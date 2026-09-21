@@ -1,0 +1,69 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# A newer push to the same branch makes the older run pointless.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      # `npm ci` is deliberate: it fails if package-lock.json has drifted from
+      # package.json, which is what we want in CI.
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check formatting
+        run: npm run format:check
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Test
+        run: npm run test:coverage
+
+      - name: Build
+        run: npm run build
+
+      - name: Upload build output
+        uses: actions/upload-artifact@v7
+        with:
+          name: dist
+          path: dist
+          retention-days: 7
+
+  # Deployment is handled by Vercel's Git integration, not here: Vercel builds
+  # every push to a preview URL and every merge to main to production. Running
+  # `vercel deploy` from Actions as well would double the build minutes and
+  # create two sources of truth. This job only asserts the config stays valid.
+  validate-vercel-config:
+    name: Validate Vercel config
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v7
+      - name: Ensure vercel.json is valid JSON
+        run: node --eval "JSON.parse(require('node:fs').readFileSync('vercel.json','utf8')); console.log('vercel.json OK')"

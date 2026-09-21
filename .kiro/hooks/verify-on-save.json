@@ -1,0 +1,16 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Format and check on save",
+      "trigger": "PostFileSave",
+      "description": "Formats the saved file and reports TypeScript or ESLint errors immediately, so mistakes surface while the change is still fresh rather than at commit time.",
+      "matcher": "discoteca/.*\\.(ts|tsx|css)$",
+      "action": {
+        "type": "command",
+        "command": "cd \"$(git -C \"${CLAUDE_PROJECT_DIR:-.}\" rev-parse --show-toplevel 2>/dev/null || echo .)\" && npx prettier --write --log-level warn . >/dev/null 2>&1; echo '--- tsc ---'; npx tsc --noEmit 2>&1 | head -20; echo '--- eslint ---'; npx eslint . --quiet 2>&1 | head -20; exit 0",
+        "timeout": 120
+      }
+    }
+  ]
+}

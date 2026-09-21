@@ -1,0 +1,33 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      # One PR for the whole lint/test toolchain keeps the noise down.
+      dev-tooling:
+        patterns:
+          - '@types/*'
+          - 'eslint*'
+          - 'prettier'
+          - 'typescript*'
+          - 'vitest'
+          - '@vitest/*'
+          - '@testing-library/*'
+        update-types: [minor, patch]
+      react:
+        patterns:
+          - 'react'
+          - 'react-dom'
+          - 'react-router'
+    commit-message:
+      prefix: 'chore(deps)'
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: 'chore(ci)'

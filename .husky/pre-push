@@ -1,0 +1,3 @@
+# Types and tests must hold before anything reaches the remote. Formatting and
+# lint are already enforced per-file by lint-staged on commit.
+npm run typecheck && npm run test

@@ -1,0 +1,72 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build output
+dist/
+dist-ssr/
+build/
+*.local
+
+# Vercel
+.vercel/
+.vercel_build_output/
+
+# Environment / secrets  (NEVER commit these)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+secrets.json
+
+# Test & coverage output
+coverage/
+.nyc_output/
+test-results/
+playwright-report/
+blob-report/
+.playwright/
+
+# Caches
+.cache/
+.temp/
+.tmp/
+.eslintcache
+*.tsbuildinfo
+.vite/
+node_modules/.vite/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Editors
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local data snapshots pulled from production (may contain private notes)
+/data/local/
+*.snapshot.json
+
+# Kiro agent runtime state (specs and steering ARE committed)
+.kiro/logs/
+.kiro/sessions/
+.kiro/session-index/

@@ -1,0 +1,158 @@
+/*
+ * Design tokens and global reset.
+ *
+ * The motion tokens are the important part of this file: every animation in the
+ * app must draw its duration and easing from here so the whole product feels
+ * like one object rather than a pile of components. See
+ * `.kiro/steering/motion.md` for the rules that govern their use.
+ */
+
+:root {
+  /* ---- Surface ---- */
+  --color-bg: #07070a;
+  --color-bg-raised: #101016;
+  --color-bg-sunken: #030305;
+  --color-edge: #22222c;
+  --color-text: #f2f2f5;
+  --color-text-muted: #9a9aa6;
+  --color-accent: #d8c9a3; /* warm foil, like a jewel case insert */
+  --color-focus: #7fb2ff;
+
+  /* ---- Type ---- */
+  --font-sans:
+    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Inter, Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  /* ---- Elevation ---- */
+  --shadow-tile: 0 1px 2px rgb(0 0 0 / 60%), 0 8px 24px rgb(0 0 0 / 45%);
+  --shadow-lifted: 0 4px 8px rgb(0 0 0 / 55%), 0 24px 64px rgb(0 0 0 / 60%);
+
+  /* ---- Motion: durations ----
+     Scale is roughly 1.3x per step. Anything above `slow` feels sluggish on a
+     phone; anything below `instant` reads as a glitch rather than a response. */
+  --duration-instant: 90ms;
+  --duration-fast: 160ms;
+  --duration-base: 240ms;
+  --duration-slow: 380ms;
+  --duration-deliberate: 560ms; /* reserved for the case-open / disc-flip */
+
+  /* ---- Motion: easing ----
+     `standard` for most transitions, `exit` for things leaving (accelerate out),
+     `entrance` for things arriving (decelerate in), `spring-ish` for anything
+     the finger is directly manipulating. */
+  --ease-standard: cubic-bezier(0.2, 0, 0.13, 1);
+  --ease-entrance: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --ease-exit: cubic-bezier(0.3, 0, 0.8, 0.15);
+  --ease-spring-ish: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* ---- Layout ---- */
+  --tile-size: 8.5rem;
+  --tile-gap: 0.75rem;
+  --radius-tile: 0.35rem;
+  --radius-panel: 1.25rem;
+
+  /* Notch and home-indicator insets, used by the fixed shelf chrome. */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  /* The shelf manages its own panning; never let the page rubber-band. */
+  overscroll-behavior: none;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  min-height: 100dvh;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+img,
+picture,
+svg,
+canvas {
+  display: block;
+  max-width: 100%;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+/* A single, consistent, always-visible focus ring. Keyboard access must survive
+   every animation we add. */
+:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.app-shell {
+  display: flex;
+  min-height: 100dvh;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: calc(1rem + var(--safe-top)) 1rem calc(1rem + var(--safe-bottom));
+  text-align: center;
+}
+
+.app-shell__title {
+  font-size: clamp(2rem, 12vw, 4rem);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.app-shell__subtitle {
+  color: var(--color-text-muted);
+  max-width: 28ch;
+}
+
+/*
+ * Reduced motion.
+ *
+ * We do not disable animation outright, because the physicality of the product
+ * is the point. We collapse durations to near-zero and remove the large
+ * translations and parallax, keeping cross-fades. Components must additionally
+ * check `useReducedMotion()` for JS-driven motion, since CSS cannot reach it.
+ */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-instant: 1ms;
+    --duration-fast: 1ms;
+    --duration-base: 1ms;
+    --duration-slow: 1ms;
+    --duration-deliberate: 1ms;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
+}
