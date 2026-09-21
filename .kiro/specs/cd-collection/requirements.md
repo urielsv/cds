@@ -18,7 +18,8 @@ a passphrase. There are no accounts and no second user role.
 user pans through by dragging or scrolling. There is no pagination and no "load
 more" button.
 
-**1.2** Each tile shows the front cover art, and the title and artist.
+**1.2** Each tile shows the front cover art, the title, the artist, the release
+year, and the country of origin.
 
 **1.3** The grid remains responsive while panning with at least 300 discs present,
 on a mid-range phone. Specifically: no frame exceeding 16ms during a sustained pan
@@ -51,6 +52,14 @@ track durations and total runtime.
 viewport, including long track titles.
 
 **2.5** Personal notes entered by the owner are displayed if present.
+
+**2.9** The country of origin is shown with a recognisable indicator (flag plus
+code), not a bare two-letter code, so a pressing's origin is identifiable at a
+glance. Region pseudo-codes such as `XW` (worldwide) are shown as such rather than
+given a flag.
+
+**2.10** A field the owner has corrected by hand is visually distinguishable from
+one supplied by MusicBrainz.
 
 **2.6** Closing the detail view returns to the shelf at the same scroll position,
 with the animation reversing into the originating tile.
@@ -136,6 +145,14 @@ collection.
 
 **5.1** The owner can edit any field of an existing disc, and can re-sync its
 metadata from MusicBrainz.
+
+**5.3** Any field the owner has set by hand is recorded as such, and a re-sync
+must never overwrite it. Country and catalogue number are the common cases: the
+printed case is the authority for a physical object and MusicBrainz is often wrong
+about older pressings.
+
+**5.4** The owner can clear a manual override, returning the field to the value the
+provider supplies.
 
 **5.2** The owner can delete a disc, with a confirmation step.
 

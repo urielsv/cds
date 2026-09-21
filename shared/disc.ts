@@ -34,6 +34,28 @@ export const discImageSchema = z.object({
   kind: z.enum(['front', 'back', 'disc', 'insert', 'spine', 'photo']),
 });
 
+/**
+ * Fields the owner may override by hand. Anything factual about the physical
+ * object that a public database can get wrong.
+ *
+ * `notes` is absent deliberately: it is always the owner's and never sourced.
+ */
+export const OVERRIDABLE_FIELDS = [
+  'title',
+  'artist',
+  'releaseDate',
+  'country',
+  'barcode',
+  'catalogNumber',
+  'labels',
+  'format',
+  'packaging',
+  'discCount',
+  'genres',
+] as const;
+
+export const overridableFieldSchema = z.enum(OVERRIDABLE_FIELDS);
+
 export const discSchema = z.object({
   /** Our own stable slug, e.g. `daft-punk-discovery-2001`. Used in URLs. */
   id: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'id must be a lowercase slug'),
@@ -46,7 +68,14 @@ export const discSchema = z.object({
 
   /** Release date as printed, possibly partial: "2001", "2001-03", "2001-03-12". */
   releaseDate: z.string().nullable(),
-  /** ISO 3166 country code, or "XW" for worldwide. */
+  /**
+   * ISO 3166-1 alpha-2 country code, or "XW" for worldwide.
+   *
+   * Frequently wrong or missing in MusicBrainz for older pressings, and the
+   * country printed on the case is often the only reliable source, so this is
+   * one of the most commonly hand-corrected fields. When set by hand, add
+   * `'country'` to `manualFields` so a re-sync cannot overwrite it.
+   */
   country: z.string().nullable(),
 
   barcode: barcodeSchema.nullable(),
@@ -75,20 +104,38 @@ export const discSchema = z.object({
 
   /** Free-form personal notes; the part no public database can provide. */
   notes: z.string().nullable(),
+  /**
+   * Fields the owner has set or corrected by hand.
+   *
+   * Re-syncing from MusicBrainz must never overwrite a field listed here. The
+   * printed case is the authority for a physical object, and MusicBrainz is
+   * often wrong about country and catalogue number on older pressings — losing a
+   * hand-verified correction to an automated refresh would be the worst kind of
+   * silent data loss, because the owner would have no way to notice.
+   */
+  manualFields: z.array(overridableFieldSchema),
   /** When this disc was added to the collection. */
   addedAt: z.iso.datetime(),
 });
 
 /**
- * The trimmed projection used by the grid. The full `Disc` is only fetched when
- * a tile is opened, which keeps the initial collection payload small enough to
- * download once and filter entirely on the client.
+ * The trimmed projection used by the grid.
+ *
+ * This must carry every field the shelf needs to render, search, filter and sort
+ * without a further request, because requirement 8.4 says browsing a loaded
+ * collection makes no network calls. That is why the filterable fields
+ * (`country`, `labels`, `format`, `genres`) are here and not only on the full
+ * record. The full `Disc` — tracks with durations, all images, notes — is
+ * fetched only when a disc is opened.
  */
 export const discSummarySchema = discSchema.pick({
   id: true,
   title: true,
   artist: true,
   releaseDate: true,
+  country: true,
+  labels: true,
+  format: true,
   genres: true,
   addedAt: true,
 });
@@ -101,6 +148,16 @@ export const collectionIndexSchema = z.object({
     discSummarySchema.extend({
       /** Front cover thumbnail for the tile. */
       thumbnail: discImageSchema.nullable(),
+      /**
+       * Track titles only — no positions or durations.
+       *
+       * Search has to match track titles (requirement 3.1) with no network
+       * request, so they must live in the index. Budget: at 400 discs and ~14
+       * tracks each this is roughly 140 KB of text, which compresses well and is
+       * a fair price for instant search. Durations stay out; they are needed only
+       * in the detail view.
+       */
+      trackTitles: z.array(z.string()),
     }),
   ),
 });
@@ -111,3 +168,12 @@ export type Disc = z.infer<typeof discSchema>;
 export type DiscSummary = z.infer<typeof discSummarySchema>;
 export type CollectionIndex = z.infer<typeof collectionIndexSchema>;
 export type DiscImageKind = DiscImage['kind'];
+export type OverridableField = (typeof OVERRIDABLE_FIELDS)[number];
+
+/** One entry as it appears in the collection index: a summary plus tile data. */
+export type DiscIndexEntry = CollectionIndex['discs'][number];
+
+/** True when the owner has hand-corrected this field and re-sync must skip it. */
+export function isManuallySet(disc: Pick<Disc, 'manualFields'>, field: OverridableField): boolean {
+  return disc.manualFields.includes(field);
+}

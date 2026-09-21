@@ -1,6 +1,6 @@
 ---
 name: mobile-camera-scan
-description: Use when implementing or debugging barcode scanning, camera capture, getUserMedia, or the SKU/EAN/UPC reader in discoteca — especially when scanning fails on iPhone or iOS Safari, when the camera preview is black, or when deciding between the native BarcodeDetector API and a WebAssembly decoder.
+description: Use when implementing or debugging barcode scanning, camera capture, getUserMedia, or the SKU/EAN/UPC reader in MyCDs — especially when scanning fails on iPhone or iOS Safari, when the camera preview is black, or when deciding between the native BarcodeDetector API and a WebAssembly decoder.
 ---
 
 # Barcode scanning that works on an iPhone

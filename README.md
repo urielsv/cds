@@ -1,8 +1,8 @@
-# discoteca
+# MyCDs
 
 A personal compact disc collection you can flip through on your phone.
 
-`discoteca` is a single-page app that presents a CD collection as a continuous,
+`MyCDs` is a single-page app that presents a CD collection as a continuous,
 pannable shelf rather than a paginated list. Tap a disc and the case opens: cover
 art, pressing details, catalogue number, label, country, and the full track
 listing. Metadata comes from [MusicBrainz](https://musicbrainz.org) and cover art
@@ -12,16 +12,21 @@ by scanning the barcode on its case with a phone camera.
 It is built as a UI/UX exercise first. The motion is the point: the intent is
 that moving through the collection feels like handling the physical objects.
 
-> **Status:** early development. The foundation, tooling and specification are in
-> place; the shelf, disc detail view and upload flow are being built against
+> **Status:** early development. The shelf and the disc detail transition work
+> against a generated fixture collection; real data loading, search, filters and
+> the upload flow are next, tracked in
 > [`.kiro/specs/cd-collection`](.kiro/specs/cd-collection).
+>
+> Run `npm run dev` to browse a fixture of 150 discs.
 
 ## Two flows
 
 **Visualise** (the primary flow, public) — browse the shelf, fuzzy-search by
 artist, title or track, filter by genre, year, label, country or format, and sort
 by any of them. The whole collection index is fetched once and then filtered
-entirely on the device, so searching and sorting never wait on the network.
+entirely on the device, so searching and sorting never wait on the network. Each
+tile carries the cover, title, artist, year and country of origin, so a pressing is
+identifiable without opening it.
 
 **Add a disc** (private, password-gated) — scan the barcode with the phone
 camera, or search by name with autocomplete. Because a barcode does not uniquely

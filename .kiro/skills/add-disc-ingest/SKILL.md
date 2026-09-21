@@ -1,6 +1,6 @@
 ---
 name: add-disc-ingest
-description: Use when adding, re-syncing or backfilling a compact disc record in discoteca — anything that fetches MusicBrainz metadata, pulls Cover Art Archive images, mirrors artwork into Blob storage, or writes the collection index. Covers the barcode and name-search lookup paths, candidate disambiguation, the exact write ordering that keeps the index consistent, and the free-tier operation budget.
+description: Use when adding, re-syncing or backfilling a compact disc record in MyCDs — anything that fetches MusicBrainz metadata, pulls Cover Art Archive images, mirrors artwork into Blob storage, or writes the collection index. Covers the barcode and name-search lookup paths, candidate disambiguation, the exact write ordering that keeps the index consistent, and the free-tier operation budget.
 ---
 
 # Ingesting a disc

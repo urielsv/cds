@@ -7,6 +7,68 @@ afterEach(() => {
   cleanup();
 });
 
+// jsdom implements neither ResizeObserver nor IntersectionObserver, and the
+// virtualised shelf measures its scroll container with the former.
+//
+// A stub that merely does nothing is not enough: TanStack Virtual reads the
+// element rect from the ResizeObserver callback, so a silent stub leaves it
+// believing the viewport is 0x0 and it mounts no rows. This stub invokes the
+// callback immediately on observe, which is what lets shelf tests exercise
+// virtualisation at all.
+class ResizeObserverStub {
+  private readonly callback: ResizeObserverCallback;
+  private readonly observed = new Set<Element>();
+
+  constructor(callback: ResizeObserverCallback) {
+    this.callback = callback;
+  }
+
+  observe(target: Element): void {
+    this.observed.add(target);
+    this.report(target);
+  }
+
+  unobserve(target: Element): void {
+    this.observed.delete(target);
+  }
+
+  disconnect(): void {
+    this.observed.clear();
+  }
+
+  private report(target: Element): void {
+    const rect = target.getBoundingClientRect();
+    const entry = {
+      target,
+      contentRect: rect,
+      borderBoxSize: [{ inlineSize: rect.width, blockSize: rect.height }],
+      contentBoxSize: [{ inlineSize: rect.width, blockSize: rect.height }],
+      devicePixelContentBoxSize: [{ inlineSize: rect.width, blockSize: rect.height }],
+    } as unknown as ResizeObserverEntry;
+
+    this.callback([entry], this);
+  }
+}
+
+vi.stubGlobal('ResizeObserver', ResizeObserverStub);
+
+class IntersectionObserverStub {
+  observe(): void {
+    /* noop */
+  }
+  unobserve(): void {
+    /* noop */
+  }
+  disconnect(): void {
+    /* noop */
+  }
+  takeRecords(): [] {
+    return [];
+  }
+}
+
+vi.stubGlobal('IntersectionObserver', IntersectionObserverStub);
+
 // jsdom does not implement matchMedia, and every motion-aware component asks it
 // whether the user prefers reduced motion. Default to "no preference" so tests
 // exercise the animated code path unless they override this.

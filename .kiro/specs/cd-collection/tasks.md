@@ -14,27 +14,33 @@ is considered done.
 - [x] 0.4 Candidate ranking with tests (`shared/musicbrainz.ts`)
 - [x] 0.5 Design tokens including the motion scale (`src/styles/global.css`)
 - [x] 0.6 CI, steering, skills, hooks, spec
+- [x] 0.7 Country display helpers with tests (`shared/country.ts`): flag, name and
+      region pseudo-code handling. _Satisfies 2.9._
+- [x] 0.8 Motion token bridge (`src/motion/tokens.ts`) reading the CSS custom
+      properties so JS and CSS cannot drift. _Satisfies 7.1._
 
 ---
 
-## 1. Spike: the pannable virtualised shelf
+## 1. Spike: the pannable virtualised shelf — mostly done
 
-**Do this first.** It is the single largest technical risk and the whole product
-sits on it. If a smooth 2D pannable virtualised grid does not work on a real phone,
-the shelf concept needs rethinking, and it is far cheaper to learn that now.
-
-- [ ] 1.1 Generate a 300-disc fixture collection with realistic titles, artists and
-      placeholder art. Reused by every later test.
-- [ ] 1.2 Build a throwaway grid: one transformed surface, two composed
+- [x] 1.1 Deterministic fixture generator (`src/dev/fixtureCollection.ts`),
+      parameterised by count so 150 (today) and 400 (the ceiling) are both easy.
+- [x] 1.2 Virtualised 2D grid: one transformed surface, two composed
       `@tanstack/react-virtual` virtualisers, fixed-aspect tiles.
-- [ ] 1.3 Add drag-to-pan from pointer events, tracking the finger 1:1, with
-      `touch-action` set so the browser stops competing.
-- [ ] 1.4 Profile on a real phone and in Chrome with CPU throttled 4x. Record
-      frame times, layer count and any layout work in a comment or note.
-      _Satisfies 1.3._
-- [ ] 1.5 Decide and write down: overscan value, tile size, whether zoom is worth
-      it. If 60fps is not reachable, stop and reconsider the interaction before
-      building further.
+- [x] 1.3 Panning. **Decision: native scrolling on both axes, not a hand-rolled
+      pointer transform.** iOS momentum and rubber-band physics are very hard to
+      reproduce and native scroll tracks the finger perfectly for free. Desktop
+      gets drag-to-pan layered on top, since it has no touch surface.
+- [x] 1.4 Virtualisation proven by test (`Shelf.test.tsx`): **42 tiles mount at
+      both 150 and 400 discs** on a 390x780 viewport, while the surface grows from
+      2368x2100 to 3848x3360. Mounted work is independent of collection size.
+- [x] 1.5 Recorded: `TILE_WIDTH` 148, `TILE_HEIGHT` 210, `OVERSCAN` 3, columns
+      `ceil(sqrt(n) * 1.3)` floored at what fills the viewport. Zoom deferred —
+      panning alone reads well and zoom adds gesture conflicts.
+- [ ] 1.6 Still outstanding: profile on a real phone and in Chrome with CPU
+      throttled 4x, confirming no frame exceeds 16ms and no layout work occurs
+      during a pan. The test above bounds the mounted count but cannot measure
+      frame time. _Satisfies 1.3._
 
 ## 2. Storage and data access
 
@@ -186,6 +192,10 @@ Read `.kiro/skills/mobile-camera-scan/SKILL.md` before starting.
 - [ ] 11.2 `DELETE /api/discs/:id`, removing images and updating the index.
       _Satisfies 5.2._
 - [ ] 11.3 Edit and delete UI, delete behind a confirmation. _Satisfies 5.2._
+- [ ] 11.4 Honour `manualFields` on re-sync: never overwrite a hand-set field, and
+      show which fields are overridden. _Satisfies 5.3._
+- [ ] 11.5 Let the owner clear an override and fall back to the provider value.
+      _Satisfies 5.4._
 
 ## 12. Polish and verification
 

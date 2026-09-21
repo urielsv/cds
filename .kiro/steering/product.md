@@ -1,4 +1,4 @@
-# What discoteca is
+# What MyCDs is
 
 A single-user, mobile-first web app for browsing a personal compact disc
 collection. It is a UI/UX project before it is a data project: the goal is that
