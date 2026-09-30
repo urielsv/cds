@@ -1,0 +1,507 @@
+{
+  "status": "Official",
+  "disambiguation": "",
+  "release-group": {
+    "primary-type": "Album",
+    "disambiguation": "",
+    "secondary-types": [],
+    "id": "48117b90-a16e-34ca-a514-19c702df1158",
+    "title": "Discovery",
+    "first-release-date": "2001-02-26",
+    "artist-credit": [
+      {
+        "name": "Daft Punk",
+        "joinphrase": "",
+        "artist": {
+          "disambiguation": "French electronic duo",
+          "id": "056e4f3e-d505-4dad-8ec1-d04f521cbb56",
+          "name": "Daft Punk",
+          "country": "FR",
+          "type": "Group"
+        }
+      }
+    ],
+    "genres": [
+      {
+        "name": "boogie",
+        "count": 1
+      },
+      {
+        "name": "club",
+        "count": 1
+      },
+      {
+        "name": "dance",
+        "count": 3
+      },
+      {
+        "name": "dance-pop",
+        "count": 2
+      },
+      {
+        "name": "disco",
+        "count": 1
+      },
+      {
+        "name": "downtempo",
+        "count": 1
+      },
+      {
+        "name": "electro",
+        "count": 3
+      },
+      {
+        "name": "electro house",
+        "count": 1
+      },
+      {
+        "name": "electro-disco",
+        "count": 1
+      },
+      {
+        "name": "electronic",
+        "count": 14
+      },
+      {
+        "name": "electronica",
+        "count": 2
+      },
+      {
+        "name": "euro house",
+        "count": 2
+      },
+      {
+        "name": "french house",
+        "count": 8
+      },
+      {
+        "name": "funky house",
+        "count": 2
+      },
+      {
+        "name": "house",
+        "count": 20
+      },
+      {
+        "name": "progressive house",
+        "count": 4
+      },
+      {
+        "name": "synth funk",
+        "count": 2
+      },
+      {
+        "name": "tech house",
+        "count": 1
+      }
+    ]
+  },
+  "country": "FR",
+  "artist-credit": [
+    {
+      "joinphrase": "",
+      "name": "Daft Punk",
+      "artist": {
+        "id": "056e4f3e-d505-4dad-8ec1-d04f521cbb56",
+        "name": "Daft Punk",
+        "disambiguation": "French electronic duo",
+        "country": "FR",
+        "type": "Group"
+      }
+    }
+  ],
+  "label-info": [
+    {
+      "catalog-number": "8496062",
+      "label": {
+        "label-code": 3098,
+        "type": "Imprint",
+        "disambiguation": "worldwide imprint of Virgin Records Ltd. and all its subsidiaries",
+        "id": "49b58bdb-3d74-40c6-956a-4c4b46115c9c",
+        "name": "Virgin"
+      }
+    }
+  ],
+  "barcode": "724384960629",
+  "genres": [
+    {
+      "name": "electronic",
+      "count": 1
+    },
+    {
+      "name": "house",
+      "count": 1
+    }
+  ],
+  "packaging": "Jewel Case",
+  "title": "Discovery",
+  "cover-art-archive": {
+    "darkened": false,
+    "artwork": true,
+    "front": true,
+    "back": true
+  },
+  "id": "d073287b-d1bd-4f11-a933-a4386f8cf701",
+  "date": "2001-02-26",
+  "media": [
+    {
+      "id": "ada31254-2a88-3a59-ad24-147cb4381468",
+      "track-count": 14,
+      "position": 1,
+      "format": "CD",
+      "tracks": [
+        {
+          "number": "1",
+          "title": "One More Time",
+          "length": 320840,
+          "position": 1,
+          "artist-credit": [
+            {
+              "artist": {
+                "type": "Group",
+                "disambiguation": "French electronic duo",
+                "name": "Daft Punk",
+                "id": "056e4f3e-d505-4dad-8ec1-d04f521cbb56",
+                "country": "FR"
+              },
+              "name": "Daft Punk",
+              "joinphrase": ""
+            }
+          ],
+          "recording": {
+            "id": "60fa767a-d85d-4991-82bc-4294e0b11ae7",
+            "title": "One More Time",
+            "length": 320746
+          },
+          "id": "25fbe7fe-655e-3624-9be1-0452364d0975"
+        },
+        {
+          "number": "2",
+          "title": "Aerodynamic",
+          "length": 207533,
+          "artist-credit": [
+            {
+              "joinphrase": "",
+              "name": "Daft Punk",
+              "artist": {
+                "disambiguation": "French electronic duo",
+                "name": "Daft Punk",
+                "id": "056e4f3e-d505-4dad-8ec1-d04f521cbb56",
+                "country": "FR",
+                "type": "Group"
+              }
+            }
+          ],
+          "position": 2,
+          "recording": {
+            "id": "7c0e11a3-1c7a-4e6d-a14d-6e86d86dbaad",
+            "title": "Aerodynamic",
+            "length": 207626
+          },
+          "id": "c2d5edfc-1874-361f-922b-2fe30ebc6f88"
+        },
+        {
+          "id": "a3b22606-acf0-35b6-85e0-d552abc2712a",
+          "recording": {
+            "id": "15f16efc-8762-4151-95ab-c12d06268640",
+            "title": "Digital Love",
+            "length": 298333
+          },
+          "length": 298333,
+          "position": 3,
+          "artist-credit": [
+            {
+              "artist": {
+                "disambiguation": "French electronic duo",
+                "id": "056e4f3e-d505-4dad-8ec1-d04f521cbb56",
+                "name": "Daft Punk",
+                "country": "FR",
+                "type": "Group"
+              },
+              "name": "Daft Punk",
+              "joinphrase": ""
+            }
+          ],
+          "number": "3",
+          "title": "Digital Love"
+        },
+        {
+          "number": "4",
+          "title": "Harder, Better, Faster, Stronger",
+          "length": 224293,
+          "position": 4,
+          "artist-credit": [
+            {
+              "joinphrase": "",
+              "name": "Daft Punk",
+              "artist": {
+                "type": "Group",
+                "name": "Daft Punk",
+                "id": "056e4f3e-d505-4dad-8ec1-d04f521cbb56",
+                "disambiguation": "French electronic duo",
+                "country": "FR"
+              }
+            }
+          ],
+          "recording": {
+            "id": "f1a6a40f-78f5-4918-968d-f64363bae94c",
+            "title": "Harder, Better, Faster, Stronger",
+            "length": 224293
+          },
+          "id": "6123d75a-12df-36a2-8f03-2c5093011a6f"
+        },
+        {
+          "recording": {
+            "id": "d63ad586-1124-4df1-9a2b-c014d7b7cb02",
+            "title": "Crescendolls",
+            "length": 211640
+          },
+          "id": "237bb6fd-9159-3bed-a159-050ac220534d",
+          "title": "Crescendolls",
+          "number": "5",
+          "position": 5,
+          "artist-credit": [
+            {
+              "artist": {
+                "disambiguation": "French electronic duo",
+                "name": "Daft Punk",
+                "id": "056e4f3e-d505-4dad-8ec1-d04f521cbb56",
+                "country": "FR",
+                "type": "Group"
+              },
+              "name": "Daft Punk",
+              "joinphrase": ""
+            }
+          ],
+          "length": 211640
+        },
+        {
+          "recording": {
+            "id": "712edd8d-b413-4e4e-aca4-9b91fce2e65c",
+            "title": "Nightvision",
+            "length": 104466
+          },
+          "id": "f55c4959-d387-3487-8ec2-fae142d6937b",
+          "number": "6",
+          "title": "Nightvision",
+          "length": 104466,
+          "position": 6,
+          "artist-credit": [
+            {
+              "artist": {
+                "type": "Group",
+                "disambiguation": "French electronic duo",
+                "id": "056e4f3e-d505-4dad-8ec1-d04f521cbb56",
+                "name": "Daft Punk",
+                "country": "FR"
+              },
+              "joinphrase": "",
+              "name": "Daft Punk"
+            }
+          ]
+        },
+        {
+          "number": "7",
+          "title": "Superheroes",
+          "length": 237800,
+          "artist-credit": [
+            {
+              "joinphrase": "",
+              "name": "Daft Punk",
+              "artist": {
+                "country": "FR",
+                "name": "Daft Punk",
+                "id": "056e4f3e-d505-4dad-8ec1-d04f521cbb56",
+                "disambiguation": "French electronic duo",
+                "type": "Group"
+              }
+            }
+          ],
+          "position": 7,
+          "recording": {
+            "id": "8a98614f-0533-44ef-890a-639cab407a2d",
+            "title": "Superheroes",
+            "length": 237800
+          },
+          "id": "63900fa4-2726-3a31-b968-8154c952a550"
+        },
+        {
+          "id": "7e1dbba1-badd-3619-8a41-a3d1d596f23f",
+          "recording": {
+            "id": "07b720fc-0d6f-4342-a6df-876d1749de0b",
+            "title": "High Life",
+            "length": 201800
+          },
+          "artist-credit": [
+            {
+              "name": "Daft Punk",
+              "joinphrase": "",
+              "artist": {
+                "type": "Group",
+                "country": "FR",
+                "disambiguation": "French electronic duo",
+                "id": "056e4f3e-d505-4dad-8ec1-d04f521cbb56",
+                "name": "Daft Punk"
+              }
+            }
+          ],
+          "position": 8,
+          "length": 201800,
+          "title": "High Life",
+          "number": "8"
+        },
+        {
+          "recording": {
+            "id": "defbfcb2-7a5c-4456-be28-b7e5ccf92cc2",
+            "title": "Something About Us",
+            "length": 231066
+          },
+          "id": "1081a5a0-ff98-33cd-902a-58a7c040f125",
+          "number": "9",
+          "title": "Something About Us",
+          "length": 231066,
+          "artist-credit": [
+            {
+              "name": "Daft Punk",
+              "joinphrase": "",
+              "artist": {
+                "type": "Group",
+                "country": "FR",
+                "disambiguation": "French electronic duo",
+                "id": "056e4f3e-d505-4dad-8ec1-d04f521cbb56",
+                "name": "Daft Punk"
+              }
+            }
+          ],
+          "position": 9
+        },
+        {
+          "recording": {
+            "id": "e1fe1d12-dac2-4325-ae1b-25e0ef06b998",
+            "title": "Voyager",
+            "length": 227866
+          },
+          "id": "fd426020-16d0-36b7-81a9-3a09f6ce74e8",
+          "title": "Voyager",
+          "number": "10",
+          "artist-credit": [
+            {
+              "joinphrase": "",
+              "name": "Daft Punk",
+              "artist": {
+                "country": "FR",
+                "disambiguation": "French electronic duo",
+                "id": "056e4f3e-d505-4dad-8ec1-d04f521cbb56",
+                "name": "Daft Punk",
+                "type": "Group"
+              }
+            }
+          ],
+          "position": 10,
+          "length": 227866
+        },
+        {
+          "id": "7a4439c2-41f1-3f2c-b52b-08530ad93d90",
+          "recording": {
+            "id": "2a220770-1150-4190-b0e0-57d89a0a7469",
+            "title": "Veridis Quo",
+            "length": 344933
+          },
+          "length": 344893,
+          "position": 11,
+          "artist-credit": [
+            {
+              "name": "Daft Punk",
+              "joinphrase": "",
+              "artist": {
+                "type": "Group",
+                "disambiguation": "French electronic duo",
+                "name": "Daft Punk",
+                "id": "056e4f3e-d505-4dad-8ec1-d04f521cbb56",
+                "country": "FR"
+              }
+            }
+          ],
+          "number": "11",
+          "title": "Veridis Quo"
+        },
+        {
+          "id": "12b6ebf6-7a07-330b-ac66-47dcb924a8c1",
+          "recording": {
+            "id": "3f60ae01-43cc-4db9-86ec-97b79f83764f",
+            "title": "Short Circuit",
+            "length": 206866
+          },
+          "length": 206866,
+          "position": 12,
+          "artist-credit": [
+            {
+              "joinphrase": "",
+              "name": "Daft Punk",
+              "artist": {
+                "country": "FR",
+                "disambiguation": "French electronic duo",
+                "id": "056e4f3e-d505-4dad-8ec1-d04f521cbb56",
+                "name": "Daft Punk",
+                "type": "Group"
+              }
+            }
+          ],
+          "number": "12",
+          "title": "Short Circuit"
+        },
+        {
+          "id": "5055e8f6-097f-3736-9938-d44725822575",
+          "recording": {
+            "id": "59038571-03ea-4ca4-965c-a57eae2aa138",
+            "title": "Face to Face",
+            "length": 240173
+          },
+          "artist-credit": [
+            {
+              "artist": {
+                "country": "FR",
+                "disambiguation": "French electronic duo",
+                "name": "Daft Punk",
+                "id": "056e4f3e-d505-4dad-8ec1-d04f521cbb56",
+                "type": "Group"
+              },
+              "name": "Daft Punk",
+              "joinphrase": ""
+            }
+          ],
+          "position": 13,
+          "length": 240173,
+          "title": "Face to Face",
+          "number": "13"
+        },
+        {
+          "id": "98c7a964-e778-3e15-b878-604a4a405eba",
+          "recording": {
+            "id": "1a915a2d-e2f4-4300-a230-96fc9c8a7b60",
+            "title": "Too Long",
+            "length": 600293
+          },
+          "artist-credit": [
+            {
+              "artist": {
+                "id": "056e4f3e-d505-4dad-8ec1-d04f521cbb56",
+                "name": "Daft Punk",
+                "disambiguation": "French electronic duo",
+                "country": "FR",
+                "type": "Group"
+              },
+              "name": "Daft Punk",
+              "joinphrase": ""
+            }
+          ],
+          "position": 14,
+          "length": 600293,
+          "title": "Too Long",
+          "number": "14"
+        }
+      ],
+      "title": ""
+    }
+  ]
+}

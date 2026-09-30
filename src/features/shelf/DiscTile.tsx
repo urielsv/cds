@@ -1,76 +1,207 @@
-import { motion, useReducedMotion } from 'motion/react';
+import { memo, useCallback, useEffect, useState, useSyncExternalStore } from 'react';
 
-import { CountryBadge } from '@/components/CountryBadge';
-import { REDUCED_TRANSITION, transition } from '@/motion/tokens';
 import { type DiscIndexEntry } from '@shared/disc';
 import { releaseYear } from '@shared/format';
 
+import { type Placement, TILE_SIZE } from './camera';
+import { isDark } from './contrast';
+import { coverLoader } from '@/lib/coverLoader';
+import { accessibleTileName } from './tileName';
+
+/**
+ * Tiles overlap their neighbours by this many world units. Adjacent images
+ * scaled by a fractional camera transform otherwise anti-alias their shared
+ * edge and leave a hairline of background showing between every cover — the
+ * one thing a borderless mosaic cannot have.
+ */
+const SEAM_OVERLAP = 0.75;
+
 interface DiscTileProps {
   disc: DiscIndexEntry;
-  onOpen: (disc: DiscIndexEntry) => void;
-  /** Suppresses the shared-element pairing while this tile's disc is open. */
-  isOpen: boolean;
+  index: number;
+  /** Where this cover sits on the wall, in cells, and how many it spans. */
+  placement: Placement;
+  /** Greyed out because it does not match the current search or filters. */
+  dimmed: boolean;
+  /** Hidden while its disc is open, so the cover appears to have left the wall. */
+  lifted: boolean;
+  /** Just added: plays the settle-in once. */
+  arrived: boolean;
+  /** Roving tabindex: exactly one tile in the mosaic is in the tab order. */
+  focusable: boolean;
+  onOpen: (disc: DiscIndexEntry, index: number) => void;
+  onFocusTile: (index: number) => void;
+  registerElement: (id: string, element: HTMLButtonElement | null) => void;
 }
 
-export function DiscTile({ disc, onOpen, isOpen }: DiscTileProps) {
-  const reduced = useReducedMotion() ?? false;
+/**
+ * One cover in the mosaic: nothing but the artwork, edge to edge.
+ *
+ * Positioned in world units inside the camera surface, so its transform is
+ * written once when it mounts or moves in the order — never during a pan.
+ */
+export const DiscTile = memo(function DiscTile({
+  disc,
+  index,
+  placement,
+  dimmed,
+  lifted,
+  arrived,
+  focusable,
+  onOpen,
+  onFocusTile,
+  registerElement,
+}: DiscTileProps) {
+  const thumbnail = disc.thumbnail;
+  const coverUrl = thumbnail?.url;
+
+  // Re-renders only when this tile's own cover changes state.
+  const subscribe = useCallback(
+    (listener: () => void) =>
+      coverUrl === undefined ? () => undefined : coverLoader.subscribeUrl(coverUrl, listener),
+    [coverUrl],
+  );
+  useSyncExternalStore(subscribe, () =>
+    coverUrl === undefined ? '' : coverLoader.snapshot(coverUrl),
+  );
+  const state = coverUrl === undefined ? 'idle' : coverLoader.state(coverUrl);
+  const src = coverUrl === undefined ? null : coverLoader.src(coverUrl);
+  const failed = state === 'failed';
+
+  // Mounted: this cover is wanted now, ahead of anything being prefetched.
+  useEffect(() => {
+    if (coverUrl === undefined) return;
+    return coverLoader.want(coverUrl);
+  }, [coverUrl]);
+
+  // A cover already in memory mounts visible — no fade, no placeholder flash
+  // on every pan back over it. Anything else fades in once it has painted.
+  const [shown, setShown] = useState(() => state === 'ready');
+  const reveal = useCallback(() => {
+    if (coverUrl !== undefined) coverLoader.markLoaded(coverUrl);
+    setShown(true);
+  }, [coverUrl]);
+
+  /**
+   * An image already complete before React attaches a load listener (a blob,
+   * or a cache hit) never fires `onLoad`. Without this check it would stay
+   * invisible behind its colour — the faster the cover, the more likely.
+   */
+  const watchCover = useCallback(
+    (image: HTMLImageElement | null) => {
+      if (image?.complete === true && image.naturalWidth > 0) reveal();
+    },
+    [reveal],
+  );
+
+  const pending = coverUrl !== undefined && !shown && !failed;
+  // Label ink chosen against the tile's own colour, so it reads on any cover.
+  const ink =
+    disc.color !== null && disc.color !== undefined && isDark(disc.color) ? 'light' : 'dark';
+
   const year = releaseYear(disc.releaseDate);
+  const size = placement.span * TILE_SIZE;
+
+  const className = [
+    'disc-tile',
+    dimmed && 'disc-tile--dimmed',
+    lifted && 'disc-tile--lifted',
+    arrived && 'disc-tile--arrived',
+    shown && 'disc-tile--loaded',
+    pending && 'disc-tile--pending',
+    pending && `disc-tile--ink-${ink}`,
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   return (
-    // A real <button>: this is the primary interactive element of the whole app
-    // and must be reachable and activatable by keyboard, not a div with a
-    // handler. The motion wrapper animates it without changing its semantics.
-    <motion.button
-      type="button"
-      className="disc-tile"
-      onClick={() => {
-        onOpen(disc);
+    // A real <button>: the primary interactive element of the app must be
+    // reachable and activatable by keyboard and screen reader.
+    <button
+      ref={(element) => {
+        registerElement(disc.id, element);
       }}
-      // Only transform and opacity: these run on the compositor, so a shelf full
-      // of tiles stays at 60fps.
-      //
-      // Spread conditionally rather than passing `undefined`: with
-      // `exactOptionalPropertyTypes` an explicit undefined is not the same as an
-      // absent prop, and Motion's types reject it.
-      {...(reduced
-        ? {}
-        : {
-            whileHover: { scale: 1.04, y: -4 },
-            whileTap: { scale: 0.97 },
-          })}
-      transition={reduced ? REDUCED_TRANSITION : transition('fast')}
-      aria-label={`${disc.title} by ${disc.artist}${year === null ? '' : `, ${year}`}`}
+      type="button"
+      className={className}
+      data-index={index}
+      tabIndex={focusable ? 0 : -1}
+      style={{
+        width: size + SEAM_OVERLAP,
+        height: size + SEAM_OVERLAP,
+        // The average cover colour fills the tile before the artwork arrives,
+        // so the wall reads as a wall of colour rather than of holes.
+        backgroundColor: disc.color ?? undefined,
+        // …and the stored tiny placeholder, when there is one, sharpens that
+        // into a blurred preview of the actual cover.
+        backgroundImage:
+          thumbnail?.placeholder && !shown ? `url("${thumbnail.placeholder}")` : undefined,
+        transform: `translate3d(${placement.column * TILE_SIZE}px, ${placement.row * TILE_SIZE}px, 0)`,
+        // Blocks are drawn above their neighbours so the seam overlap of a
+        // large cover never shows as a line across a small one.
+        zIndex: placement.span,
+      }}
+      onClick={() => {
+        onOpen(disc, index);
+      }}
+      onFocus={() => {
+        onFocusTile(index);
+      }}
+      aria-label={accessibleTileName(disc, dimmed)}
     >
-      <span className="disc-tile__case">
-        {/* The disc peeking out from behind the cover. Purely decorative, but it
-            is what makes a tile read as an object in a case rather than a photo. */}
-        <span aria-hidden="true" className="disc-tile__disc" />
-
-        {!isOpen && (
-          <motion.img
-            // Pairs with the cover in the detail view so opening grows out of
-            // this tile. Dropped while open so the detail view owns the element.
-            layoutId={`cover-${disc.id}`}
+      {thumbnail && !failed ? (
+        src !== null && (
+          <img
+            ref={watchCover}
             className="disc-tile__cover"
-            src={disc.thumbnail?.url ?? ''}
+            src={src}
             alt=""
-            width={disc.thumbnail?.width ?? 300}
-            height={disc.thumbnail?.height ?? 300}
-            loading="lazy"
+            width={thumbnail.width}
+            height={thumbnail.height}
+            // Not `lazy`: the wall only mounts covers at or near the screen, so
+            // windowing already does what lazy loading would.
+            loading="eager"
+            fetchPriority="high"
             decoding="async"
             draggable={false}
+            onLoad={reveal}
+            onError={() => {
+              coverLoader.markFailed(thumbnail.url);
+            }}
           />
-        )}
-      </span>
+        )
+      ) : (
+        // No artwork, or it would not load: a typographic cover rather than an
+        // empty square.
+        <span className="disc-tile__typeset" aria-hidden="true">
+          <span className="disc-tile__typeset-title">{disc.title}</span>
+          <span className="disc-tile__typeset-artist">{disc.artist}</span>
+        </span>
+      )}
 
-      <span className="disc-tile__meta">
-        <span className="disc-tile__title">{disc.title}</span>
-        <span className="disc-tile__artist">{disc.artist}</span>
-        <span className="disc-tile__footer">
-          {year !== null && <span className="disc-tile__year">{year}</span>}
-          <CountryBadge country={disc.country} />
+      {/* While its cover is on the way, a tile says what it is. Every slot
+          reads differently — the shelf is legible before any artwork — and it
+          is gone the moment the cover lands. Hidden by CSS when zoomed too far
+          out to read. */}
+      {pending && (
+        <span className="disc-tile__pending-label" aria-hidden="true">
+          <span className="disc-tile__pending-title">{disc.title}</span>
+          <span className="disc-tile__pending-artist">{disc.artist}</span>
+        </span>
+      )}
+
+      {/* Hover caption for pointer users. Decorative: the button's accessible
+          name already carries the same text. On a cover the owner has rated
+          highly — and therefore made large — the stars sit alongside it. */}
+      <span className="disc-tile__caption" aria-hidden="true">
+        {placement.span > 1 && (disc.rating ?? 0) > 0 && (
+          <span className="disc-tile__stars">{'★'.repeat(disc.rating ?? 0)}</span>
+        )}
+        <span className="disc-tile__caption-title">{disc.title}</span>
+        <span className="disc-tile__caption-artist">
+          {disc.artist}
+          {year === null ? '' : ` · ${year}`}
         </span>
       </span>
-    </motion.button>
+    </button>
   );
-}
+});

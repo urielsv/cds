@@ -54,7 +54,8 @@ export function parseCubicBezier(value: string): Cubic | null {
   return parts as Cubic;
 }
 
-function durationMs(name: DurationName): number {
+/** A duration token in milliseconds, for timers that must match a CSS transition. */
+export function durationMs(name: DurationName): number {
   const raw = readCustomProperty(`--duration-${name}`);
   const parsed = raw === null ? null : parseCssDuration(raw);
   return parsed ?? FALLBACK_DURATIONS_MS[name];
@@ -81,11 +82,30 @@ export function transition(duration: DurationName, ease: EasingName = 'standard'
 }
 
 /**
- * The transition to use for a gesture release, where a little overshoot reads as
- * physical weight.
+ * Bounce for the release springs. Zero is critically damped: the wall arrives
+ * without wobbling around its resting cell. The spring still carries the
+ * finger's velocity, which is what makes a release feel physical — a hard
+ * flick into an edge overshoots and comes back on its own, without any bounce
+ * being added.
  */
-export function releaseTransition(): Transition {
-  return transition('base', 'springish');
+const SPRING_BOUNCE = 0;
+
+/**
+ * A physical spring for direct-manipulation releases, timed by a duration
+ * token and started at the finger's velocity (units per second).
+ *
+ * Unlike a tween, a spring begins moving at whatever speed the content already
+ * had, so there is no visible change of pace at the instant the finger lifts —
+ * the difference between a throw and a correction. `visualDuration` is the time
+ * to visibly arrive, so the tokens keep their meaning.
+ */
+export function springTransition(duration: DurationName, velocity = 0): Transition {
+  return {
+    type: 'spring',
+    visualDuration: durationMs(duration) / 1000,
+    bounce: SPRING_BOUNCE,
+    velocity,
+  };
 }
 
 /**

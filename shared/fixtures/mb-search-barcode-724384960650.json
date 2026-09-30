@@ -1,0 +1,175 @@
+{
+  "count": 2,
+  "offset": 0,
+  "releases": [
+    {
+      "id": "8d28a4da-8077-4cae-a0a1-2d16c4923775",
+      "score": 100,
+      "title": "Discovery",
+      "status": "Official",
+      "disambiguation": "Interstella 5555 artwork",
+      "packaging": "None",
+      "artist-credit": [
+        {
+          "name": "Daft Punk",
+          "artist": {
+            "id": "056e4f3e-d505-4dad-8ec1-d04f521cbb56",
+            "name": "Daft Punk",
+            "disambiguation": "French electronic duo"
+          }
+        }
+      ],
+      "release-group": {
+        "id": "48117b90-a16e-34ca-a514-19c702df1158",
+        "title": "Discovery",
+        "primary-type": "Album"
+      },
+      "date": "2024-10-08",
+      "country": "XW",
+      "barcode": "724384960650",
+      "label-info": [
+        {
+          "label": {
+            "id": "3b0a155a-ce07-4e15-816b-2398cb4f0680",
+            "name": "ADA France"
+          }
+        }
+      ],
+      "track-count": 14,
+      "media": [
+        {
+          "id": "0ba70e77-eebd-3835-a251-fbefcef4590c",
+          "format": "Digital Media",
+          "disc-count": 0,
+          "track-count": 14
+        }
+      ],
+      "tags": [
+        {
+          "name": "rock"
+        },
+        {
+          "name": "electronic"
+        },
+        {
+          "name": "dance"
+        },
+        {
+          "name": "house"
+        },
+        {
+          "name": "electro"
+        },
+        {
+          "name": "electronica"
+        },
+        {
+          "name": "disco"
+        },
+        {
+          "name": "boogie"
+        },
+        {
+          "name": "progressive house"
+        },
+        {
+          "name": "french house"
+        },
+        {
+          "name": "dance music"
+        },
+        {
+          "name": "house music"
+        },
+        {
+          "name": "leftfield house"
+        }
+      ]
+    },
+    {
+      "id": "6cd30d99-4923-4d5e-8e51-9d87506976f1",
+      "score": 100,
+      "title": "Discovery",
+      "status": "Official",
+      "packaging": "None",
+      "artist-credit": [
+        {
+          "name": "Daft Punk",
+          "artist": {
+            "id": "056e4f3e-d505-4dad-8ec1-d04f521cbb56",
+            "name": "Daft Punk",
+            "disambiguation": "French electronic duo"
+          }
+        }
+      ],
+      "release-group": {
+        "id": "48117b90-a16e-34ca-a514-19c702df1158",
+        "title": "Discovery",
+        "primary-type": "Album"
+      },
+      "date": "2005-01-24",
+      "country": "XW",
+      "barcode": "724384960650",
+      "label-info": [
+        {
+          "catalog-number": "724384960650",
+          "label": {
+            "id": "49b58bdb-3d74-40c6-956a-4c4b46115c9c",
+            "name": "Virgin"
+          }
+        },
+        {
+          "catalog-number": "724384960650",
+          "label": {
+            "id": "3b0a155a-ce07-4e15-816b-2398cb4f0680",
+            "name": "ADA France"
+          }
+        }
+      ],
+      "track-count": 14,
+      "media": [
+        {
+          "id": "c9d80beb-bc2e-3f16-a071-b8cb16d22be5",
+          "format": "Digital Media",
+          "disc-count": 0,
+          "track-count": 14
+        }
+      ],
+      "tags": [
+        {
+          "name": "electronic"
+        },
+        {
+          "name": "house"
+        },
+        {
+          "name": "electro"
+        },
+        {
+          "name": "electronica"
+        },
+        {
+          "name": "disco"
+        },
+        {
+          "name": "boogie"
+        },
+        {
+          "name": "progressive house"
+        },
+        {
+          "name": "french house"
+        },
+        {
+          "name": "dance music"
+        },
+        {
+          "name": "house music"
+        },
+        {
+          "name": "leftfield house"
+        }
+      ]
+    }
+  ]
+}

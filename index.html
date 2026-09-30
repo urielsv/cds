@@ -11,8 +11,12 @@
     <meta name="description" content="A personal compact disc collection you can flip through." />
     <title>MyCDs</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <!-- Cover art is served from the Internet Archive; warm the connection early. -->
+    <!-- Demo cover art is served from the Cover Art Archive, which redirects to
+         archive.org; warm both early. `crossorigin` because covers are fetched
+         with CORS (src/features/shelf/coverLoader.ts), which uses the anonymous
+         connection pool. -->
     <link rel="preconnect" href="https://coverartarchive.org" crossorigin />
+    <link rel="preconnect" href="https://archive.org" crossorigin />
   </head>
   <body>
     <div id="root"></div>

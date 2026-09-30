@@ -1,14 +1,17 @@
 /**
- * A deterministic fake collection, for developing the shelf before any real data
- * exists.
+ * A deterministic fake collection, for tests and for profiling the wall.
  *
- * Deliberately generated rather than hand-written so the shelf can be tested at
- * 150 discs (the current real collection) and at 400 (the expected ceiling in
- * about three years) without maintaining a fixture file. Deterministic so that
- * performance profiles are comparable between runs.
+ * Generated rather than hand-written so the wall can be exercised at any size —
+ * 150 discs, or 400, the expected ceiling in about three years — without
+ * maintaining a fixture file, and deterministic so performance profiles are
+ * comparable between runs.
  *
  * Cover art is a generated gradient data URI: no network, no licensing question,
- * and still enough visual variety to judge whether the grid reads well.
+ * and still enough visual variety to judge whether the wall reads well. What the
+ * *app* shows when no real collection is configured is a different thing: real
+ * albums with real artwork, in `demoCollection.json` (see
+ * `scripts/seed-demo.mjs`). This generator is for code that needs a collection
+ * without touching either.
  */
 
 import { type CollectionIndex, type DiscIndexEntry } from '@shared/disc';
@@ -189,7 +192,7 @@ function pick<T>(random: () => number, items: readonly T[]): T {
  * Builds a cover as an SVG data URI: two-stop gradient plus a couple of bands, so
  * tiles are visually distinguishable while scrolling.
  */
-function generateCover(random: () => number): string {
+function generateCover(random: () => number): { url: string; color: string } {
   const hue = Math.floor(random() * 360);
   const hue2 = (hue + 30 + Math.floor(random() * 90)) % 360;
   const light = 18 + Math.floor(random() * 22);
@@ -210,7 +213,26 @@ function generateCover(random: () => number): string {
   // encodeURIComponent keeps this valid without base64 and stays readable in
   // devtools. No text is drawn: real covers are images, and lettering would make
   // the fixture look more finished than it is.
-  return `data:image/svg+xml,${encodeURIComponent(svg.replace(/\n\s*/g, ' '))}`;
+  return {
+    url: `data:image/svg+xml,${encodeURIComponent(svg.replace(/\n\s*/g, ' '))}`,
+    // The midpoint of the gradient stands in for the average colour that ingest
+    // computes from real artwork.
+    color: hslToHex(hue, 50, light + 7),
+  };
+}
+
+function hslToHex(hue: number, saturation: number, lightness: number): string {
+  const s = saturation / 100;
+  const l = lightness / 100;
+  const a = s * Math.min(l, 1 - l);
+  const channel = (n: number) => {
+    const k = (n + hue / 30) % 12;
+    const value = l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1));
+    return Math.round(value * 255)
+      .toString(16)
+      .padStart(2, '0');
+  };
+  return `#${channel(0)}${channel(8)}${channel(4)}`;
 }
 
 function generateDisc(index: number, random: () => number): DiscIndexEntry {
@@ -241,6 +263,7 @@ function generateDisc(index: number, random: () => number): DiscIndexEntry {
 
   // `index` keeps ids unique even when artist, title and year collide.
   const id = `${discSlug(artist, title, releaseDate)}-${index}`;
+  const cover = generateCover(random);
 
   return {
     id,
@@ -253,13 +276,16 @@ function generateDisc(index: number, random: () => number): DiscIndexEntry {
     genres,
     addedAt: new Date(Date.UTC(2023, 0, 1) + index * 86_400_000 * 3).toISOString(),
     thumbnail: {
-      url: generateCover(random),
+      url: cover.url,
       width: 300,
       height: 300,
       placeholder: null,
       kind: 'front',
     },
     trackTitles,
+    color: cover.color,
+    // A spread of ratings so the rating arrangement has something to shape.
+    rating: random() < 0.55 ? 1 + Math.floor(random() * 5) : null,
   };
 }
 

@@ -1,17 +1,17 @@
-import { render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen } from '@testing-library/react';
+import { createRef } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { generateFixtureCollection } from '@/dev/fixtureCollection';
 
-import { Shelf } from './Shelf';
+import { Shelf, type ShelfHandle } from './Shelf';
 
 /**
- * jsdom gives every element a zero size, so a virtualiser mounts nothing by
- * default. These tests fake a phone-sized viewport so the grid actually produces
- * cells — otherwise the virtualisation, which is the entire point of the shelf,
- * would never be exercised.
+ * jsdom lays nothing out, so every element is 0×0 and the wall would mount
+ * nothing. These tests fake a phone-sized viewport so the camera and
+ * virtualisation — the entire point of the shelf — are actually exercised.
  */
-const VIEWPORT_WIDTH = 390; // iPhone-ish
+const VIEWPORT_WIDTH = 390;
 const VIEWPORT_HEIGHT = 780;
 
 function stubViewport() {
@@ -30,62 +30,213 @@ function stubViewport() {
   });
 }
 
+function renderShelf(count: number, props: Partial<Parameters<typeof Shelf>[0]> = {}) {
+  const discs = generateFixtureCollection(count).discs;
+  return {
+    discs,
+    ...render(
+      <Shelf
+        discs={discs}
+        matches={null}
+        wallMode="even"
+        openDiscId={null}
+        arrivedDiscId={null}
+        onOpen={vi.fn()}
+        {...props}
+      />,
+    ),
+  };
+}
+
+const tiles = (container: HTMLElement) => container.querySelectorAll('.disc-tile');
+
 describe('Shelf', () => {
   beforeEach(stubViewport);
   afterEach(() => {
     vi.restoreAllMocks();
   });
 
-  it('mounts tiles for a realistic collection', () => {
-    const collection = generateFixtureCollection(150);
-    render(<Shelf discs={collection.discs} onOpen={vi.fn()} openDiscId={null} />);
-
-    expect(screen.getAllByRole('button').length).toBeGreaterThan(0);
+  it('mounts covers for a realistic collection', () => {
+    const { container } = renderShelf(150);
+    expect(tiles(container).length).toBeGreaterThan(0);
   });
 
-  it('mounts only a fraction of the collection, not all of it', () => {
-    const collection = generateFixtureCollection(400);
-    render(<Shelf discs={collection.discs} onOpen={vi.fn()} openDiscId={null} />);
-
-    // The whole point of virtualising: frame cost must not scale with collection
-    // size. If this ever equals 400, virtualisation has silently broken.
-    const mounted = screen.getAllByRole('button').length;
-    expect(mounted).toBeGreaterThan(0);
-    expect(mounted).toBeLessThan(120);
+  it('mounts only the covers near the screen, not the whole collection', () => {
+    const { container } = renderShelf(400);
+    // If this ever equals 400, virtualisation has silently broken.
+    expect(tiles(container).length).toBeGreaterThan(0);
+    expect(tiles(container).length).toBeLessThan(120);
   });
 
-  it('mounts a similar number of tiles at 150 and 400 discs', () => {
-    const small = render(
-      <Shelf discs={generateFixtureCollection(150).discs} onOpen={vi.fn()} openDiscId={null} />,
-    );
-    const smallCount = small.container.querySelectorAll('.disc-tile').length;
+  it('mounts a similar number of covers at 150 and 400 discs', () => {
+    const small = renderShelf(150);
+    const smallCount = tiles(small.container).length;
     small.unmount();
-
-    const large = render(
-      <Shelf discs={generateFixtureCollection(400).discs} onOpen={vi.fn()} openDiscId={null} />,
-    );
-    const largeCount = large.container.querySelectorAll('.disc-tile').length;
-
-    // Both are bounded by the viewport, so they should be in the same ballpark.
-    expect(Math.abs(largeCount - smallCount)).toBeLessThan(smallCount);
+    const large = renderShelf(400);
+    expect(Math.abs(tiles(large.container).length - smallCount)).toBeLessThan(smallCount);
   });
 
-  it('positions cells with a transform rather than layout properties', () => {
-    const collection = generateFixtureCollection(150);
+  it('shows a single disc whole', () => {
+    const { container } = renderShelf(1);
+    expect(tiles(container)).toHaveLength(1);
+  });
+
+  it('moves the whole wall with one transform on one surface', () => {
+    const { container } = renderShelf(150);
+    const surface = container.querySelector<HTMLElement>('.shelf__surface');
+    expect(surface?.style.transform).toMatch(/translate3d\(.+\) scale\(.+\)/);
+    // No layer is promoted while nothing is moving.
+    expect(surface?.style.willChange).toBe('');
+  });
+
+  it('greys out non-matching covers instead of removing them', () => {
+    const { container, discs } = renderShelf(150, { matches: new Set() });
+    const mounted = tiles(container);
+    expect(mounted.length).toBeGreaterThan(0);
+    expect([...mounted].every((tile) => tile.classList.contains('disc-tile--dimmed'))).toBe(true);
+    expect(discs.length).toBe(150);
+  });
+
+  it('leaves matching covers at full strength', () => {
+    const discs = generateFixtureCollection(150).discs;
+    const first = discs[0]!;
     const { container } = render(
-      <Shelf discs={collection.discs} onOpen={vi.fn()} openDiscId={null} />,
+      <Shelf
+        discs={discs}
+        matches={new Set([first.id])}
+        wallMode="even"
+        openDiscId={null}
+        arrivedDiscId={null}
+        onOpen={vi.fn()}
+      />,
     );
-
-    const cell = container.querySelector<HTMLElement>('.shelf__cell');
-    expect(cell).not.toBeNull();
-    // translate3d keeps positioning on the compositor. `top`/`left` here would
-    // force layout on every scroll frame.
-    expect(cell?.style.transform).toMatch(/translate3d\(/);
+    const tile = container.querySelector(`[data-index="0"]`);
+    expect(tile).not.toHaveClass('disc-tile--dimmed');
   });
 
-  it('renders an empty shelf without crashing', () => {
-    const { container } = render(<Shelf discs={[]} onOpen={vi.fn()} openDiscId={null} />);
+  it('announces how many albums match', () => {
+    renderShelf(150, { matches: new Set(['x']) });
+    expect(screen.getByRole('application')).toHaveAccessibleName(/150 albums, 1 matching/);
+  });
+
+  it('keeps exactly one cover in the tab order', () => {
+    const { container } = renderShelf(150);
+    expect(container.querySelectorAll('.disc-tile[tabindex="0"]')).toHaveLength(1);
+  });
+
+  it('moves focus between covers with the arrow keys', () => {
+    const { container } = renderShelf(150);
+    const first = container.querySelector<HTMLElement>('[data-index="0"]')!;
+    act(() => {
+      first.focus();
+    });
+    fireEvent.keyDown(first, { key: 'ArrowRight' });
+    expect(document.activeElement).toHaveAttribute('data-index', '1');
+  });
+
+  it('hides the cover of the open disc so it appears to have left the wall', () => {
+    const discs = generateFixtureCollection(150).discs;
+    const { container } = render(
+      <Shelf
+        discs={discs}
+        matches={null}
+        wallMode="even"
+        openDiscId={discs[0]!.id}
+        arrivedDiscId={null}
+        onOpen={vi.fn()}
+      />,
+    );
+    expect(container.querySelector('[data-index="0"]')).toHaveClass('disc-tile--lifted');
+  });
+
+  it('reports where a cover is on screen, for the open transition', () => {
+    const discs = generateFixtureCollection(150).discs;
+    const ref = createRef<ShelfHandle>();
+    render(
+      <Shelf
+        ref={ref}
+        discs={discs}
+        matches={null}
+        wallMode="even"
+        openDiscId={null}
+        arrivedDiscId={null}
+        onOpen={vi.fn()}
+      />,
+    );
+    const rect = ref.current?.rectFor(discs[0]!.id);
+    expect(rect?.width).toBeGreaterThan(0);
+    expect(rect?.width).toBe(rect?.height);
+    expect(ref.current?.rectFor('missing')).toBeNull();
+  });
+
+  it('draws the covers rated highest larger when arranged by rating', () => {
+    const { container } = renderShelf(150, { wallMode: 'rating' });
+    const sizes = [...container.querySelectorAll<HTMLElement>('.disc-tile')].map((tile) =>
+      Number.parseFloat(tile.style.width),
+    );
+    // The fixture has five-, four- and lower-rated albums, so the wall should
+    // show three block sizes at once.
+    expect(new Set(sizes).size).toBeGreaterThan(1);
+    expect(Math.max(...sizes) / Math.min(...sizes)).toBeGreaterThan(1.9);
+  });
+
+  it('keeps every cover mounted once, whatever its size', () => {
+    const { container } = renderShelf(150, { wallMode: 'rating' });
+    const ids = [...container.querySelectorAll<HTMLElement>('.disc-tile')].map(
+      (tile) => tile.dataset.index,
+    );
+    expect(new Set(ids).size).toBe(ids.length);
+  });
+
+  it('renders an empty collection without crashing', () => {
+    const { container } = render(
+      <Shelf
+        discs={[]}
+        matches={null}
+        wallMode="even"
+        openDiscId={null}
+        arrivedDiscId={null}
+        onOpen={vi.fn()}
+      />,
+    );
     expect(container.querySelector('.shelf')).not.toBeNull();
-    expect(container.querySelectorAll('.disc-tile')).toHaveLength(0);
+    expect(tiles(container)).toHaveLength(0);
+  });
+
+  it('spans the screen width exactly, so there is nothing to pan sideways', () => {
+    const { container } = renderShelf(150);
+    const surface = container.querySelector<HTMLElement>('.shelf__surface')!;
+    const match = /translate3d\((-?[\d.]+)px, (-?[\d.]+)px, 0\) scale\(([\d.]+)\)/.exec(
+      surface.style.transform,
+    );
+    expect(match).not.toBeNull();
+    const [, x, , scale] = match!;
+    expect(Number(x)).toBe(0);
+    expect(Number.parseFloat(surface.style.width) * Number(scale)).toBeCloseTo(VIEWPORT_WIDTH, 1);
+  });
+
+  it('re-flows to more covers across when zooming out, still exactly screen-wide', () => {
+    const ref = createRef<ShelfHandle>();
+    const { container } = renderShelf(150, { ref });
+    const surface = container.querySelector<HTMLElement>('.shelf__surface')!;
+    const before = Number.parseFloat(surface.style.width);
+    act(() => {
+      ref.current?.zoomStep(-1);
+    });
+    const after = Number.parseFloat(surface.style.width);
+    expect(after).toBeGreaterThan(before);
+    // Every column count the wall re-flows to is whole covers.
+    expect((after / 160) % 1).toBe(0);
+  });
+
+  it('re-flows back to fewer, larger covers when zooming in', () => {
+    const ref = createRef<ShelfHandle>();
+    const { container } = renderShelf(150, { ref });
+    const surface = container.querySelector<HTMLElement>('.shelf__surface')!;
+    const before = Number.parseFloat(surface.style.width);
+    act(() => {
+      ref.current?.zoomStep(1);
+    });
+    expect(Number.parseFloat(surface.style.width)).toBeLessThan(before);
   });
 });

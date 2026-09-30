@@ -105,6 +105,14 @@ export const discSchema = z.object({
   /** Free-form personal notes; the part no public database can provide. */
   notes: z.string().nullable(),
   /**
+   * The owner's rating, 1–5 stars, or null for unrated.
+   *
+   * Purely the owner's own judgement — never sourced from a provider, so it is
+   * deliberately absent from `OVERRIDABLE_FIELDS`. The wall can size covers by
+   * it, which is why it also travels in the collection index.
+   */
+  rating: z.number().int().min(1).max(5).nullable(),
+  /**
    * Fields the owner has set or corrected by hand.
    *
    * Re-syncing from MusicBrainz must never overwrite a field listed here. The
@@ -138,6 +146,7 @@ export const discSummarySchema = discSchema.pick({
   format: true,
   genres: true,
   addedAt: true,
+  rating: true,
 });
 
 export const collectionIndexSchema = z.object({
@@ -158,6 +167,25 @@ export const collectionIndexSchema = z.object({
        * in the detail view.
        */
       trackTitles: z.array(z.string()),
+      /**
+       * Average colour of the front cover as `#rrggbb`, computed once at ingest.
+       *
+       * Lets the shelf be arranged by colour — the most striking way to lay out
+       * a wall of covers — and gives an empty tile a sensible tint while its
+       * artwork loads. Optional so indexes written before it existed still parse.
+       */
+      color: z
+        .string()
+        .regex(/^#[0-9a-f]{6}$/i)
+        .nullable()
+        .optional(),
+      /**
+       * Carried so the ingest endpoint can warn about duplicates (requirement
+       * 4.13) from the index alone, without reading every disc document — which
+       * would cost one Blob read per disc per add.
+       */
+      releaseMbid: mbidSchema.nullable().optional(),
+      barcode: barcodeSchema.nullable().optional(),
     }),
   ),
 });

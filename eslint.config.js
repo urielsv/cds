@@ -26,7 +26,7 @@ export default defineConfig([
         projectService: {
           // These config files are not part of the TypeScript program, but the
           // type-aware rules still want a program for them.
-          allowDefaultProject: ['eslint.config.js', 'commitlint.config.js'],
+          allowDefaultProject: ['eslint.config.js', 'commitlint.config.js', 'scripts/*.mjs'],
         },
         tsconfigRootDir: import.meta.dirname,
       },
@@ -54,7 +54,7 @@ export default defineConfig([
 
   // Serverless functions, shared code and scripts run on Node.
   {
-    files: ['api/**/*.ts', 'shared/**/*.ts', 'scripts/**/*.ts'],
+    files: ['api/**/*.ts', 'shared/**/*.ts', 'scripts/**/*.{ts,mjs}'],
     languageOptions: {
       globals: globals.node,
     },
@@ -94,5 +94,15 @@ export default defineConfig([
         { allowNumber: true, allowBoolean: true },
       ],
     },
+  },
+  /*
+   * Maintenance scripts are plain Node ESM, run by hand, and load the app's
+   * TypeScript modules dynamically through Vite — so their types are `any` by
+   * construction and the type-aware rules have nothing real to check. Syntax
+   * and correctness rules still apply.
+   */
+  {
+    files: ['scripts/**/*.mjs'],
+    extends: [tseslint.configs.disableTypeChecked],
   },
 ]);

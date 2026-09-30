@@ -1,0 +1,264 @@
+{
+  "count": 20,
+  "offset": 0,
+  "releases": [
+    {
+      "id": "488477d8-10b4-47fe-a482-549f011406a5",
+      "score": 100,
+      "title": "Discovery",
+      "status": "Official",
+      "packaging": "Jewel Case",
+      "artist-credit": [
+        {
+          "name": "Daft Punk",
+          "artist": {
+            "id": "056e4f3e-d505-4dad-8ec1-d04f521cbb56",
+            "name": "Daft Punk",
+            "disambiguation": "French electronic duo"
+          }
+        }
+      ],
+      "release-group": {
+        "id": "48117b90-a16e-34ca-a514-19c702df1158",
+        "title": "Discovery",
+        "primary-type": "Album"
+      },
+      "date": "2021",
+      "country": "XE",
+      "barcode": "0190296610424",
+      "label-info": [
+        {
+          "catalog-number": "0190296610424",
+          "label": {
+            "id": "3b0a155a-ce07-4e15-816b-2398cb4f0680",
+            "name": "ADA France"
+          }
+        }
+      ],
+      "track-count": 14,
+      "media": [
+        {
+          "id": "ff08afc5-9784-314c-b9e8-a6a18417ad41",
+          "format": "CD",
+          "disc-count": 1,
+          "track-count": 14
+        }
+      ]
+    },
+    {
+      "id": "d073287b-d1bd-4f11-a933-a4386f8cf701",
+      "score": 100,
+      "title": "Discovery",
+      "status": "Official",
+      "packaging": "Jewel Case",
+      "artist-credit": [
+        {
+          "name": "Daft Punk",
+          "artist": {
+            "id": "056e4f3e-d505-4dad-8ec1-d04f521cbb56",
+            "name": "Daft Punk",
+            "disambiguation": "French electronic duo"
+          }
+        }
+      ],
+      "release-group": {
+        "id": "48117b90-a16e-34ca-a514-19c702df1158",
+        "title": "Discovery",
+        "primary-type": "Album"
+      },
+      "date": "2001-02-26",
+      "country": "FR",
+      "barcode": "724384960629",
+      "label-info": [
+        {
+          "catalog-number": "8496062",
+          "label": {
+            "id": "49b58bdb-3d74-40c6-956a-4c4b46115c9c",
+            "name": "Virgin"
+          }
+        }
+      ],
+      "track-count": 14,
+      "media": [
+        {
+          "id": "ada31254-2a88-3a59-ad24-147cb4381468",
+          "format": "CD",
+          "disc-count": 15,
+          "track-count": 14
+        }
+      ],
+      "tags": [
+        {
+          "name": "electronic"
+        },
+        {
+          "name": "house"
+        },
+        {
+          "name": "electronic music"
+        }
+      ]
+    },
+    {
+      "id": "44e85a85-77d7-3e2e-8416-65a27d2aef68",
+      "score": 100,
+      "title": "Discovery",
+      "status": "Official",
+      "packaging": "Jewel Case",
+      "artist-credit": [
+        {
+          "name": "Daft Punk",
+          "artist": {
+            "id": "056e4f3e-d505-4dad-8ec1-d04f521cbb56",
+            "name": "Daft Punk",
+            "disambiguation": "French electronic duo"
+          }
+        }
+      ],
+      "release-group": {
+        "id": "48117b90-a16e-34ca-a514-19c702df1158",
+        "title": "Discovery",
+        "primary-type": "Album"
+      },
+      "date": "2001-03-12",
+      "country": "GB",
+      "barcode": "724381008829",
+      "label-info": [
+        {
+          "catalog-number": "8100882",
+          "label": {
+            "id": "49b58bdb-3d74-40c6-956a-4c4b46115c9c",
+            "name": "Virgin"
+          }
+        },
+        {
+          "catalog-number": "CDVX2940",
+          "label": {
+            "id": "49b58bdb-3d74-40c6-956a-4c4b46115c9c",
+            "name": "Virgin"
+          }
+        }
+      ],
+      "track-count": 14,
+      "media": [
+        {
+          "id": "7685b425-3330-3474-8d03-ba479b7b74c2",
+          "format": "CD",
+          "disc-count": 10,
+          "track-count": 14
+        }
+      ],
+      "tags": [
+        {
+          "name": "electronic"
+        },
+        {
+          "name": "pop"
+        },
+        {
+          "name": "dance"
+        },
+        {
+          "name": "house"
+        },
+        {
+          "name": "techno"
+        },
+        {
+          "name": "disco"
+        }
+      ]
+    },
+    {
+      "id": "bd3bb36e-16c8-438f-850e-dfbf4d1478f0",
+      "score": 100,
+      "title": "Discovery",
+      "status": "Official",
+      "packaging": "Jewel Case",
+      "artist-credit": [
+        {
+          "name": "Daft Punk",
+          "artist": {
+            "id": "056e4f3e-d505-4dad-8ec1-d04f521cbb56",
+            "name": "Daft Punk",
+            "disambiguation": "French electronic duo"
+          }
+        }
+      ],
+      "release-group": {
+        "id": "48117b90-a16e-34ca-a514-19c702df1158",
+        "title": "Discovery",
+        "primary-type": "Album"
+      },
+      "date": "2001-02-26",
+      "country": "AU",
+      "barcode": "934065017098",
+      "label-info": [
+        {
+          "catalog-number": "8100172",
+          "label": {
+            "id": "df7d1c7f-ef95-425f-8eef-445b3d7bcbd9",
+            "name": "Parlophone"
+          }
+        }
+      ],
+      "track-count": 14,
+      "media": [
+        {
+          "id": "24de8e70-a07c-350e-9036-be54eb4abe6c",
+          "format": "CD",
+          "disc-count": 0,
+          "track-count": 14
+        }
+      ]
+    },
+    {
+      "id": "4375a6b0-cd50-4f59-be32-13161c0fc448",
+      "score": 100,
+      "title": "Discovery",
+      "artist-credit": [
+        {
+          "name": "Daft Punk",
+          "artist": {
+            "id": "056e4f3e-d505-4dad-8ec1-d04f521cbb56",
+            "name": "Daft Punk",
+            "disambiguation": "French electronic duo"
+          }
+        }
+      ],
+      "release-group": {
+        "id": "48117b90-a16e-34ca-a514-19c702df1158",
+        "title": "Discovery",
+        "primary-type": "Album"
+      },
+      "date": "2001-03-12",
+      "country": "XE",
+      "barcode": "724384960629",
+      "label-info": [
+        {
+          "catalog-number": "7243 8496062 9",
+          "label": {
+            "id": "49b58bdb-3d74-40c6-956a-4c4b46115c9c",
+            "name": "Virgin"
+          }
+        },
+        {
+          "catalog-number": "8496062",
+          "label": {
+            "id": "49b58bdb-3d74-40c6-956a-4c4b46115c9c",
+            "name": "Virgin"
+          }
+        }
+      ],
+      "track-count": 14,
+      "media": [
+        {
+          "id": "4449b526-78a8-45ab-9149-9f00026af14f",
+          "format": "CD",
+          "disc-count": 1,
+          "track-count": 14
+        }
+      ]
+    }
+  ]
+}

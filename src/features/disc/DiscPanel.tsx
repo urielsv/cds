@@ -1,144 +1,451 @@
-import { motion, useReducedMotion } from 'motion/react';
-import { useEffect, useRef } from 'react';
+import { animate, useReducedMotion } from 'motion/react';
+import {
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from 'react';
 
 import { CountryBadge } from '@/components/CountryBadge';
+import { StarRating } from '@/components/StarRating';
+import { loadDisc } from '@/lib/collection';
+import { coverLoader } from '@/lib/coverLoader';
 import { REDUCED_TRANSITION, transition } from '@/motion/tokens';
-import { type DiscIndexEntry } from '@shared/disc';
-import { releaseYear } from '@shared/format';
+import { type Disc, type DiscIndexEntry } from '@shared/disc';
+import { formatDuration, releaseYear, totalRuntimeMs } from '@shared/format';
+
+export interface ScreenRect {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
 
 interface DiscPanelProps {
   disc: DiscIndexEntry;
-  onClose: () => void;
+  /** Present for the owner: rating this disc resizes it on the wall. */
+  onRate?: ((rating: number | null) => Promise<void>) | undefined;
+  /** Where the tile is on screen right now; null when it cannot be located. */
+  originRect: () => ScreenRect | null;
+  /** Called once the closing animation has finished and the panel can unmount. */
+  onClosed: () => void;
+}
+
+function isOnScreen(rect: ScreenRect | null): rect is ScreenRect {
+  return (
+    rect !== null &&
+    rect.width > 0 &&
+    rect.x + rect.width > 0 &&
+    rect.y + rect.height > 0 &&
+    rect.x < window.innerWidth &&
+    rect.y < window.innerHeight
+  );
+}
+
+/** Transform that makes an element at `to` appear exactly at `from`. */
+function invert(from: ScreenRect, to: DOMRect) {
+  return {
+    x: from.x - to.left,
+    y: from.y - to.top,
+    scale: from.width / to.width,
+  };
 }
 
 /**
  * The opened disc.
  *
- * Spike-stage: renders what the collection index carries. Track durations, the
- * back cover, packaging and personal notes arrive with the real detail document
- * (spec task 5.1) — the index deliberately does not carry them.
+ * The cover grows out of the tile that was tapped and shrinks back into it
+ * (requirements 2.1, 2.6). This is a hand-written, transform-only FLIP rather
+ * than Motion's `layoutId`, for a concrete reason: the tile lives inside the
+ * mosaic's camera surface, which carries its own `scale()` transform. Motion's
+ * projection only corrects for ancestors that are Motion components, so a
+ * shared layout animation from inside that surface is off by the camera scale
+ * on the way back. Measuring both ends in screen space and animating the one
+ * element outside the surface is exact at every zoom level.
  */
-export function DiscPanel({ disc, onClose }: DiscPanelProps) {
+export function DiscPanel({ disc, onRate, originRect, onClosed }: DiscPanelProps) {
   const reduced = useReducedMotion() ?? false;
+  const rootRef = useRef<HTMLDivElement>(null);
+  const coverRef = useRef<HTMLElement | null>(null);
+  const setCover = useCallback((element: HTMLElement | null) => {
+    coverRef.current = element;
+  }, []);
+  const backdropRef = useRef<HTMLDivElement>(null);
+  const bodyRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
-  const year = releaseYear(disc.releaseDate);
+  const closing = useRef(false);
+  const [detail, setDetail] = useState<Disc | null>(null);
+  const [rating, setRating] = useState<number | null>(disc.rating ?? null);
+  const [ratingBusy, setRatingBusy] = useState(false);
+  const [ratingError, setRatingError] = useState<string | null>(null);
 
-  // Focus moves into the panel on open so a keyboard or screen reader user is not
-  // left behind on the shelf. Returning focus to the originating tile on close is
-  // handled by the shelf, which owns that element.
+  const year = releaseYear(disc.releaseDate);
+  const cover = detail?.images.find((image) => image.kind === 'front' && image.width > 600);
+  const coverUrl = disc.thumbnail?.url;
+
+  // The cover was almost certainly just on the shelf, so it is already in
+  // memory: show that copy at once instead of asking the network again. (For
+  // the demo, asking again means ~1.7 s of uncacheable redirects before the
+  // cached image — a panel that opens onto a blank square.)
+  const subscribeCover = useCallback(
+    (listener: () => void) =>
+      coverUrl === undefined ? () => undefined : coverLoader.subscribeUrl(coverUrl, listener),
+    [coverUrl],
+  );
+  const loadedCover = useSyncExternalStore(subscribeCover, () =>
+    coverUrl === undefined ? null : coverLoader.src(coverUrl),
+  );
+  // Held while the panel is open, so the copy on show is never evicted from
+  // under it, and fetched first if it somehow is not in memory yet.
   useEffect(() => {
-    closeRef.current?.focus();
+    if (coverUrl === undefined) return;
+    return coverLoader.want(coverUrl);
+  }, [coverUrl]);
+
+  /**
+   * The large image replaces the tile-sized one only once it is downloaded
+   * and decoded, so the swap is a sharpening in place. Offering both through
+   * `srcset` instead lets the browser pick the large one up front and show
+   * nothing until it arrives — replacing an image already on screen with a
+   * wait.
+   */
+  const [largeReady, setLargeReady] = useState<string | null>(null);
+  useEffect(() => {
+    if (!cover) return;
+    let cancelled = false;
+    const image = new Image();
+    image.decoding = 'async';
+    image.src = cover.url;
+    // `decode()` where it exists, so the swap never shows a half-decoded image.
+    const decoded =
+      typeof image.decode === 'function'
+        ? image.decode()
+        : new Promise<void>((resolve, reject) => {
+            image.onload = () => {
+              resolve();
+            };
+            image.onerror = reject;
+          });
+    decoded
+      .then(() => {
+        if (!cancelled) setLargeReady(cover.url);
+      })
+      .catch(() => {
+        /* Keep showing the tile-sized cover; it is complete, just smaller. */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [cover]);
+  const coverSrc = largeReady ?? loadedCover ?? coverUrl;
+
+  // The full record adds durations, catalogue number and notes. The panel is
+  // complete without it; this only enriches it when it arrives.
+  useEffect(() => {
+    const controller = new AbortController();
+    loadDisc(disc.id, controller.signal)
+      .then(setDetail)
+      .catch(() => {
+        /* The index entry is enough to show; the detail is a bonus. */
+      });
+    return () => {
+      controller.abort();
+    };
+  }, [disc.id]);
+
+  // Opening. Runs before paint, so the cover is never seen in its final place
+  // first and then jumping back to the tile.
+  useLayoutEffect(() => {
+    const coverElement = coverRef.current;
+    const backdrop = backdropRef.current;
+    const body = bodyRef.current;
+    if (!coverElement || !backdrop || !body) return;
+
+    closeRef.current?.focus({ preventScroll: true });
+
+    const fade = reduced ? REDUCED_TRANSITION : transition('base');
+    void animate(backdrop, { opacity: [0, 1] }, fade);
+    void animate(
+      body,
+      reduced ? { opacity: [0, 1] } : { opacity: [0, 1], y: [16, 0] },
+      reduced ? REDUCED_TRANSITION : { ...transition('slow', 'entrance'), delay: 0.06 },
+    );
+
+    const origin = originRect();
+    if (reduced || !isOnScreen(origin)) {
+      // Reduced motion, or a tile that is not on screen: cross-fade instead of
+      // flying. The destination is the same; only the travel is dropped.
+      void animate(coverElement, { opacity: [0, 1] }, fade);
+      return;
+    }
+    const start = invert(origin, coverElement.getBoundingClientRect());
+    void animate(
+      coverElement,
+      { x: [start.x, 0], y: [start.y, 0], scale: [start.scale, 1] },
+      transition('deliberate', 'entrance'),
+    );
+    // Deliberately run once: the opening happens exactly once per panel.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const close = useCallback(() => {
+    if (closing.current) return;
+    closing.current = true;
+    const coverElement = coverRef.current;
+    const backdrop = backdropRef.current;
+    const body = bodyRef.current;
+    if (!coverElement || !backdrop || !body) {
+      onClosed();
+      return;
+    }
+
+    const fade = reduced ? REDUCED_TRANSITION : transition('base', 'exit');
+    void animate(backdrop, { opacity: 0 }, fade);
+    void animate(body, { opacity: 0 }, reduced ? REDUCED_TRANSITION : transition('fast', 'exit'));
+    if (closeRef.current) void animate(closeRef.current, { opacity: 0 }, fade);
+
+    const origin = originRect();
+    if (reduced || !isOnScreen(origin)) {
+      void animate(coverElement, { opacity: 0 }, fade).then(onClosed);
+      return;
+    }
+    // Measure where the cover is now — the sheet may have been scrolled — and
+    // send it home, relative to that.
+    const rect = coverElement.getBoundingClientRect();
+    const current = { x: 0, y: 0, scale: 1 };
+    const target = invert(origin, rect);
+    void animate(
+      coverElement,
+      {
+        x: [current.x, target.x],
+        y: [current.y, target.y],
+        scale: [current.scale, target.scale],
+      },
+      transition('slow', 'standard'),
+    ).then(onClosed);
+  }, [onClosed, originRect, reduced]);
+
+  // Escape closes; Tab stays inside the dialog while it is open.
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose();
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        close();
+        return;
+      }
+      if (event.key !== 'Tab' || !rootRef.current) return;
+      const focusable = [
+        ...rootRef.current.querySelectorAll<HTMLElement>('button, [href], [tabindex="0"]'),
+      ].filter((element) => !element.hasAttribute('disabled'));
+      const first = focusable[0];
+      const last = focusable.at(-1);
+      if (!first || !last) return;
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
     };
     window.addEventListener('keydown', onKeyDown);
     return () => {
       window.removeEventListener('keydown', onKeyDown);
     };
-  }, [onClose]);
+  }, [close]);
+
+  const tracks =
+    detail?.tracks ??
+    disc.trackTitles.map((title, i) => ({
+      position: i + 1,
+      title,
+      lengthMs: null,
+      artist: null,
+    }));
+  const runtime = detail ? totalRuntimeMs(detail.tracks) : null;
+  const facts: { label: string; value: ReactNode }[] = [];
+  if (disc.releaseDate !== null) facts.push({ label: 'Released', value: disc.releaseDate });
+  if (disc.country !== null) {
+    facts.push({
+      label: 'Origin',
+      value: (
+        <CountryBadge
+          country={disc.country}
+          size="detail"
+          isManual={detail?.manualFields.includes('country') ?? false}
+        />
+      ),
+    });
+  }
+  if (disc.format !== null) {
+    facts.push({
+      label: 'Format',
+      value:
+        detail && detail.discCount > 1
+          ? `${disc.format} ×${String(detail.discCount)}`
+          : disc.format,
+    });
+  }
+  if (disc.labels.length > 0) facts.push({ label: 'Label', value: disc.labels.join(' · ') });
+  if (detail?.catalogNumber) facts.push({ label: 'Catalogue', value: detail.catalogNumber });
+  if (detail?.packaging) facts.push({ label: 'Packaging', value: detail.packaging });
+  if (detail?.barcode) facts.push({ label: 'Barcode', value: detail.barcode });
 
   return (
-    <motion.div
+    <div
+      ref={rootRef}
       className="disc-panel"
       role="dialog"
       aria-modal="true"
       aria-label={`${disc.title} by ${disc.artist}`}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={reduced ? REDUCED_TRANSITION : transition('base')}
     >
-      {/* Scrim. A plain button so dismissing by tapping outside is also a real,
-          labelled control rather than a click handler on a div. */}
-      <button type="button" className="disc-panel__scrim" onClick={onClose} aria-label="Close" />
+      <div ref={backdropRef} className="disc-panel__backdrop">
+        {/* The cover itself, blurred to fill the screen: the room takes on the
+            colour of the record. One static element, painted once. */}
+        {coverSrc && <img className="disc-panel__ambient" src={loadedCover ?? coverSrc} alt="" />}
+        <button
+          type="button"
+          className="disc-panel__scrim"
+          onClick={close}
+          aria-label="Close"
+          tabIndex={-1}
+        />
+      </div>
 
-      <motion.div
-        className="disc-panel__sheet"
-        initial={reduced ? { opacity: 0 } : { y: 24, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        exit={reduced ? { opacity: 0 } : { y: 24, opacity: 0 }}
-        transition={reduced ? REDUCED_TRANSITION : transition('slow', 'entrance')}
-      >
-        <div className="disc-panel__art">
-          <motion.img
-            // The pairing that makes the panel grow out of the tapped tile.
-            layoutId={`cover-${disc.id}`}
-            className="disc-panel__cover"
-            src={disc.thumbnail?.url ?? ''}
-            alt={`Cover of ${disc.title} by ${disc.artist}`}
-            width={disc.thumbnail?.width ?? 300}
-            height={disc.thumbnail?.height ?? 300}
-            draggable={false}
+      <div className="disc-panel__scroll">
+        <div className="disc-panel__layout">
+          <div className="disc-panel__art">
+            {coverSrc ? (
+              <img
+                ref={setCover}
+                className="disc-panel__cover"
+                src={coverSrc}
+                alt={`Cover of ${disc.title} by ${disc.artist}`}
+                width={disc.thumbnail?.width ?? 500}
+                height={disc.thumbnail?.height ?? 500}
+                style={{ backgroundColor: disc.color ?? undefined }}
+                draggable={false}
+              />
+            ) : (
+              <div
+                ref={setCover}
+                className="disc-panel__cover disc-panel__cover--typeset"
+                style={{ backgroundColor: disc.color ?? undefined }}
+                role="img"
+                aria-label={`No artwork for ${disc.title}`}
+              >
+                <span>{disc.title}</span>
+              </div>
+            )}
+          </div>
+
+          <div ref={bodyRef} className="disc-panel__body">
+            <header className="disc-panel__header">
+              <h2 className="disc-panel__title">{disc.title}</h2>
+              <p className="disc-panel__artist">
+                {disc.artist}
+                {year !== null && <span className="disc-panel__year"> · {year}</span>}
+              </p>
+              <StarRating
+                value={rating}
+                busy={ratingBusy}
+                onChange={
+                  onRate === undefined
+                    ? undefined
+                    : (next) => {
+                        // Optimistic: the wall resizes this cover immediately,
+                        // and rolls back if the save fails.
+                        const previous = rating;
+                        setRating(next);
+                        setRatingBusy(true);
+                        setRatingError(null);
+                        void onRate(next)
+                          .catch((error: unknown) => {
+                            setRating(previous);
+                            setRatingError(
+                              error instanceof Error ? error.message : 'The rating did not save.',
+                            );
+                          })
+                          .finally(() => {
+                            setRatingBusy(false);
+                          });
+                      }
+                }
+              />
+              {ratingError !== null && (
+                <p className="disc-panel__rating-error" role="alert">
+                  {ratingError}
+                </p>
+              )}
+            </header>
+
+            {facts.length > 0 && (
+              <dl className="disc-panel__facts">
+                {facts.map((fact) => (
+                  <div key={fact.label} className="disc-panel__fact">
+                    <dt>{fact.label}</dt>
+                    <dd>{fact.value}</dd>
+                  </div>
+                ))}
+              </dl>
+            )}
+
+            {disc.genres.length > 0 && (
+              <ul className="disc-panel__genres" aria-label="Genres">
+                {disc.genres.map((genre) => (
+                  <li key={genre} className="disc-panel__genre">
+                    {genre}
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            {detail?.notes && <p className="disc-panel__notes">{detail.notes}</p>}
+
+            {tracks.length > 0 && (
+              <section className="disc-panel__tracks" aria-label="Tracks">
+                <h3 className="disc-panel__tracks-heading">
+                  {tracks.length} track{tracks.length === 1 ? '' : 's'}
+                  {runtime !== null && ` · ${formatDuration(runtime)}`}
+                </h3>
+                <ol className="disc-panel__tracklist">
+                  {tracks.map((track) => (
+                    <li key={track.position} className="disc-panel__track">
+                      <span className="disc-panel__track-number">{track.position}</span>
+                      <span className="disc-panel__track-title">
+                        {track.title}
+                        {track.artist !== null && (
+                          <span className="disc-panel__track-artist"> — {track.artist}</span>
+                        )}
+                      </span>
+                      {track.lengthMs !== null && (
+                        <span className="disc-panel__track-length">
+                          {formatDuration(track.lengthMs)}
+                        </span>
+                      )}
+                    </li>
+                  ))}
+                </ol>
+              </section>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <button ref={closeRef} type="button" className="disc-panel__close glass" onClick={close}>
+        <svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18">
+          <path
+            d="M6 6l12 12M18 6L6 18"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
           />
-        </div>
-
-        <div className="disc-panel__body">
-          <header className="disc-panel__header">
-            <h2 className="disc-panel__title">{disc.title}</h2>
-            <p className="disc-panel__artist">{disc.artist}</p>
-          </header>
-
-          <dl className="disc-panel__facts">
-            {year !== null && (
-              <div className="disc-panel__fact">
-                <dt>Released</dt>
-                <dd>{disc.releaseDate}</dd>
-              </div>
-            )}
-            {disc.country !== null && (
-              <div className="disc-panel__fact">
-                <dt>Origin</dt>
-                <dd>
-                  <CountryBadge country={disc.country} size="detail" />
-                </dd>
-              </div>
-            )}
-            {disc.format !== null && (
-              <div className="disc-panel__fact">
-                <dt>Format</dt>
-                <dd>{disc.format}</dd>
-              </div>
-            )}
-            {disc.labels.length > 0 && (
-              <div className="disc-panel__fact">
-                <dt>Label</dt>
-                <dd>{disc.labels.join(' · ')}</dd>
-              </div>
-            )}
-          </dl>
-
-          {disc.genres.length > 0 && (
-            <ul className="disc-panel__genres">
-              {disc.genres.map((genre) => (
-                <li key={genre} className="disc-panel__genre">
-                  {genre}
-                </li>
-              ))}
-            </ul>
-          )}
-
-          <section className="disc-panel__tracks">
-            <h3 className="disc-panel__tracks-heading">
-              {disc.trackTitles.length} track{disc.trackTitles.length === 1 ? '' : 's'}
-            </h3>
-            <ol className="disc-panel__tracklist">
-              {disc.trackTitles.map((track, i) => (
-                <li key={`${track}-${String(i)}`} className="disc-panel__track">
-                  <span className="disc-panel__track-number">{i + 1}</span>
-                  <span className="disc-panel__track-title">{track}</span>
-                </li>
-              ))}
-            </ol>
-          </section>
-        </div>
-
-        <button ref={closeRef} type="button" className="disc-panel__close" onClick={onClose}>
-          Close
-        </button>
-      </motion.div>
-    </motion.div>
+        </svg>
+        <span className="visually-hidden">Close</span>
+      </button>
+    </div>
   );
 }

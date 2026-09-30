@@ -1,5 +1,5 @@
 /*
- * Design tokens and global reset.
+ * Design tokens and global styles.
  *
  * The motion tokens are the important part of this file: every animation in the
  * app must draw its duration and easing from here so the whole product feels
@@ -8,24 +8,53 @@
  */
 
 :root {
-  /* ---- Surface ---- */
-  --color-bg: #07070a;
-  --color-bg-raised: #101016;
-  --color-bg-sunken: #030305;
-  --color-edge: #22222c;
-  --color-text: #f2f2f5;
-  --color-text-muted: #9a9aa6;
-  --color-accent: #d8c9a3; /* warm foil, like a jewel case insert */
-  --color-focus: #7fb2ff;
+  /* ---- Surface ----
+     White, and as little of it as possible: the covers are the interface, so
+     everything that is not a cover gets out of the way. There is no page
+     furniture at all — no header, no title bar — and the only chrome is one
+     floating pane that the covers pass behind. */
+  --color-bg: #ffffff;
+  --color-bg-raised: #ffffff;
+  /* Tint under a cover that has not loaded, so the wall never flashes white. */
+  --color-tile-empty: #ececee;
+  --color-bg-sunken: #f4f4f5;
+  --color-edge: rgb(0 0 0 / 9%);
+  --color-text: #0d0d0f;
+  --color-text-muted: rgb(13 13 15 / 58%);
+  --color-text-faint: rgb(13 13 15 / 38%);
+  --color-accent: #8a6d2f; /* warm foil, like a jewel case insert */
+  --color-danger: #b3261e;
+  --color-warning: #8a5a00;
+  --color-focus: #1f6feb;
 
   /* ---- Type ---- */
   --font-sans:
-    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Inter, Helvetica, Arial, sans-serif;
+    ui-sans-serif, system-ui, -apple-system, 'SF Pro Text', 'Segoe UI', Inter, Helvetica, Arial,
+    sans-serif;
   --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
 
   /* ---- Elevation ---- */
-  --shadow-tile: 0 1px 2px rgb(0 0 0 / 60%), 0 8px 24px rgb(0 0 0 / 45%);
-  --shadow-lifted: 0 4px 8px rgb(0 0 0 / 55%), 0 24px 64px rgb(0 0 0 / 60%);
+  --shadow-tile: 0 1px 2px rgb(0 0 0 / 10%), 0 6px 20px rgb(0 0 0 / 12%);
+  --shadow-lifted: 0 2px 6px rgb(0 0 0 / 10%), 0 24px 70px rgb(0 0 0 / 22%);
+
+  /* ---- Liquid glass ----
+     Translucent, heavily blurred and saturated, with a bright hairline along
+     the top edge where light would catch it. Static: none of these values is
+     ever animated (backdrop-filter and box-shadow are both paint-bound). */
+  --glass-fill: linear-gradient(
+    180deg,
+    rgb(255 255 255 / 72%) 0%,
+    rgb(255 255 255 / 58%) 55%,
+    rgb(255 255 255 / 64%) 100%
+  );
+  /* Large panes hold paragraphs and lists, so they get a more opaque base under
+     the same glass: still see-through, but legible over the busiest covers. */
+  --glass-fill-dense: linear-gradient(180deg, rgb(255 255 255 / 84%), rgb(250 250 251 / 90%));
+  --glass-blur: blur(28px) saturate(1.6);
+  --glass-edge:
+    inset 0 0.5px 0 rgb(255 255 255 / 90%), inset 0 0 0 0.5px rgb(0 0 0 / 7%),
+    inset 0 -0.5px 0 rgb(0 0 0 / 4%);
+  --glass-shadow: 0 8px 30px rgb(0 0 0 / 12%), 0 1px 4px rgb(0 0 0 / 8%);
 
   /* ---- Motion: durations ----
      Scale is roughly 1.3x per step. Anything above `slow` feels sluggish on a
@@ -46,18 +75,20 @@
   --ease-spring-ish: cubic-bezier(0.34, 1.56, 0.64, 1);
 
   /* ---- Layout ---- */
-  --tile-size: 8.5rem;
-  --tile-gap: 0.75rem;
-  --radius-tile: 0.35rem;
-  --radius-panel: 1.25rem;
+  --radius-pill: 999px;
+  --radius-panel: 1.75rem;
+  --radius-control: 0.9rem;
+  /* Height of the floating bar plus its margin: how far the last row of the
+     wall can scroll clear of it. Read by the shelf's inset probe. */
+  --bar-clearance: 5.5rem;
 
-  /* Notch and home-indicator insets, used by the fixed shelf chrome. */
+  /* Notch and home-indicator insets. */
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --safe-left: env(safe-area-inset-left, 0px);
   --safe-right: env(safe-area-inset-right, 0px);
 
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 *,
@@ -70,19 +101,25 @@
   margin: 0;
 }
 
-html {
-  /* The shelf manages its own panning; never let the page rubber-band. */
+html,
+body {
+  height: 100%;
+  /* The wall pans itself; the page never scrolls, bounces or pinch-zooms. */
+  overflow: hidden;
   overscroll-behavior: none;
+}
+
+html {
   -webkit-text-size-adjust: 100%;
 }
 
 body {
-  min-height: 100dvh;
   background-color: var(--color-bg);
   color: var(--color-text);
   font-family: var(--font-sans);
-  line-height: 1.5;
+  line-height: 1.45;
   -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
 }
 
 img,
@@ -101,6 +138,10 @@ textarea {
   color: inherit;
 }
 
+button {
+  cursor: pointer;
+}
+
 /* A single, consistent, always-visible focus ring. Keyboard access must survive
    every animation we add. */
 :focus-visible {
@@ -108,26 +149,20 @@ textarea {
   outline-offset: 2px;
 }
 
-.app-shell {
-  display: flex;
-  min-height: 100dvh;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: calc(1rem + var(--safe-top)) 1rem calc(1rem + var(--safe-bottom));
-  text-align: center;
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
 }
 
-.app-shell__title {
-  font-size: clamp(2rem, 12vw, 4rem);
-  font-weight: 600;
-  letter-spacing: -0.03em;
-}
-
-.app-shell__subtitle {
-  color: var(--color-text-muted);
-  max-width: 28ch;
+.icon {
+  flex: none;
 }
 
 /*
@@ -158,183 +193,1802 @@ textarea {
 }
 
 /* ===========================================================================
-   Shell
+   Glass
    =========================================================================== */
 
-.visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-  border: 0;
+.glass {
+  position: relative;
+  background: var(--glass-fill);
+  box-shadow: var(--glass-edge), var(--glass-shadow);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  color: var(--color-text);
 }
 
-.app-bar {
-  position: fixed;
-  z-index: 2;
-  top: 0;
-  right: 0;
-  left: 0;
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  padding: calc(0.75rem + var(--safe-top)) calc(1rem + var(--safe-right)) 0.75rem
-    calc(1rem + var(--safe-left));
-  background: linear-gradient(to bottom, var(--color-bg) 55%, transparent);
+.filter-panel.glass,
+.admin-sheet.glass,
+.popover.glass {
+  background: var(--glass-fill), var(--glass-fill-dense);
+}
+
+/* The specular sheen: a soft highlight across the top, as if lit from above. */
+.glass::before {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    120% 70% at 30% 0%,
+    rgb(255 255 255 / 55%) 0%,
+    rgb(255 255 255 / 0%) 60%
+  );
+  content: '';
   pointer-events: none;
 }
 
-.app-bar__title {
-  font-size: 1.15rem;
-  font-weight: 600;
-  letter-spacing: -0.02em;
+/* Where backdrop blur is unavailable, fall back to a solid enough fill that
+   text stays readable over busy artwork. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass {
+    background: rgb(255 255 255 / 95%);
+  }
 }
 
-.app-bar__count {
-  color: var(--color-text-muted);
-  font-size: 0.8rem;
-  font-variant-numeric: tabular-nums;
-}
-
-.app-main {
-  height: 100dvh;
+@media (prefers-reduced-transparency: reduce) {
+  .glass {
+    background: rgb(255 255 255 / 98%);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
 }
 
 /* ===========================================================================
-   Shelf
+   Shell
+   =========================================================================== */
+
+.app-main {
+  position: fixed;
+  inset: 0;
+}
+
+.app-message {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 2rem;
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+/* Deliberately faint and out of the way: a note about the data, not chrome. */
+.demo-note {
+  position: fixed;
+  z-index: 2;
+  top: calc(0.6rem + var(--safe-top));
+  left: calc(0.7rem + var(--safe-left));
+  border-radius: var(--radius-pill);
+  background: rgb(255 255 255 / 55%);
+  padding: 0.15rem 0.55rem;
+  color: var(--color-text-faint);
+  font-size: 0.66rem;
+  letter-spacing: 0.04em;
+  pointer-events: none;
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+/* ===========================================================================
+   The wall
    =========================================================================== */
 
 .shelf {
-  width: 100%;
-  height: 100dvh;
-  overflow: auto;
-  /* Tell the browser we handle both axes so it stops guessing mid-gesture. */
-  touch-action: pan-x pan-y;
-  overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch;
-  padding: calc(3.5rem + var(--safe-top)) 1rem calc(2rem + var(--safe-bottom));
-  scrollbar-width: none;
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  cursor: grab;
+  /* Every gesture is ours: the browser must neither scroll nor zoom. */
+  touch-action: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
-.shelf::-webkit-scrollbar {
-  display: none;
+.shelf--panning {
+  cursor: grabbing;
 }
 
+.shelf:focus-visible {
+  outline-offset: -2px;
+}
+
+/* Positioned with the safe-area insets and the bar clearance, then measured:
+   the only way for script to learn what `env()` resolves to. */
+.shelf__inset-probe {
+  position: absolute;
+  top: var(--safe-top);
+  bottom: calc(var(--bar-clearance) + var(--safe-bottom));
+  left: 0;
+  width: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+/* The one element that moves. Its transform is written by CameraController;
+   `will-change` is added only while it is moving. Sized to the whole wall (by
+   Shelf) and filled with the empty-tile colour, so any cell no cover occupies
+   — the tail of an incomplete last row — reads as an empty slot in the wall
+   rather than as background showing through. */
 .shelf__surface {
-  position: relative;
-}
-
-.shelf__cell {
   position: absolute;
   top: 0;
   left: 0;
-  display: flex;
-  align-items: stretch;
-  padding: calc(var(--tile-gap) / 2);
+  background-color: var(--color-tile-empty);
+  transform-origin: 0 0;
 }
 
-/* ===========================================================================
-   Disc tile
-   =========================================================================== */
+/* ---- First-load curtain (ShelfIntro) ---- */
+
+.shelf-intro {
+  position: absolute;
+  z-index: 1;
+  display: grid;
+  inset: 0;
+  place-items: center;
+  background-color: var(--color-bg);
+  transition: opacity var(--duration-slow) var(--ease-standard);
+}
+
+/* Lifted: fades to reveal the wall, and stops catching touches at once so the
+   first pan is never swallowed by a curtain on its way out. */
+.shelf-intro--leaving {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.shelf-intro__content {
+  display: flex;
+  width: min(18rem, 80vw);
+  flex-direction: column;
+  align-items: center;
+  gap: 1.1rem;
+  text-align: center;
+  transition: transform var(--duration-slow) var(--ease-standard);
+}
+
+/* The content drifts forward a touch as the curtain lifts: the wall arrives
+   from behind it rather than the words simply vanishing. */
+.shelf-intro--leaving .shelf-intro__content {
+  transform: scale(1.04);
+}
+
+.shelf-intro__wordmark {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+/* Messages stack in one grid cell so the old one leaves while the new one
+   arrives, with no jump in height between them. */
+.shelf-intro__messages {
+  display: grid;
+  width: 100%;
+  min-height: 1.4em;
+}
+
+.shelf-intro__message {
+  margin: 0;
+  grid-area: 1 / 1;
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+  letter-spacing: -0.01em;
+}
+
+/* ---- The jewel case and its disc ----
+   The slide, the re-centring and the turn are all driven by one spring in
+   ShelfIntro, written as inline transforms. No CSS transition on transform
+   here: it would smooth the spring's frames into a lag behind it. */
+.shelf-intro__case-group {
+  position: relative;
+  width: 7.5rem;
+  height: 7.5rem;
+  margin-bottom: 0.6rem;
+}
+
+.shelf-intro__disc {
+  position: absolute;
+  top: 4%;
+  left: 4%;
+  width: 92%;
+  height: 92%;
+  border-radius: 50%;
+  /* The rainbow a CD throws when light catches the data side. */
+  background:
+    radial-gradient(
+      circle,
+      rgb(255 255 255 / 0%) 0 40%,
+      rgb(255 255 255 / 45%) 41% 42%,
+      rgb(255 255 255 / 0%) 43%
+    ),
+    conic-gradient(
+      from 30deg,
+      #dfe3ea,
+      #f3d9ec,
+      #d9e6fb,
+      #d8f3e6,
+      #f7efd0,
+      #e4dcf7,
+      #dfe3ea,
+      #f3d9ec,
+      #d9e6fb,
+      #dfe3ea
+    );
+  box-shadow: 0 6px 18px rgb(0 0 0 / 14%);
+  /* The centre hole shows the background through the disc. */
+  -webkit-mask: radial-gradient(circle, transparent 0 5.6%, #000 6%);
+  mask: radial-gradient(circle, transparent 0 5.6%, #000 6%);
+}
+
+.shelf-intro__disc-detail {
+  display: block;
+  width: 100%;
+  height: 100%;
+  fill: none;
+}
+
+.shelf-intro__disc-rim {
+  stroke: rgb(0 0 0 / 10%);
+  stroke-width: 0.8;
+}
+
+.shelf-intro__disc-groove {
+  stroke: rgb(255 255 255 / 55%);
+  stroke-width: 0.5;
+}
+
+/* The clear plastic hub around the hole. */
+.shelf-intro__disc-hub {
+  fill: rgb(255 255 255 / 55%);
+  stroke: rgb(0 0 0 / 6%);
+  stroke-width: 0.6;
+}
+
+.shelf-intro__disc-edge {
+  fill: none;
+  stroke: rgb(0 0 0 / 7%);
+  stroke-linecap: round;
+  stroke-width: 2.4;
+}
+
+/* The moulded text on the hub ring; tiny and faint, as on a real pressing. */
+.shelf-intro__disc-text {
+  fill: rgb(0 0 0 / 32%);
+  font-size: 3.1px;
+  font-weight: 600;
+  letter-spacing: 0.35px;
+}
+
+.shelf-intro__disc-stack {
+  stroke: rgb(0 0 0 / 8%);
+  stroke-width: 0.5;
+}
+
+.shelf-intro__case {
+  position: absolute;
+  overflow: hidden;
+  inset: 0;
+  border-radius: 3px;
+  /* A black case: the disc's rainbow reads against it, and a light page with
+     one dark object on it has somewhere for the eye to land. Not flat black —
+     a faint falloff towards the hinge, as a glossy case catches the light. */
+  background: linear-gradient(135deg, #2a2a2e 0%, #121214 55%, #0a0a0b 100%);
+  box-shadow:
+    0 14px 32px rgb(0 0 0 / 28%),
+    0 2px 6px rgb(0 0 0 / 18%);
+}
+
+.shelf-intro__case-detail {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  inset: 0;
+}
+
+.shelf-intro__spine {
+  fill: rgb(255 255 255 / 6%);
+}
+
+.shelf-intro__ridge {
+  stroke: rgb(255 255 255 / 16%);
+  stroke-linecap: round;
+  stroke-width: 0.8;
+}
+
+.shelf-intro__case-edge {
+  fill: none;
+  stroke: rgb(255 255 255 / 14%);
+  stroke-width: 1;
+}
+
+.shelf-intro__count {
+  margin: 0;
+  color: var(--color-text-faint);
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+.shelf-intro__skip {
+  position: absolute;
+  bottom: calc(2rem + var(--safe-bottom));
+  left: 50%;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: var(--color-bg-sunken);
+  padding: 0.6rem 1.1rem;
+  color: var(--color-text);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 550;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, 0.5rem);
+  transition:
+    opacity var(--duration-base) var(--ease-standard),
+    transform var(--duration-base) var(--ease-standard);
+}
+
+.shelf-intro__skip--shown {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, 0);
+}
+
+/* ---- Tiles ---- */
 
 .disc-tile {
-  display: flex;
-  width: 100%;
-  flex-direction: column;
-  gap: 0.5rem;
-  padding: 0;
-  border: 0;
-  background: none;
-  cursor: pointer;
-  text-align: left;
-  /* The tile is the thing that lifts, so it owns the 3D context. */
-  transform-origin: center bottom;
-}
-
-.disc-tile__case {
-  position: relative;
-  display: block;
-  aspect-ratio: 1;
-  width: 100%;
-  border-radius: var(--radius-tile);
-  background-color: var(--color-bg-raised);
-  box-shadow: var(--shadow-tile);
-}
-
-/* The disc edge peeking out from behind the cover: what makes the tile read as
-   an object in a case rather than a flat image. */
-.disc-tile__disc {
   position: absolute;
-  top: 8%;
-  right: -5%;
-  width: 62%;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle at 50% 50%,
-    #0a0a0b 26%,
-    #c3cedb 28%,
-    #8fa6bf 58%,
-    #dfe7f0 100%
-  );
-  opacity: 0.85;
-  transition: transform var(--duration-base) var(--ease-standard);
-}
-
-.disc-tile:hover .disc-tile__disc,
-.disc-tile:focus-visible .disc-tile__disc {
-  transform: translateX(18%) rotate(22deg);
+  top: 0;
+  left: 0;
+  display: block;
+  overflow: hidden;
+  border: 0;
+  margin: 0;
+  background-color: var(--color-tile-empty);
+  background-position: center;
+  background-size: cover;
+  padding: 0;
+  cursor: inherit;
+  /* The transform is inline (the tile's place in the world); interaction
+     feedback therefore goes on the cover inside, never on the tile itself. */
 }
 
 .disc-tile__cover {
-  position: absolute;
-  inset: 0;
   width: 100%;
   height: 100%;
-  border-radius: var(--radius-tile);
   object-fit: cover;
+  opacity: 0;
+  /* `fast`, not `base`: a cover arriving is a small state change, and on a
+     pan the fade is time the user spends looking at a placeholder. */
+  transition:
+    opacity var(--duration-fast) var(--ease-standard),
+    transform var(--duration-base) var(--ease-standard);
 }
 
-.disc-tile__meta {
-  display: flex;
-  min-width: 0;
+/* Cover art fades in over the colour / placeholder, never pops. */
+.disc-tile--loaded .disc-tile__cover {
+  opacity: 1;
+}
+
+/* Still coming: each waiting tile shows what it is — title and artist, set
+   small in the corner of its own colour — so a screen of them reads as a
+   shelf of distinct albums, not a repeated placeholder. Only when zoomed in
+   enough to read (`shelf--animate`); further out, the colour alone. */
+.disc-tile__pending-label {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: none;
   flex-direction: column;
-  gap: 0.1rem;
+  gap: 2px;
+  padding: 12px;
+  pointer-events: none;
+  text-align: left;
 }
 
-.disc-tile__title,
-.disc-tile__artist {
+.shelf--animate .disc-tile__pending-label {
+  display: flex;
+}
+
+.disc-tile__pending-title,
+.disc-tile__pending-artist {
+  display: -webkit-box;
   overflow: hidden;
-  font-size: 0.78rem;
-  line-height: 1.3;
+  -webkit-box-orient: vertical;
+}
+
+.disc-tile__pending-title {
+  -webkit-line-clamp: 2;
+  font-size: 15px;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+  line-height: 1.15;
+}
+
+.disc-tile__pending-artist {
+  -webkit-line-clamp: 1;
+  font-size: 11px;
+  opacity: 0.72;
+}
+
+.disc-tile--ink-dark .disc-tile__pending-label {
+  color: rgb(0 0 0 / 70%);
+}
+
+.disc-tile--ink-light .disc-tile__pending-label {
+  color: rgb(255 255 255 / 88%);
+}
+
+/* Arrived: the cover settles into its slot — a slight scale-down with the
+   fade — which is what tells the eye this one just changed. Only when few
+   enough tiles are mounted to animate; otherwise the fade alone. */
+.shelf--animate .disc-tile__cover {
+  transform: scale(1.04);
+}
+
+.shelf--animate .disc-tile--loaded .disc-tile__cover {
+  transform: none;
+}
+
+/* Touch feedback within one frame of the press: the cover sinks slightly into
+   the wall. Suppressed once the press turns into a pan. */
+.disc-tile:active .disc-tile__cover {
+  transform: scale(0.94);
+  transition-duration: var(--duration-instant);
+}
+
+.shelf--panning .disc-tile:active .disc-tile__cover {
+  transform: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .disc-tile:hover .disc-tile__cover {
+    transform: scale(1.05);
+  }
+}
+
+.disc-tile:focus-visible {
+  z-index: 1;
+  outline: 4px solid var(--color-focus);
+  outline-offset: -4px;
+}
+
+/* Not matching: washed out in place, never removed, so the collection keeps its
+   shape and matches read as a pattern within it. Faded with a filter rather
+   than with opacity: translucent tiles would double up where neighbours overlap
+   to hide seams, drawing a grid of hairlines over the wall. */
+.disc-tile--dimmed {
+  filter: grayscale(1) contrast(0.08) brightness(1.65);
+}
+
+/* Only when few enough tiles are mounted (see ANIMATE_ALL_LIMIT) do dim
+   changes and re-orderings animate; otherwise they are instant. */
+.shelf--animate .disc-tile {
+  transition:
+    opacity var(--duration-base) var(--ease-standard),
+    filter var(--duration-base) var(--ease-standard);
+}
+
+.shelf--animate.shelf--reordering .disc-tile {
+  transition:
+    transform var(--duration-slow) var(--ease-standard),
+    opacity var(--duration-base) var(--ease-standard),
+    filter var(--duration-base) var(--ease-standard);
+}
+
+/* The cover has left the wall while its disc is open: a gap where it was. */
+.disc-tile--lifted {
+  opacity: 0;
+}
+
+/* A just-added disc settles into its place rather than appearing. */
+.disc-tile--arrived .disc-tile__cover {
+  animation: tile-arrive var(--duration-deliberate) var(--ease-entrance) both;
+}
+
+@keyframes tile-arrive {
+  from {
+    opacity: 0;
+    transform: scale(1.35);
+  }
+}
+
+/* No artwork: a quiet typographic cover. */
+.disc-tile__typeset {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 4px;
+  padding: 14px;
+  background: linear-gradient(160deg, #fafafa, #dededf);
+  color: #18181b;
+  text-align: left;
+}
+
+.disc-tile__typeset-title {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  font-size: 17px;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.disc-tile__typeset-artist {
+  overflow: hidden;
+  color: var(--color-text-muted);
+  font-size: 12px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.disc-tile__title {
-  font-weight: 550;
+/* Hover caption for pointer users; sizes are world units, so it scales with
+   the zoom along with the cover it labels. */
+.disc-tile__caption {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 44px 10px 9px;
+  /* Light text on a scrim that is always dark, whatever the cover: the text
+     previously inherited the page's dark ink, which vanished on the scrim and
+     on dark covers alike. The scrim eases out rather than fading linearly, so
+     the text sits on near-solid dark without a visible band where it ends. */
+  background: linear-gradient(
+    to top,
+    rgb(0 0 0 / 86%) 0%,
+    rgb(0 0 0 / 62%) 40%,
+    rgb(0 0 0 / 22%) 75%,
+    rgb(0 0 0 / 0%) 100%
+  );
+  color: #fff;
+  opacity: 0;
+  /* A hairline of shadow for the rare very bright cover under a thin scrim. */
+  text-shadow: 0 1px 2px rgb(0 0 0 / 45%);
+  pointer-events: none;
+  text-align: left;
+  transition: opacity var(--duration-fast) var(--ease-standard);
 }
 
-.disc-tile__artist {
-  color: var(--color-text-muted);
-  font-size: 0.72rem;
+.disc-tile__caption-title,
+.disc-tile__caption-artist {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.disc-tile__footer {
+.disc-tile__caption-title {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.disc-tile__caption-artist {
+  color: rgb(255 255 255 / 78%);
+  font-size: 11px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .disc-tile:hover .disc-tile__caption,
+  .disc-tile:focus-visible .disc-tile__caption {
+    opacity: 1;
+  }
+
+  .shelf--panning .disc-tile:hover .disc-tile__caption {
+    opacity: 0;
+  }
+}
+
+/* ===========================================================================
+   Floating bar
+   =========================================================================== */
+
+.floating-bar {
+  position: fixed;
+  z-index: 5;
+  right: 0;
+  bottom: calc(0.85rem + var(--safe-bottom));
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0 calc(0.75rem + var(--safe-right)) 0 calc(0.75rem + var(--safe-left));
+  pointer-events: none;
+}
+
+.floating-bar > * {
+  pointer-events: auto;
+}
+
+.floating-bar__status {
   display: flex;
   align-items: center;
   gap: 0.35rem;
-  margin-top: 0.15rem;
+  border-radius: var(--radius-pill);
+  background: rgb(255 255 255 / 72%);
+  box-shadow: 0 1px 4px rgb(0 0 0 / 8%);
+  padding: 0.2rem 0.3rem 0.2rem 0.8rem;
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(6px);
+  transition:
+    opacity var(--duration-fast) var(--ease-standard),
+    transform var(--duration-fast) var(--ease-standard);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
 }
 
-.disc-tile__year {
+.floating-bar__status--visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: none;
+}
+
+.floating-bar__status-clear {
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: rgb(0 0 0 / 8%);
+  padding: 0.15rem 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 550;
+}
+
+.floating-bar__pane {
+  display: flex;
+  width: min(38rem, 100%);
+  height: 3.5rem;
+  align-items: center;
+  gap: 0.25rem;
+  border-radius: var(--radius-pill);
+  padding: 0.35rem;
+}
+
+.floating-bar__search {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  height: 100%;
+  flex: 1;
+  align-items: center;
+  border-radius: var(--radius-pill);
+  background: rgb(0 0 0 / 5%);
+}
+
+.floating-bar__field {
+  display: flex;
+  min-width: 0;
+  height: 100%;
+  flex: 1;
+  align-items: center;
+  gap: 0.5rem;
+  padding-left: 0.85rem;
   color: var(--color-text-muted);
-  font-size: 0.68rem;
+}
+
+.floating-bar__input {
+  min-width: 0;
+  height: 100%;
+  flex: 1;
+  border: 0;
+  background: transparent;
+  color: var(--color-text);
+  /* 16px or more stops iOS Safari zooming the page when the field is focused. */
+  font-size: 1rem;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.floating-bar__input::placeholder {
+  color: var(--color-text-faint);
+}
+
+.floating-bar__input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.floating-bar__search:focus-within {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 1px;
+}
+
+.floating-bar__clear {
+  display: grid;
+  width: 1.75rem;
+  height: 1.75rem;
+  flex: none;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  margin-right: 0.4rem;
+  background: rgb(0 0 0 / 10%);
+}
+
+.floating-bar__actions {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 0.1rem;
+}
+
+.floating-bar__button {
+  position: relative;
+  display: grid;
+  width: 2.75rem;
+  height: 2.75rem;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  transition:
+    background-color var(--duration-fast) var(--ease-standard),
+    transform var(--duration-instant) var(--ease-standard);
+}
+
+.floating-bar__button:hover,
+.floating-bar__button[aria-expanded='true'] {
+  background: rgb(0 0 0 / 8%);
+}
+
+.floating-bar__button:active {
+  transform: scale(0.92);
+}
+
+.floating-bar__button--accent {
+  background: var(--color-text);
+  color: #fff;
+}
+
+.floating-bar__button--accent:hover {
+  background: #000;
+}
+
+.floating-bar__badge {
+  position: absolute;
+  top: 0.35rem;
+  right: 0.3rem;
+  display: grid;
+  min-width: 1rem;
+  height: 1rem;
+  place-items: center;
+  border-radius: var(--radius-pill);
+  background: var(--color-text);
+  padding: 0 0.25rem;
+  color: #fff;
+  font-size: 0.62rem;
+  font-weight: 700;
+}
+
+/* Pinch covers zoom on touch screens; buttons are for mouse and keyboard. */
+.floating-bar__zoom {
+  display: none;
+}
+
+@media (hover: hover) and (pointer: fine) and (min-width: 40rem) {
+  .floating-bar__zoom {
+    display: flex;
+    gap: 0.1rem;
+    border-left: 1px solid var(--color-edge);
+    margin-left: 0.2rem;
+    padding-left: 0.2rem;
+  }
+}
+
+/* ===========================================================================
+   Popover (arrange)
+   =========================================================================== */
+
+.popover {
+  position: fixed;
+  z-index: 6;
+  right: 0;
+  bottom: calc(0.85rem + var(--safe-bottom) + 4.25rem);
+  left: 0;
+  width: min(21rem, calc(100% - 1.5rem));
+  border-radius: var(--radius-panel);
+  margin-inline: auto;
+  padding: 0.6rem;
+  transform-origin: 50% 100%;
+}
+
+.popover__heading {
+  padding: 0.4rem 0.7rem 0.3rem;
+  color: var(--color-text-faint);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.popover__options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.15rem;
+}
+
+.popover__option {
+  display: flex;
+  min-height: 2.6rem;
+  align-items: center;
+  justify-content: space-between;
+  border: 0;
+  border-radius: var(--radius-control);
+  background: transparent;
+  padding: 0.4rem 0.75rem;
+  font-size: 0.9rem;
+  text-align: left;
+}
+
+.popover__option:hover {
+  background: rgb(0 0 0 / 5%);
+}
+
+.popover__option--active {
+  background: rgb(0 0 0 / 8%);
+  font-weight: 600;
+}
+
+.popover__direction {
+  display: inline-flex;
+  color: var(--color-text-muted);
+}
+
+.popover__toggle {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  border-top: 1px solid var(--color-edge);
+  margin-top: 0.5rem;
+  padding: 0.75rem 0.7rem 0.35rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.popover__toggle small {
+  display: block;
+  color: var(--color-text-faint);
+  font-size: 0.75rem;
+}
+
+/* An iOS-style switch built on a real checkbox. */
+.switch {
+  position: relative;
+  width: 2.6rem;
+  height: 1.55rem;
+  flex: none;
+  border-radius: var(--radius-pill);
+  margin-top: 0.1rem;
+  background: rgb(0 0 0 / 16%);
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+  transition: background-color var(--duration-fast) var(--ease-standard);
+}
+
+.switch::after {
+  position: absolute;
+  top: 0.15rem;
+  left: 0.15rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 35%);
+  content: '';
+  transition: transform var(--duration-fast) var(--ease-spring-ish);
+}
+
+.switch:checked {
+  background: #34c759;
+}
+
+.switch:checked::after {
+  transform: translateX(1.05rem);
+}
+
+/* ===========================================================================
+   Filter panel
+   =========================================================================== */
+
+.filter-panel {
+  position: fixed;
+  z-index: 7;
+  right: calc(0.5rem + var(--safe-right));
+  bottom: calc(0.5rem + var(--safe-bottom));
+  left: calc(0.5rem + var(--safe-left));
+  display: flex;
+  max-height: min(80dvh, 44rem);
+  flex-direction: column;
+  border-radius: var(--radius-panel);
+}
+
+@media (min-width: 56rem) {
+  .filter-panel {
+    top: calc(0.75rem + var(--safe-top));
+    right: calc(0.75rem + var(--safe-right));
+    bottom: calc(0.75rem + var(--safe-bottom));
+    left: auto;
+    width: 24rem;
+    max-height: none;
+  }
+}
+
+.filter-panel__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.1rem 1rem 0.6rem 1.35rem;
+}
+
+.filter-panel__title {
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.filter-panel__summary {
+  color: var(--color-text-muted);
+  font-size: 0.82rem;
   font-variant-numeric: tabular-nums;
+}
+
+.filter-panel__header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.filter-panel__reset {
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: rgb(0 0 0 / 7%);
+  padding: 0.35rem 0.85rem;
+  font-size: 0.85rem;
+  font-weight: 550;
+}
+
+.filter-panel__body {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 1.35rem;
+  overflow-y: auto;
+  padding: 0.5rem 1.35rem 1.35rem;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  /* The page blocks every gesture; this list must opt back in to scrolling. */
+  touch-action: pan-y;
+}
+
+.filter-panel__section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 0.55rem;
+}
+
+.filter-panel__section-title {
+  color: var(--color-text-faint);
+  font-size: 0.72rem;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.filter-panel__section-count {
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+}
+
+.filter-panel__narrow {
+  width: 100%;
+  border: 0;
+  border-radius: var(--radius-control);
+  margin-bottom: 0.6rem;
+  background: rgb(0 0 0 / 5%);
+  padding: 0.55rem 0.8rem;
+  font-size: 1rem;
+  outline: none;
+}
+
+.filter-panel__narrow:focus-visible {
+  outline: 2px solid var(--color-focus);
+}
+
+.filter-panel__more {
+  border: 0;
+  margin-top: 0.5rem;
+  background: none;
+  padding: 0.2rem 0;
+  color: var(--color-text-muted);
+  font-size: 0.82rem;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.filter-panel__years {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.filter-panel__years-dash {
+  color: var(--color-text-faint);
+}
+
+.filter-panel__footer {
+  border-top: 1px solid var(--color-edge);
+  padding: 0.75rem 1.35rem calc(0.9rem);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.chip {
+  display: inline-flex;
+  min-height: 2.25rem;
+  align-items: center;
+  gap: 0.45rem;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: rgb(0 0 0 / 6%);
+  padding: 0.35rem 0.8rem;
+  font-size: 0.86rem;
+  transition:
+    background-color var(--duration-fast) var(--ease-standard),
+    color var(--duration-fast) var(--ease-standard),
+    transform var(--duration-instant) var(--ease-standard);
+}
+
+.chip:hover {
+  background: rgb(0 0 0 / 11%);
+}
+
+.chip:active {
+  transform: scale(0.95);
+}
+
+.chip--active {
+  background: var(--color-text);
+  color: #fff;
+}
+
+.chip--active:hover {
+  background: #000;
+}
+
+.chip__label {
+  text-transform: none;
+}
+
+.chip__count {
+  opacity: 0.55;
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.select {
+  position: relative;
+  flex: 1;
+}
+
+.select select {
+  width: 100%;
+  border: 0;
+  border-radius: var(--radius-control);
+  background: rgb(0 0 0 / 5%);
+  padding: 0.6rem 0.8rem;
+  font-size: 1rem;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.icon-button {
+  display: grid;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex: none;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: rgb(0 0 0 / 6%);
+  transition: background-color var(--duration-fast) var(--ease-standard);
+}
+
+.icon-button:hover {
+  background: rgb(0 0 0 / 11%);
+}
+
+.owner-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.85rem;
+}
+
+.owner-row__label {
+  color: var(--color-text-muted);
+}
+
+.owner-row__sign-in {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* ===========================================================================
+   Buttons and fields
+   =========================================================================== */
+
+.pill-button {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: rgb(0 0 0 / 7%);
+  padding: 0.55rem 1.25rem;
+  font-weight: 600;
+  transition:
+    background-color var(--duration-fast) var(--ease-standard),
+    transform var(--duration-instant) var(--ease-standard),
+    opacity var(--duration-fast) var(--ease-standard);
+}
+
+.pill-button:hover {
+  background: rgb(0 0 0 / 12%);
+}
+
+.pill-button:active {
+  transform: scale(0.97);
+}
+
+.pill-button:disabled {
+  cursor: default;
+  opacity: 0.5;
+  transform: none;
+}
+
+.pill-button--primary {
+  background: var(--color-text);
+  color: #fff;
+}
+
+.pill-button--primary:hover {
+  background: #000;
+}
+
+.text-button {
+  border: 0;
+  background: none;
+  padding: 0.25rem 0;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.text-button:hover {
+  color: var(--color-text);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.field__label {
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+  font-weight: 550;
+}
+
+.field__input {
+  width: 100%;
+  border: 0;
+  border-radius: var(--radius-control);
+  background: rgb(0 0 0 / 5%);
+  padding: 0.75rem 0.9rem;
+  font-size: 1rem;
+  outline: none;
+}
+
+.field__input:focus-visible {
+  outline: 2px solid var(--color-focus);
+}
+
+.field__input--area {
+  min-height: 5rem;
+  resize: vertical;
+}
+
+/* ===========================================================================
+   Disc panel
+   =========================================================================== */
+
+.disc-panel {
+  position: fixed;
+  z-index: 20;
+  inset: 0;
+}
+
+.disc-panel__backdrop {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: var(--color-bg);
+}
+
+/* The record's own colours, blurred into the room. Painted once; static. */
+.disc-panel__ambient {
+  position: absolute;
+  inset: -15%;
+  width: 130%;
+  max-width: none;
+  height: 130%;
+  filter: blur(80px) saturate(1.7) brightness(1.35);
+  object-fit: cover;
+  opacity: 0.55;
+}
+
+.disc-panel__scrim {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgb(255 255 255 / 62%);
+  cursor: default;
+}
+
+.disc-panel__scroll {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+  /* Clicks on empty space fall through to the scrim and close the panel. */
+  pointer-events: none;
+}
+
+.disc-panel__layout {
+  display: flex;
+  max-width: 64rem;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.75rem;
+  margin: 0 auto;
+  padding: calc(4.25rem + var(--safe-top)) calc(1.25rem + var(--safe-right))
+    calc(2.5rem + var(--safe-bottom)) calc(1.25rem + var(--safe-left));
+}
+
+.disc-panel__layout > * {
+  pointer-events: auto;
+}
+
+@media (min-width: 60rem) {
+  .disc-panel__layout {
+    min-height: 100%;
+    flex-direction: row;
+    align-items: center;
+    gap: 3.5rem;
+    padding-top: 3rem;
+  }
+
+  .disc-panel__art {
+    position: sticky;
+    top: 3rem;
+    align-self: center;
+  }
+}
+
+.disc-panel__art {
+  width: min(86vw, 28rem, 55dvh);
+  flex: none;
+}
+
+.disc-panel__cover {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  /* Never a blank white square: the cover's own colour, or a neutral tint,
+     holds the space until the artwork arrives. */
+  background-color: var(--color-tile-empty);
+  border-radius: 0.3rem;
+  box-shadow: var(--shadow-lifted);
+  object-fit: cover;
+  /* The FLIP transition scales from the top-left corner. */
+  transform-origin: 0 0;
+}
+
+.disc-panel__cover--typeset {
+  display: flex;
+  align-items: flex-end;
+  padding: 1.5rem;
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.disc-panel__body {
+  display: flex;
+  width: min(100%, 32rem);
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.disc-panel__title {
+  font-size: clamp(1.6rem, 6vw, 2.4rem);
+  font-weight: 750;
+  letter-spacing: -0.03em;
+  line-height: 1.08;
+  /* Long titles wrap rather than overflow on a 320px viewport. */
+  overflow-wrap: anywhere;
+}
+
+.disc-panel__artist {
+  margin-top: 0.35rem;
+  color: var(--color-text-muted);
+  font-size: 1.1rem;
+}
+
+.disc-panel__year {
+  color: var(--color-text-faint);
+}
+
+.disc-panel__facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr));
+  gap: 0.9rem 1rem;
+  margin: 0;
+  border-top: 1px solid var(--color-edge);
+  padding-top: 1.1rem;
+}
+
+.disc-panel__fact dt {
+  color: var(--color-text-faint);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.disc-panel__fact dd {
+  margin: 0.2rem 0 0;
+  font-size: 0.92rem;
+  overflow-wrap: anywhere;
+}
+
+.disc-panel__genres {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.disc-panel__genre {
+  border-radius: var(--radius-pill);
+  background: rgb(0 0 0 / 6%);
+  padding: 0.2rem 0.65rem;
+  color: var(--color-text-muted);
+  font-size: 0.78rem;
+}
+
+.disc-panel__notes {
+  border-left: 2px solid var(--color-accent);
+  padding-left: 0.85rem;
+  color: var(--color-text-muted);
+  font-style: italic;
+  white-space: pre-line;
+}
+
+.disc-panel__tracks-heading {
+  color: var(--color-text-faint);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.disc-panel__tracklist {
+  margin: 0.4rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.disc-panel__track {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  border-bottom: 1px solid var(--color-edge);
+  padding: 0.55rem 0;
+  font-size: 0.95rem;
+}
+
+.disc-panel__track-number {
+  min-width: 1.4rem;
+  color: var(--color-text-faint);
+  font-size: 0.78rem;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.disc-panel__track-title {
+  flex: 1;
+  overflow-wrap: anywhere;
+}
+
+.disc-panel__track-artist {
+  color: var(--color-text-muted);
+}
+
+.disc-panel__track-length {
+  color: var(--color-text-faint);
+  font-size: 0.82rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.disc-panel__close {
+  position: fixed;
+  z-index: 1;
+  top: calc(0.9rem + var(--safe-top));
+  right: calc(0.9rem + var(--safe-right));
+  display: grid;
+  width: 2.75rem;
+  height: 2.75rem;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+}
+
+/* ===========================================================================
+   Owner sheets
+   =========================================================================== */
+
+.admin-layer {
+  position: fixed;
+  z-index: 30;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: calc(0.5rem + var(--safe-top)) calc(0.5rem + var(--safe-right))
+    calc(0.5rem + var(--safe-bottom)) calc(0.5rem + var(--safe-left));
+}
+
+@media (min-width: 40rem) {
+  .admin-layer {
+    align-items: center;
+  }
+}
+
+.admin-layer__scrim {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgb(255 255 255 / 55%);
+  cursor: default;
+}
+
+.admin-sheet {
+  display: flex;
+  width: min(26rem, 100%);
+  max-height: 100%;
+  flex-direction: column;
+  border-radius: var(--radius-panel);
+  outline: none;
+}
+
+.admin-sheet--wide {
+  width: min(40rem, 100%);
+  height: min(46rem, 100%);
+}
+
+.admin-sheet__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1rem 0.5rem 1.35rem;
+}
+
+.admin-sheet__title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.admin-sheet__body {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 1rem;
+  overflow-y: auto;
+  padding: 0.5rem 1.35rem 1.35rem;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+}
+
+.admin-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.admin-form__hint {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.admin-form__error {
+  color: var(--color-danger);
+  font-size: 0.9rem;
+}
+
+.admin-form__warning {
+  color: var(--color-warning);
+  font-size: 0.85rem;
+}
+
+.admin-form__confirm {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border-radius: var(--radius-control);
+  background: rgb(255 196 0 / 14%);
+  padding: 0.75rem 0.9rem;
+  font-size: 0.9rem;
+}
+
+.admin-code {
+  display: block;
+  overflow-x: auto;
+  border-radius: var(--radius-control);
+  background: rgb(0 0 0 / 5%);
+  padding: 0.75rem 0.9rem;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  white-space: nowrap;
+  -webkit-user-select: all;
+  user-select: all;
+}
+
+.add-search {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.add-search__field {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: var(--radius-pill);
+  background: rgb(0 0 0 / 5%);
+  padding: 0 1rem;
+  color: var(--color-text-muted);
+}
+
+.add-search__field:focus-within {
+  outline: 2px solid var(--color-focus);
+}
+
+.add-search__input {
+  min-width: 0;
+  height: 2.75rem;
+  flex: 1;
+  border: 0;
+  background: transparent;
+  color: var(--color-text);
+  font-size: 1rem;
+  outline: none;
+}
+
+.add-results {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.candidates {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.candidate {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 0.85rem;
+  border: 0;
+  border-radius: var(--radius-control);
+  background: transparent;
+  padding: 0.5rem;
+  text-align: left;
+  transition: background-color var(--duration-fast) var(--ease-standard);
+}
+
+.candidate:hover {
+  background: rgb(0 0 0 / 5%);
+}
+
+.candidate__thumb {
+  width: 3.5rem;
+  height: 3.5rem;
+  flex: none;
+  overflow: hidden;
+  border-radius: 0.25rem;
+  background: var(--color-tile-empty);
+}
+
+.candidate__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.candidate__text {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+}
+
+.candidate__title {
+  overflow: hidden;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.candidate__artist {
+  overflow: hidden;
+  color: var(--color-text-muted);
+  font-size: 0.88rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.candidate__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.15rem;
+  color: var(--color-text-faint);
+  font-size: 0.75rem;
+}
+
+.candidate__owned {
+  flex: none;
+  border-radius: var(--radius-pill);
+  background: rgb(138 109 47 / 12%);
+  padding: 0.1rem 0.5rem;
+  color: var(--color-accent);
+  font-size: 0.72rem;
+}
+
+.review {
+  display: grid;
+  gap: 1.25rem;
+}
+
+@media (min-width: 36rem) {
+  .review {
+    grid-template-columns: 13rem 1fr;
+  }
+}
+
+.review__art {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.review__cover {
+  width: min(13rem, 60vw);
+  aspect-ratio: 1;
+  border-radius: 0.3rem;
+  background: var(--color-tile-empty);
+  box-shadow: var(--shadow-tile);
+  object-fit: cover;
+}
+
+.review__cover--loading {
+  animation: review-pulse var(--duration-deliberate) var(--ease-standard) infinite alternate;
+}
+
+@keyframes review-pulse {
+  to {
+    opacity: 0.45;
+  }
+}
+
+.review__cover--empty {
+  display: grid;
+  place-items: center;
+  color: var(--color-text-faint);
+  font-size: 0.85rem;
+}
+
+.review__details {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.review__title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.review__artist {
+  color: var(--color-text-muted);
+}
+
+.review__barcode {
+  color: var(--color-text-faint);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+}
+
+.review__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
 }
 
 /* ===========================================================================
@@ -346,15 +2000,15 @@ textarea {
   align-items: center;
   gap: 0.2rem;
   border-radius: 0.2rem;
-  background-color: rgb(255 255 255 / 6%);
-  padding: 0.05rem 0.25rem;
+  background-color: rgb(0 0 0 / 5%);
+  padding: 0.05rem 0.3rem;
   color: var(--color-text-muted);
-  font-size: 0.62rem;
+  font-size: 0.66rem;
   letter-spacing: 0.03em;
 }
 
 .country-badge__flag {
-  font-size: 0.8em;
+  font-size: 0.9em;
   line-height: 1;
 }
 
@@ -370,176 +2024,114 @@ textarea {
 }
 
 .country-badge--detail {
-  padding: 0.15rem 0.4rem;
-  font-size: 0.78rem;
+  padding: 0.15rem 0.45rem;
+  font-size: 0.85rem;
 }
 
 /* ===========================================================================
-   Disc panel
+   Ratings
    =========================================================================== */
 
-.disc-panel {
-  position: fixed;
-  z-index: 10;
-  inset: 0;
+.star {
+  color: var(--color-text-faint);
+  transition: color var(--duration-fast) var(--ease-standard);
+}
+
+.star--filled {
+  color: #f0a020;
+}
+
+.star-rating {
   display: flex;
-  align-items: flex-end;
-  justify-content: center;
+  align-items: center;
+  gap: 0.1rem;
+  margin-top: 0.5rem;
 }
 
-.disc-panel__scrim {
-  position: absolute;
-  inset: 0;
-  border: 0;
-  background-color: rgb(0 0 0 / 68%);
-  backdrop-filter: blur(6px);
-  cursor: pointer;
+.star-rating--readonly {
+  gap: 0.05rem;
 }
 
-.disc-panel__sheet {
-  position: relative;
-  display: flex;
-  width: min(30rem, 100%);
-  max-height: 92dvh;
-  flex-direction: column;
-  overflow-y: auto;
-  border-radius: var(--radius-panel) var(--radius-panel) 0 0;
-  background-color: var(--color-bg-raised);
-  box-shadow: var(--shadow-lifted);
-  padding-bottom: calc(1rem + var(--safe-bottom));
-}
-
-.disc-panel__art {
-  display: flex;
-  justify-content: center;
-  padding: 1.5rem 1.5rem 0;
-}
-
-.disc-panel__cover {
-  width: min(16rem, 62vw);
-  height: auto;
-  aspect-ratio: 1;
-  border-radius: 0.5rem;
-  box-shadow: var(--shadow-tile);
-  object-fit: cover;
-}
-
-.disc-panel__body {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  padding: 1.25rem 1.5rem 0;
-}
-
-.disc-panel__header {
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-}
-
-.disc-panel__title {
-  font-size: 1.3rem;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  /* Long titles must wrap rather than overflow on a 320px viewport. */
-  overflow-wrap: anywhere;
-}
-
-.disc-panel__artist {
-  color: var(--color-text-muted);
-}
-
-.disc-panel__facts {
+.star-rating__button {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
-  gap: 0.75rem;
-  margin: 0;
-  border-top: 1px solid var(--color-edge);
-  border-bottom: 1px solid var(--color-edge);
-  padding: 0.85rem 0;
-}
-
-.disc-panel__fact dt {
-  color: var(--color-text-muted);
-  font-size: 0.68rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.disc-panel__fact dd {
-  margin: 0.15rem 0 0;
-  font-size: 0.85rem;
-  overflow-wrap: anywhere;
-}
-
-.disc-panel__genres {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem;
-  margin: 0;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: none;
   padding: 0;
-  list-style: none;
+  transition: transform var(--duration-instant) var(--ease-standard);
 }
 
-.disc-panel__genre {
-  border: 1px solid var(--color-edge);
-  border-radius: 999px;
-  padding: 0.1rem 0.5rem;
-  color: var(--color-text-muted);
-  font-size: 0.7rem;
+.star-rating__button:hover {
+  transform: scale(1.12);
 }
 
-.disc-panel__tracks-heading {
-  color: var(--color-text-muted);
-  font-size: 0.68rem;
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+.star-rating__button:active {
+  transform: scale(0.94);
 }
 
-.disc-panel__tracklist {
-  margin: 0.5rem 0 0;
-  padding: 0;
-  list-style: none;
+.star-rating__button:disabled {
+  cursor: default;
+  opacity: 0.6;
+  transform: none;
 }
 
-.disc-panel__track {
-  display: flex;
-  align-items: baseline;
-  gap: 0.6rem;
-  border-bottom: 1px solid rgb(255 255 255 / 4%);
-  padding: 0.4rem 0;
-  font-size: 0.85rem;
-}
-
-.disc-panel__track-number {
-  min-width: 1.3rem;
-  color: var(--color-text-muted);
-  font-size: 0.72rem;
+.star-rating__hint {
+  margin-left: 0.35rem;
+  color: var(--color-text-faint);
+  font-size: 0.78rem;
   font-variant-numeric: tabular-nums;
-  text-align: right;
 }
 
-.disc-panel__track-title {
-  overflow-wrap: anywhere;
+.disc-panel__rating-error {
+  color: var(--color-danger);
+  font-size: 0.82rem;
 }
 
-.disc-panel__close {
-  margin: 1.25rem 1.5rem 0;
-  border: 1px solid var(--color-edge);
-  border-radius: 999px;
-  background-color: transparent;
-  padding: 0.6rem 1rem;
-  cursor: pointer;
-  transition:
-    background-color var(--duration-fast) var(--ease-standard),
-    transform var(--duration-fast) var(--ease-standard);
+/* Stars on a large cover's hover caption, where the rating is the reason the
+   cover is large in the first place. */
+.disc-tile__stars {
+  color: #ffc247;
+  font-size: 12px;
+  letter-spacing: 0.08em;
 }
 
-.disc-panel__close:hover {
-  background-color: rgb(255 255 255 / 6%);
+/* ===========================================================================
+   Segmented control (cover size)
+   =========================================================================== */
+
+.popover__segmented {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.15rem;
+  border-radius: var(--radius-control);
+  background: rgb(0 0 0 / 5%);
+  padding: 0.15rem;
 }
 
-.disc-panel__close:active {
-  transform: scale(0.98);
+.popover__segment {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  border: 0;
+  border-radius: calc(var(--radius-control) - 0.15rem);
+  background: transparent;
+  padding: 0.5rem 0.7rem;
+  font-size: 0.9rem;
+  text-align: left;
+  transition: background-color var(--duration-fast) var(--ease-standard);
+}
+
+.popover__segment small {
+  color: var(--color-text-faint);
+  font-size: 0.72rem;
+  line-height: 1.25;
+}
+
+.popover__segment--active {
+  background: #fff;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 12%);
+  font-weight: 600;
 }

@@ -24,7 +24,6 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@tanstack/react-virtual": "3.14.13",
     "@vercel/blob": "2.8.0",
     "fuse.js": "7.5.0",
     "jose": "6.2.12",

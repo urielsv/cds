@@ -1,0 +1,236 @@
+# Albums for the demo wall, one per line: Artist — Album
+# Resolved against MusicBrainz by scripts/seed-demo.mjs. Lines that cannot be
+# matched to a CD pressing with front cover art are skipped and reported.
+
+Daft Punk — Discovery
+Daft Punk — Homework
+Daft Punk — Random Access Memories
+Radiohead — OK Computer
+Radiohead — Kid A
+Radiohead — In Rainbows
+Radiohead — The Bends
+Sigur Rós — Ágætis byrjun
+Sigur Rós — Takk...
+Boards of Canada — Music Has the Right to Children
+Boards of Canada — Geogaddi
+Massive Attack — Mezzanine
+Massive Attack — Blue Lines
+Portishead — Dummy
+Portishead — Third
+Aphex Twin — Selected Ambient Works 85–92
+Aphex Twin — Richard D. James Album
+Björk — Homogenic
+Björk — Debut
+Björk — Vespertine
+The Chemical Brothers — Dig Your Own Hole
+Air — Moon Safari
+Mogwai — Young Team
+Burial — Untrue
+Four Tet — Rounds
+Caribou — Swim
+Bonobo — Black Sands
+The Knife — Silent Shout
+Pink Floyd — The Dark Side of the Moon
+Pink Floyd — Wish You Were Here
+Pink Floyd — Animals
+Talk Talk — Spirit of Eden
+Cocteau Twins — Heaven or Las Vegas
+My Bloody Valentine — Loveless
+Slowdive — Souvlaki
+Stereolab — Dots and Loops
+Broadcast — Tender Buttons
+Autechre — Amber
+Flying Lotus — Cosmogramma
+Kendrick Lamar — To Pimp a Butterfly
+Kendrick Lamar — good kid, m.A.A.d city
+Madvillain — Madvillainy
+J Dilla — Donuts
+Gustavo Cerati — Bocanada
+Gustavo Cerati — Fuerza natural
+Gustavo Cerati — Siempre es hoy
+Soda Stereo — Canción animal
+Soda Stereo — Signos
+Soda Stereo — Doble vida
+Soda Stereo — Dynamo
+Soda Stereo — Sueño Stereo
+Soda Stereo — Nada personal
+Los Fabulosos Cadillacs — Vasos vacíos
+Los Fabulosos Cadillacs — Rey azúcar
+Babasónicos — Jessico
+Babasónicos — Infame
+Spinetta — Kamikaze
+Luis Alberto Spinetta — Pelusón of Milk
+Charly García — Clics modernos
+Charly García — Piano bar
+Charly García — Yendo de la cama al living
+Serú Girán — Bicicleta
+Patricio Rey y sus Redonditos de Ricota — Oktubre
+Patricio Rey y sus Redonditos de Ricota — Luzbelito
+Fito Páez — El amor después del amor
+Fito Páez — Giros
+Los Redondos — Lobo suelto, cordero atado
+Divididos — La era de la boludez
+Sumo — Divididos por la felicidad
+Virus — Locura
+Andrés Calamaro — Honestidad brutal
+Andrés Calamaro — Alta suciedad
+Los Rodríguez — Sin documentos
+Café Tacvba — Re
+Caifanes — El silencio
+Illya Kuryaki and the Valderramas — Chaco
+Bajofondo — Mar dulce
+Gotan Project — La revancha del tango
+Mercedes Sosa — Cantora 1
+Astor Piazzolla — Tango: Zero Hour
+The Beatles — Abbey Road
+The Beatles — Revolver
+The Beatles — Sgt. Pepper's Lonely Hearts Club Band
+The Beatles — Rubber Soul
+The Rolling Stones — Sticky Fingers
+The Rolling Stones — Let It Bleed
+Led Zeppelin — Led Zeppelin IV
+Led Zeppelin — Physical Graffiti
+David Bowie — The Rise and Fall of Ziggy Stardust and the Spiders From Mars
+David Bowie — Low
+David Bowie — Blackstar
+Queen — A Night at the Opera
+Fleetwood Mac — Rumours
+The Velvet Underground — The Velvet Underground & Nico
+The Clash — London Calling
+Joy Division — Unknown Pleasures
+Joy Division — Closer
+New Order — Power, Corruption & Lies
+The Cure — Disintegration
+The Smiths — The Queen Is Dead
+Depeche Mode — Violator
+Talking Heads — Remain in Light
+Kraftwerk — Trans-Europe Express
+Kraftwerk — Computer World
+Brian Eno — Ambient 1: Music for Airports
+Nirvana — Nevermind
+Nirvana — In Utero
+Pearl Jam — Ten
+Soundgarden — Superunknown
+Pixies — Doolittle
+Sonic Youth — Daydream Nation
+R.E.M. — Automatic for the People
+U2 — The Joshua Tree
+U2 — Achtung Baby
+Oasis — (What's the Story) Morning Glory?
+Blur — Parklife
+Pulp — Different Class
+The Stone Roses — The Stone Roses
+Primal Scream — Screamadelica
+Beck — Odelay
+Beck — Sea Change
+Weezer — Weezer
+Smashing Pumpkins — Siamese Dream
+Red Hot Chili Peppers — Californication
+Red Hot Chili Peppers — Blood Sugar Sex Magik
+Rage Against the Machine — Rage Against the Machine
+Metallica — Metallica
+Metallica — Master of Puppets
+Tool — Lateralus
+Nine Inch Nails — The Downward Spiral
+Deftones — White Pony
+Queens of the Stone Age — Songs for the Deaf
+The Strokes — Is This It
+The White Stripes — Elephant
+Interpol — Turn On the Bright Lights
+Yeah Yeah Yeahs — Fever to Tell
+Arcade Fire — Funeral
+Arctic Monkeys — AM
+Arctic Monkeys — Whatever People Say I Am, That's What I'm Not
+The National — Boxer
+LCD Soundsystem — Sound of Silver
+MGMT — Oracular Spectacular
+Tame Impala — Currents
+Tame Impala — Lonerism
+Vampire Weekend — Vampire Weekend
+Bon Iver — For Emma, Forever Ago
+Fleet Foxes — Fleet Foxes
+Beach House — Teen Dream
+Grizzly Bear — Veckatimest
+Animal Collective — Merriweather Post Pavilion
+The xx — xx
+Gorillaz — Demon Days
+Gorillaz — Plastic Beach
+Coldplay — A Rush of Blood to the Head
+Muse — Origin of Symmetry
+Justice — †
+Moderat — II
+Jon Hopkins — Immunity
+Floating Points — Promises
+Frank Ocean — Blonde
+Frank Ocean — Channel Orange
+Kanye West — My Beautiful Dark Twisted Fantasy
+Kanye West — Graduation
+Lauryn Hill — The Miseducation of Lauryn Hill
+OutKast — Aquemini
+OutKast — Speakerboxxx/The Love Below
+A Tribe Called Quest — The Low End Theory
+Nas — Illmatic
+The Notorious B.I.G. — Ready to Die
+Wu-Tang Clan — Enter the Wu-Tang (36 Chambers)
+Dr. Dre — 2001
+Beastie Boys — Paul's Boutique
+De La Soul — 3 Feet High and Rising
+Erykah Badu — Baduizm
+D'Angelo — Voodoo
+Amy Winehouse — Back to Black
+Adele — 21
+Beyoncé — Lemonade
+Rosalía — El mal querer
+Bad Bunny — Un verano sin ti
+Prince — Purple Rain
+Michael Jackson — Thriller
+Michael Jackson — Off the Wall
+Stevie Wonder — Songs in the Key of Life
+Marvin Gaye — What's Going On
+Miles Davis — Kind of Blue
+Miles Davis — Bitches Brew
+John Coltrane — A Love Supreme
+Dave Brubeck Quartet — Time Out
+Bill Evans Trio — Waltz for Debby
+Herbie Hancock — Head Hunters
+Nina Simone — Wild Is the Wind
+Bob Marley & The Wailers — Exodus
+Bob Dylan — Highway 61 Revisited
+Bob Dylan — Blood on the Tracks
+Joni Mitchell — Blue
+Leonard Cohen — Songs of Leonard Cohen
+Nick Drake — Pink Moon
+Simon & Garfunkel — Bridge Over Troubled Water
+The Beach Boys — Pet Sounds
+Jimi Hendrix Experience — Are You Experienced
+The Doors — The Doors
+Elvis Costello — This Year's Model
+Tom Waits — Rain Dogs
+Jeff Buckley — Grace
+Elliott Smith — Either/Or
+Sufjan Stevens — Illinois
+Neutral Milk Hotel — In the Aeroplane Over the Sea
+Arca — Arca
+FKA twigs — LP1
+Lorde — Melodrama
+Billie Eilish — When We All Fall Asleep, Where Do We Go?
+Taylor Swift — 1989
+Lana Del Rey — Born to Die
+Mac DeMarco — Salad Days
+King Crimson — In the Court of the Crimson King
+Yes — Close to the Edge
+Genesis — Selling England by the Pound
+Mike Oldfield — Tubular Bells
+Vangelis — Blade Runner
+Jean-Michel Jarre — Oxygène
+Moby — Play
+Underworld — Second Toughest in the Infants
+The Prodigy — The Fat of the Land
+Fatboy Slim — You've Come a Long Way, Baby
+Chemical Brothers — Surrender
+Orbital — Orbital 2
+Leftfield — Leftism
+Röyksopp — Melody A.M.
+Zero 7 — Simple Things
+Thievery Corporation — The Mirror Conspiracy
+Nicolas Jaar — Space Is Only Noise

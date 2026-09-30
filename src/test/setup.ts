@@ -3,8 +3,12 @@ import '@testing-library/jest-dom/vitest';
 import { cleanup } from '@testing-library/react';
 import { afterEach, vi } from 'vitest';
 
+import { coverLoader } from '@/lib/coverLoader';
+
 afterEach(() => {
   cleanup();
+  // Which covers have loaded is session state; tests must not inherit it.
+  coverLoader.reset();
 });
 
 // jsdom implements neither ResizeObserver nor IntersectionObserver, and the
