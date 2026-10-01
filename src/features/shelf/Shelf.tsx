@@ -38,7 +38,7 @@ import {
 import { CameraController } from './cameraController';
 import { DiscTile } from './DiscTile';
 import { ShelfIntro } from './ShelfIntro';
-import { indexAt, packMosaic, rowCounter, spansFor, type WallMode } from './layout';
+import { indexAt, packMosaic, rowCounter, spansFor } from './layout';
 import { useCoverPrefetch } from './useCoverPrefetch';
 import { useCameraGestures } from './useCameraGestures';
 
@@ -73,8 +73,6 @@ interface ShelfProps {
   discs: readonly DiscIndexEntry[];
   /** Ids matching the current search and filters; null means all match. */
   matches: ReadonlySet<string> | null;
-  /** Even grid, or blocks sized by the owner's rating. */
-  wallMode: WallMode;
   openDiscId: string | null;
   arrivedDiscId: string | null;
   onOpen: (disc: DiscIndexEntry) => void;
@@ -109,15 +107,7 @@ interface PendingReflow {
  * `CameraController`), and only the tiles near the screen are mounted. So the
  * cost of a frame depends on the screen, not on the size of the collection.
  */
-export function Shelf({
-  discs,
-  matches,
-  wallMode,
-  openDiscId,
-  arrivedDiscId,
-  onOpen,
-  ref,
-}: ShelfProps) {
+export function Shelf({ discs, matches, openDiscId, arrivedDiscId, onOpen, ref }: ShelfProps) {
   const viewportRef = useRef<HTMLDivElement>(null);
   const surfaceRef = useRef<HTMLDivElement>(null);
   const insetProbeRef = useRef<HTMLDivElement>(null);
@@ -149,15 +139,8 @@ export function Shelf({
    * library. There is nothing to pan sideways, which on a phone is what makes
    * the wall read as a list to scroll rather than a map to hunt around.
    */
-  const spans = useMemo(
-    () =>
-      spansFor(
-        discs.map((disc) => disc.rating),
-        wallMode,
-      ),
-    [discs, wallMode],
-  );
-  const rowsFor = useMemo(() => rowCounter(spans, wallMode), [spans, wallMode]);
+  const spans = useMemo(() => spansFor(discs.length), [discs.length]);
+  const rowsFor = useMemo(() => rowCounter(spans), [spans]);
   const allowedColumns = useMemo(
     () =>
       viewport.width > 0 && viewport.height > 0

@@ -15,7 +15,6 @@ function entry(id: string, overrides: Partial<DiscIndexEntry>): DiscIndexEntry {
     format: 'CD',
     genres: [],
     addedAt: '2026-01-01T00:00:00.000Z',
-    rating: null,
     thumbnail: null,
     trackTitles: [],
     ...overrides,

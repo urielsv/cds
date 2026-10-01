@@ -38,7 +38,6 @@ function renderShelf(count: number, props: Partial<Parameters<typeof Shelf>[0]> 
       <Shelf
         discs={discs}
         matches={null}
-        wallMode="even"
         openDiscId={null}
         arrivedDiscId={null}
         onOpen={vi.fn()}
@@ -104,7 +103,6 @@ describe('Shelf', () => {
       <Shelf
         discs={discs}
         matches={new Set([first.id])}
-        wallMode="even"
         openDiscId={null}
         arrivedDiscId={null}
         onOpen={vi.fn()}
@@ -140,7 +138,6 @@ describe('Shelf', () => {
       <Shelf
         discs={discs}
         matches={null}
-        wallMode="even"
         openDiscId={discs[0]!.id}
         arrivedDiscId={null}
         onOpen={vi.fn()}
@@ -157,7 +154,6 @@ describe('Shelf', () => {
         ref={ref}
         discs={discs}
         matches={null}
-        wallMode="even"
         openDiscId={null}
         arrivedDiscId={null}
         onOpen={vi.fn()}
@@ -169,19 +165,8 @@ describe('Shelf', () => {
     expect(ref.current?.rectFor('missing')).toBeNull();
   });
 
-  it('draws the covers rated highest larger when arranged by rating', () => {
-    const { container } = renderShelf(150, { wallMode: 'rating' });
-    const sizes = [...container.querySelectorAll<HTMLElement>('.disc-tile')].map((tile) =>
-      Number.parseFloat(tile.style.width),
-    );
-    // The fixture has five-, four- and lower-rated albums, so the wall should
-    // show three block sizes at once.
-    expect(new Set(sizes).size).toBeGreaterThan(1);
-    expect(Math.max(...sizes) / Math.min(...sizes)).toBeGreaterThan(1.9);
-  });
-
-  it('keeps every cover mounted once, whatever its size', () => {
-    const { container } = renderShelf(150, { wallMode: 'rating' });
+  it('keeps every cover mounted once', () => {
+    const { container } = renderShelf(150);
     const ids = [...container.querySelectorAll<HTMLElement>('.disc-tile')].map(
       (tile) => tile.dataset.index,
     );
@@ -190,14 +175,7 @@ describe('Shelf', () => {
 
   it('renders an empty collection without crashing', () => {
     const { container } = render(
-      <Shelf
-        discs={[]}
-        matches={null}
-        wallMode="even"
-        openDiscId={null}
-        arrivedDiscId={null}
-        onOpen={vi.fn()}
-      />,
+      <Shelf discs={[]} matches={null} openDiscId={null} arrivedDiscId={null} onOpen={vi.fn()} />,
     );
     expect(container.querySelector('.shelf')).not.toBeNull();
     expect(tiles(container)).toHaveLength(0);

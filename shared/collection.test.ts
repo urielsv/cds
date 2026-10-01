@@ -30,7 +30,6 @@ function entry(overrides: Partial<DiscIndexEntry> = {}): DiscIndexEntry {
     format: 'CD',
     genres: ['house'],
     addedAt: '2026-01-01T00:00:00.000Z',
-    rating: null,
     thumbnail: null,
     trackTitles: [],
     ...overrides,
@@ -178,19 +177,6 @@ describe('sortDiscs', () => {
     expect(discs.map((d) => d.id)).toEqual(before);
   });
 
-  it('orders by rating, leaving unrated albums last', () => {
-    const rated = [
-      entry({ id: 'three', rating: 3 }),
-      entry({ id: 'none', rating: null }),
-      entry({ id: 'five', rating: 5 }),
-    ];
-    expect(sortDiscs(rated, { key: 'rating', direction: 'desc' }).map((d) => d.id)).toEqual([
-      'five',
-      'three',
-      'none',
-    ]);
-  });
-
   it('orders by colour through the spectrum with greys after', () => {
     const coloured = [
       entry({ id: 'grey', color: '#808080' }),
@@ -240,7 +226,6 @@ describe('query state', () => {
       },
       sort: { key: 'colour', direction: 'asc' },
       groupMatches: true,
-      wallMode: 'rating',
     };
     expect(parseQueryState(serialiseQueryState(state))).toEqual(state);
   });
@@ -250,6 +235,12 @@ describe('query state', () => {
     expect(state.sort).toEqual(DEFAULT_QUERY_STATE.sort);
     expect(state.filters.yearFrom).toBeNull();
     expect(state.filters.decades).toEqual([]);
+  });
+
+  it('ignores the parameters of the dropped rating feature in old links', () => {
+    const state = parseQueryState('?sort=rating-desc&wall=rating&q=air');
+    expect(state).toEqual({ ...DEFAULT_QUERY_STATE, query: 'air' });
+    expect(serialiseQueryState(state)).toBe('q=air');
   });
 });
 
@@ -292,7 +283,6 @@ const disc: Disc = {
     fetchedAt: '2026-01-01T00:00:00.000Z',
   },
   notes: null,
-  rating: 4,
   manualFields: [],
   addedAt: '2026-01-01T00:00:00.000Z',
 };

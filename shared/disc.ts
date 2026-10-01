@@ -56,6 +56,12 @@ export const OVERRIDABLE_FIELDS = [
 
 export const overridableFieldSchema = z.enum(OVERRIDABLE_FIELDS);
 
+/*
+ * Neither `discSchema` nor the index schema is `.strict()`, on purpose: stored
+ * documents written before ratings were dropped still carry a `rating` key, and
+ * Zod's default stripping is what lets them keep parsing. Make these strict
+ * only after rewriting every stored document.
+ */
 export const discSchema = z.object({
   /** Our own stable slug, e.g. `daft-punk-discovery-2001`. Used in URLs. */
   id: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'id must be a lowercase slug'),
@@ -105,14 +111,6 @@ export const discSchema = z.object({
   /** Free-form personal notes; the part no public database can provide. */
   notes: z.string().nullable(),
   /**
-   * The owner's rating, 1–5 stars, or null for unrated.
-   *
-   * Purely the owner's own judgement — never sourced from a provider, so it is
-   * deliberately absent from `OVERRIDABLE_FIELDS`. The wall can size covers by
-   * it, which is why it also travels in the collection index.
-   */
-  rating: z.number().int().min(1).max(5).nullable(),
-  /**
    * Fields the owner has set or corrected by hand.
    *
    * Re-syncing from MusicBrainz must never overwrite a field listed here. The
@@ -146,7 +144,6 @@ export const discSummarySchema = discSchema.pick({
   format: true,
   genres: true,
   addedAt: true,
-  rating: true,
 });
 
 export const collectionIndexSchema = z.object({

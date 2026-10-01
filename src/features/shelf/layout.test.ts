@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { indexAt, packMosaic, spanForRating, wallPlacement } from './layout';
+import { indexAt, packMosaic, rowCounter, spansFor, wallPlacement } from './layout';
 
 /** Marks every cell a placement covers, so overlaps and holes are visible. */
 function grid(spans: number[], columns: number) {
@@ -17,16 +17,6 @@ function grid(spans: number[], columns: number) {
   });
   return { cells, placements, rows };
 }
-
-describe('spanForRating', () => {
-  it('makes only four and five star albums large', () => {
-    expect([null, 1, 2, 3, 4, 5].map(spanForRating)).toEqual([1, 1, 1, 1, 2, 3]);
-  });
-
-  it('treats a missing rating as unrated', () => {
-    expect(spanForRating(undefined)).toBe(1);
-  });
-});
 
 describe('packMosaic', () => {
   it('lays an even wall out as a plain grid', () => {
@@ -91,30 +81,30 @@ describe('packMosaic', () => {
 });
 
 describe('wallPlacement', () => {
-  const ratings = Array.from({ length: 60 }, (_, i) => (i % 10 === 0 ? 5 : i % 4 === 0 ? 4 : null));
-
-  it('ignores ratings in the even arrangement', () => {
-    const wall = wallPlacement(ratings, 'even', 5);
+  it('lays every cover out as a single cell', () => {
+    const wall = wallPlacement(60, 5);
+    expect(wall.placements).toHaveLength(60);
     expect(wall.placements.every((p) => p.span === 1)).toBe(true);
-  });
-
-  it('sizes by rating in the rating arrangement', () => {
-    const wall = wallPlacement(ratings, 'rating', 5);
-    expect(wall.placements[0]?.span).toBe(3);
-    expect(wall.placements[4]?.span).toBe(2);
-    expect(wall.placements[1]?.span).toBe(1);
+    expect(wall.rows).toBe(12);
   });
 
   it('is exactly as many columns wide as asked, so it spans the screen', () => {
     for (const columns of [2, 4, 5, 8]) {
-      expect(wallPlacement(ratings, 'even', columns).columns).toBe(columns);
-      expect(wallPlacement(ratings, 'rating', columns).columns).toBe(columns);
+      expect(wallPlacement(60, columns).columns).toBe(columns);
     }
   });
+});
 
-  it('shrinks blocks wider than a narrow wall rather than overflowing it', () => {
-    const wall = wallPlacement(ratings, 'rating', 2);
-    expect(Math.max(...wall.placements.map((p) => p.column + p.span))).toBeLessThanOrEqual(2);
+describe('rowCounter', () => {
+  it('counts the rows of an even grid', () => {
+    const rows = rowCounter(spansFor(10));
+    expect(rows(4)).toBe(3);
+    expect(rows(5)).toBe(2);
+  });
+
+  it('packs a mosaic of mixed sizes to count its rows', () => {
+    const spans = [3, 1, 1, 1];
+    expect(rowCounter(spans)(4)).toBe(packMosaic(spans, 4).rows);
   });
 });
 

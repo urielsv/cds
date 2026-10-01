@@ -92,7 +92,7 @@ export function columnsAtScale(viewport: Pick<Viewport, 'width'>, scale: number)
  * than legible, not more columns than there are albums, and the re-flowed wall
  * is still at least a screen tall — zooming out further would leave background
  * below the last row. `rowsFor` gives the wall's height in rows at a count
- * (the rating mosaic's height depends on how its blocks pack). A collection too
+ * (a mosaic's height depends on how its blocks pack). A collection too
  * small to fill the screen at any count keeps the single largest one.
  */
 export function widthColumns(
@@ -132,8 +132,8 @@ export function initialColumnsWanted(viewport: Pick<Viewport, 'width'>): number 
  * zoomed all the way out the whole collection fills it: one disc is 1×1, and a
  * 150-disc collection on a portrait phone is about 8×19.
  *
- * This is the even arrangement. Arranging by rating packs blocks of different
- * sizes instead — see `layout.ts` — and hands the resulting cell counts to
+ * This is the even arrangement. A mosaic of blocks of different sizes is
+ * packed by `layout.ts` instead, which hands the resulting cell counts to
  * `gridLayoutOf`.
  */
 export function gridLayout(

@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react';
 
 import { Icon } from '@/components/Icon';
 import { REDUCED_TRANSITION, transition } from '@/motion/tokens';
-import { type Sort, type SortKey, type WallModeName } from '@shared/collection';
+import { type Sort, type SortKey } from '@shared/collection';
 
 const OPTIONS: {
   key: SortKey;
@@ -11,7 +11,6 @@ const OPTIONS: {
   /** Natural first direction. */ direction: Sort['direction'];
 }[] = [
   { key: 'added', label: 'Recently added', direction: 'desc' },
-  { key: 'rating', label: 'Rating', direction: 'desc' },
   { key: 'colour', label: 'Colour', direction: 'asc' },
   { key: 'artist', label: 'Artist', direction: 'asc' },
   { key: 'title', label: 'Title', direction: 'asc' },
@@ -22,8 +21,6 @@ const OPTIONS: {
 ];
 
 interface ArrangeMenuProps {
-  wallMode: WallModeName;
-  onWallModeChange: (mode: WallModeName) => void;
   sort: Sort;
   onSortChange: (sort: Sort) => void;
   groupMatches: boolean;
@@ -36,8 +33,6 @@ interface ArrangeMenuProps {
  * direction, which saves a separate control for the common case.
  */
 export function ArrangeMenu({
-  wallMode,
-  onWallModeChange,
   sort,
   onSortChange,
   groupMatches,
@@ -70,32 +65,6 @@ export function ArrangeMenu({
       exit={reduced ? { opacity: 0 } : { opacity: 0, y: 8, scale: 0.98 }}
       transition={reduced ? REDUCED_TRANSITION : transition('base', 'entrance')}
     >
-      <p className="popover__heading" id="size-heading">
-        Cover size
-      </p>
-      <div className="popover__segmented" role="radiogroup" aria-labelledby="size-heading">
-        {(
-          [
-            { mode: 'even', label: 'Even', hint: 'Every cover the same size' },
-            { mode: 'rating', label: 'By rating', hint: 'Your favourites drawn larger' },
-          ] as const
-        ).map((option) => (
-          <button
-            key={option.mode}
-            type="button"
-            role="radio"
-            aria-checked={wallMode === option.mode}
-            className={`popover__segment${wallMode === option.mode ? ' popover__segment--active' : ''}`}
-            onClick={() => {
-              onWallModeChange(option.mode);
-            }}
-          >
-            {option.label}
-            <small>{option.hint}</small>
-          </button>
-        ))}
-      </div>
-
       <p className="popover__heading" id="arrange-heading">
         Arrange by
       </p>

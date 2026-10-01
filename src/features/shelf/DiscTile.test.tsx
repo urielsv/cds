@@ -29,7 +29,6 @@ function makeDisc(overrides: Partial<DiscIndexEntry> = {}): DiscIndexEntry {
     },
     trackTitles: ['One More Time', 'Aerodynamic'],
     color: '#223344',
-    rating: null,
     ...overrides,
   };
 }
@@ -109,13 +108,6 @@ describe('DiscTile', () => {
     renderTile({ placement: { column: 0, row: 0, span: 3 } });
     expect(Number.parseFloat(screen.getByRole('button').style.width)).toBeGreaterThan(
       3 * TILE_SIZE - 1,
-    );
-  });
-
-  it('names its rating for screen readers', () => {
-    renderTile({ disc: makeDisc({ rating: 4 }) });
-    expect(screen.getByRole('button')).toHaveAccessibleName(
-      'Discovery by Daft Punk, 2001, rated 4 of 5',
     );
   });
 

@@ -284,8 +284,6 @@ function generateDisc(index: number, random: () => number): DiscIndexEntry {
     },
     trackTitles,
     color: cover.color,
-    // A spread of ratings so the rating arrangement has something to shape.
-    rating: random() < 0.55 ? 1 + Math.floor(random() * 5) : null,
   };
 }
 

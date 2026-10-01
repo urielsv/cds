@@ -11,7 +11,6 @@ import { FilterPanel } from '@/features/search/FilterPanel';
 import { FloatingBar } from '@/features/search/FloatingBar';
 import { Shelf, type ShelfHandle } from '@/features/shelf/Shelf';
 import { useDebouncedValue, useQueryState } from '@/hooks/useQueryState';
-import { api } from '@/lib/api';
 import { loadCollection } from '@/lib/collection';
 import { createDiscSearch } from '@/lib/search';
 import {
@@ -73,7 +72,7 @@ export function App() {
   const search = useMemo(() => createDiscSearch(discs), [discs]);
   const facets = useMemo(() => deriveFacets(discs), [discs]);
   const query = useDebouncedValue(queryState.query, SEARCH_DEBOUNCE_MS);
-  const { filters, sort, groupMatches, wallMode } = queryState;
+  const { filters, sort, groupMatches } = queryState;
   const filterCount = activeFilterCount(filters);
 
   /** Null when nothing is narrowing, so the wall shows every cover at full strength. */
@@ -152,31 +151,6 @@ export function App() {
     };
   }, [arrivedId]);
 
-  /**
-   * Rating a disc changes how large it is drawn, so the in-memory collection is
-   * updated as soon as the server confirms and the wall re-packs around it.
-   */
-  const handleRate = useCallback(
-    async (rating: number | null) => {
-      const id = openDisc?.id;
-      if (id === undefined) return;
-      const { entry } = await api<{ entry: DiscIndexEntry }>(
-        `/api/discs/${encodeURIComponent(id)}`,
-        { method: 'PATCH', body: JSON.stringify({ rating }) },
-      );
-      setLoad((previous) =>
-        previous.status === 'ready'
-          ? {
-              ...previous,
-              discs: previous.discs.map((disc) => (disc.id === entry.id ? entry : disc)),
-            }
-          : previous,
-      );
-      setOpenDisc((previous) => (previous?.id === entry.id ? entry : previous));
-    },
-    [openDisc],
-  );
-
   const clearNarrowing = useCallback(() => {
     updateQuery({ query: '', filters: EMPTY_FILTERS });
   }, [updateQuery]);
@@ -254,7 +228,6 @@ export function App() {
             ref={shelfRef}
             discs={ordered}
             matches={matches}
-            wallMode={wallMode}
             openDiscId={openDisc?.id ?? null}
             arrivedDiscId={arrivedId}
             onOpen={handleOpen}
@@ -318,10 +291,6 @@ export function App() {
         {overlay === 'arrange' && (
           <ArrangeMenu
             key="arrange"
-            wallMode={wallMode}
-            onWallModeChange={(mode) => {
-              updateQuery({ wallMode: mode });
-            }}
             sort={sort}
             onSortChange={(next) => {
               updateQuery({ sort: next });
@@ -363,7 +332,6 @@ export function App() {
           disc={openDisc}
           originRect={originRect}
           onClosed={handleClosed}
-          onRate={session.status === 'signed-in' ? handleRate : undefined}
         />
       )}
     </>

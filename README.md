@@ -12,8 +12,8 @@ from the [Cover Art Archive](https://coverartarchive.org).
 It is built as a UI/UX exercise first. The motion is the point: the intent is
 that moving through the collection feels like handling the physical objects.
 
-> **Status:** browsing, search, filters, arranging, rating and the
-> add-an-album flow work. Barcode scanning with the camera, and editing or
+> **Status:** browsing, search, filters, arranging and the add-an-album flow
+> work. Barcode scanning with the camera, and editing or
 > deleting a disc, are next — tracked in
 > [`.kiro/specs/cd-collection`](.kiro/specs/cd-collection).
 >
@@ -37,11 +37,6 @@ left at the screen edge. A flick throws the wall towards the cell it was aimed
 at and arrives in about 200ms rather than drifting to a halt: the grid clicks
 into place instead of coasting.
 
-Covers can be **all the same size, or sized by rating**. Rate an album 1–5 stars
-from its detail view, switch the wall to “By rating”, and your five-star albums
-are drawn three cells wide and four-star albums two, with the rest packed in
-around them — a wall that shows at a glance what you actually care about.
-
 A floating glass bar at the bottom holds search, filters and arrangement.
 Searching and filtering never hide anything: covers that do not match are washed
 out in place, so the collection keeps its shape and matches read as a pattern
@@ -52,7 +47,7 @@ track titles first, then label, genre, format, country (code or name), release
 year, decade and barcode. Words narrow rather than replace, so “daft discovery”
 finds the album, “cerati 1999” finds that year's pressing, and “argentina trip
 hop” works too. Filters cover decade, release year range, genre, artist, label,
-country and format; the wall can be arranged by date added, rating, colour,
+country and format; the wall can be arranged by date added, colour,
 artist, title, year, genre, label or country. The whole collection index is
 fetched once and filtered entirely on the device, and the current view lives in
 the URL so it can be shared.
@@ -138,17 +133,13 @@ release group, picks the earliest CD pressing that has front cover art, and maps
 it with the same `shared/` code the real ingest uses, so the demo exercises the
 real data model rather than a parallel one.
 
-Two things about it are deliberately not production behaviour, and both are
-demo-only:
-
-- **The artwork is referenced at the Cover Art Archive rather than copied.** The
-  images belong to their owners and this repository is public, so the demo
-  hotlinks them; a real collection mirrors artwork into its own Blob storage at
-  ingest, as the [steering notes](.kiro/steering/api-integration.md) require.
-  The visible cost is speed — archive.org can take a second per cover, which is
-  why the wall warms the covers around the viewport in advance.
-- **The ratings are synthetic**, derived from each disc's id. They exist so the
-  arrange-by-rating wall has something to shape; nobody has actually rated these.
+One thing about it is deliberately not production behaviour, and it is
+demo-only: **the artwork is referenced at the Cover Art Archive rather than
+copied.** The images belong to their owners and this repository is public, so
+the demo hotlinks them; a real collection mirrors artwork into its own Blob
+storage at ingest, as the [steering notes](.kiro/steering/api-integration.md)
+require. The visible cost is speed — archive.org can take a second per cover,
+which is why the wall warms the covers around the viewport in advance.
 
 Re-running the seed is safe and mostly offline: MusicBrainz responses and cover
 colours are cached under `node_modules/.cache/seed-demo`.

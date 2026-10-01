@@ -190,12 +190,8 @@ export const DiscTile = memo(function DiscTile({
       )}
 
       {/* Hover caption for pointer users. Decorative: the button's accessible
-          name already carries the same text. On a cover the owner has rated
-          highly — and therefore made large — the stars sit alongside it. */}
+          name already carries the same text. */}
       <span className="disc-tile__caption" aria-hidden="true">
-        {placement.span > 1 && (disc.rating ?? 0) > 0 && (
-          <span className="disc-tile__stars">{'★'.repeat(disc.rating ?? 0)}</span>
-        )}
         <span className="disc-tile__caption-title">{disc.title}</span>
         <span className="disc-tile__caption-artist">
           {disc.artist}

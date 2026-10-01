@@ -353,8 +353,6 @@ export function mapRelease(release: MbRelease, options: MapReleaseOptions): Disc
       fetchedAt: options.now,
     },
     notes: blankToNull(options.notes),
-    // The owner's own judgement; never sourced from a provider.
-    rating: null,
     manualFields: [],
     addedAt: options.now,
   });

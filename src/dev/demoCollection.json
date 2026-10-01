@@ -12,7 +12,6 @@
       "format": "CD",
       "genres": ["house", "electronic", "french house", "progressive house", "dance"],
       "addedAt": "2026-09-29T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/30e45d86-707d-4042-9df5-93724557aadb/front-250",
         "width": 250,
@@ -50,7 +49,6 @@
       "format": "CD",
       "genres": ["electronic", "house", "french house"],
       "addedAt": "2026-09-24T22:55:18.603Z",
-      "rating": 1,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/7c6f8d63-edf7-4d99-b17e-2ab54e37bd56/front-250",
         "width": 250,
@@ -90,7 +88,6 @@
       "format": "CD",
       "genres": ["electronic", "disco", "funk", "electro", "french house"],
       "addedAt": "2026-09-19T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/158f94bf-d77f-4055-afa4-8fc7e0b2a004/front-250",
         "width": 250,
@@ -127,7 +124,6 @@
       "format": "CD",
       "genres": ["alternative rock", "art rock", "rock", "experimental", "post-britpop"],
       "addedAt": "2026-09-14T22:55:18.603Z",
-      "rating": 4,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/3c8cbdc8-555f-3987-8f03-6baf9488d1b0/front-250",
         "width": 250,
@@ -163,7 +159,6 @@
       "format": "MiniDisc",
       "genres": ["electronic", "art rock", "experimental rock", "alternative rock", "post-rock"],
       "addedAt": "2026-09-09T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/8eeb86cf-7df8-34b4-accf-67f224a93dad/front-250",
         "width": 250,
@@ -197,7 +192,6 @@
       "format": "12\" Vinyl + CD + Enhanced CD",
       "genres": ["alternative rock", "rock", "art rock", "electronic", "indie rock"],
       "addedAt": "2026-09-04T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/ea92a194-2d60-35c7-9d56-0e1dba20cd45/front-250",
         "width": 250,
@@ -249,7 +243,6 @@
       "format": "CD-R",
       "genres": ["alternative rock", "rock", "britpop", "post-britpop", "psychedelic"],
       "addedAt": "2026-08-30T22:55:18.603Z",
-      "rating": 5,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/66336036-055a-4b7a-9b4b-ee4ca1b57c92/front-250",
         "width": 250,
@@ -287,7 +280,6 @@
       "format": "CD",
       "genres": ["experimental", "post-rock", "rock", "ambient", "progressive"],
       "addedAt": "2026-08-25T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/743f2ede-a911-4fc9-9d78-c88c2c2fb429/front-250",
         "width": 250,
@@ -321,7 +313,6 @@
       "format": "CD",
       "genres": ["post-rock", "ambient", "dream pop", "rock"],
       "addedAt": "2026-08-20T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/5770cb37-f0c5-3f7f-b66c-d40a0ef473a0/front-250",
         "width": 250,
@@ -356,7 +347,6 @@
       "format": "CD",
       "genres": ["idm"],
       "addedAt": "2026-08-15T22:55:18.603Z",
-      "rating": 4,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/c77121b6-4552-3127-9f19-685a7f8f090f/front-250",
         "width": 250,
@@ -397,7 +387,6 @@
       "format": "CD",
       "genres": ["idm", "electronic", "ambient", "downtempo"],
       "addedAt": "2026-08-10T22:55:18.603Z",
-      "rating": 3,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/5da8e677-bec2-471f-82ec-5b51133cd0c7/front-250",
         "width": 250,
@@ -445,7 +434,6 @@
       "format": "CD",
       "genres": ["downtempo", "electronic", "leftfield", "trip hop"],
       "addedAt": "2026-08-05T22:55:18.603Z",
-      "rating": 4,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/2130a763-a5b7-4452-b695-008e4a15d0b3/front-250",
         "width": 250,
@@ -480,7 +468,6 @@
       "format": "CD",
       "genres": ["acid jazz", "downtempo", "dub", "electronic", "funk"],
       "addedAt": "2026-07-31T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/1c23ebd1-b28b-3ee2-b7e7-b6e7cc225fd8/front-250",
         "width": 250,
@@ -513,7 +500,6 @@
       "format": "CD",
       "genres": ["trip hop", "electronic"],
       "addedAt": "2026-07-26T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/00163fb1-5ab7-4fec-b0dd-a915e2722340/front-250",
         "width": 250,
@@ -548,7 +534,6 @@
       "format": "CD",
       "genres": ["trip hop", "electronic", "downtempo", "experimental rock", "folk rock"],
       "addedAt": "2026-07-21T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/064fa38d-810d-4a8a-a6a4-55d6fd1da34b/front-250",
         "width": 250,
@@ -583,7 +568,6 @@
       "format": "CD",
       "genres": ["ambient techno", "ambient", "electronic", "idm"],
       "addedAt": "2026-07-16T22:55:18.603Z",
-      "rating": 2,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/91b48d23-7a5e-47d8-8484-cd06d54224ce/front-250",
         "width": 250,
@@ -620,7 +604,6 @@
       "format": "CD",
       "genres": ["idm", "drill and bass", "electronic", "experimental"],
       "addedAt": "2026-07-11T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/6a264c41-d41b-4fd2-ae91-b3681a056823/front-250",
         "width": 250,
@@ -654,7 +637,6 @@
       "format": "CD",
       "genres": ["electronic", "downtempo", "art pop", "trip hop", "glitch pop"],
       "addedAt": "2026-07-06T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/2a7ff1ca-aab3-4e09-93be-6c3eadbf90e2/front-250",
         "width": 250,
@@ -688,7 +670,6 @@
       "format": "CD",
       "genres": ["electronic", "art pop", "house", "dance-pop", "experimental"],
       "addedAt": "2026-07-01T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/00b86937-7e64-43fd-b9b4-1e71f626e47c/front-250",
         "width": 250,
@@ -723,7 +704,6 @@
       "format": "CD",
       "genres": ["electronic", "art pop", "ambient", "glitch pop", "idm"],
       "addedAt": "2026-06-26T22:55:18.603Z",
-      "rating": 5,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/1c526feb-ce6b-49c6-9dd4-5d3b523cec36/front-250",
         "width": 250,
@@ -766,7 +746,6 @@
       "format": "CD",
       "genres": ["big beat", "electronic", "breakbeat", "electronica", "techno"],
       "addedAt": "2026-06-21T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/96232e23-5cfa-43a4-95e2-cf6a9e4f919f/front-250",
         "width": 250,
@@ -801,7 +780,6 @@
       "format": "CD",
       "genres": ["electronic"],
       "addedAt": "2026-06-16T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/0ba087fc-7cee-46f5-874f-9e92ab43408e/front-250",
         "width": 250,
@@ -835,7 +813,6 @@
       "format": "CD",
       "genres": ["post-rock", "rock"],
       "addedAt": "2026-06-11T22:55:18.603Z",
-      "rating": 2,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/02cfd10b-5070-4414-8033-f8b75dc1e538/front-250",
         "width": 250,
@@ -869,7 +846,6 @@
       "format": "CD",
       "genres": ["dubstep", "future garage", "electronic"],
       "addedAt": "2026-06-06T22:55:18.603Z",
-      "rating": 3,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/513f30f0-36a4-4c77-b645-ded21cdf6e08/front-250",
         "width": 250,
@@ -906,7 +882,6 @@
       "format": "CD",
       "genres": ["downtempo", "electronic", "leftfield"],
       "addedAt": "2026-06-01T22:55:18.603Z",
-      "rating": 4,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/1b0eebe9-c639-367a-bb7b-80bcce5e1d56/front-250",
         "width": 250,
@@ -940,7 +915,6 @@
       "format": "CD",
       "genres": ["electronic"],
       "addedAt": "2026-05-27T22:55:18.603Z",
-      "rating": 4,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/0c727a84-e19b-3217-b47c-2228c786d46a/front-250",
         "width": 250,
@@ -973,7 +947,6 @@
       "format": "CD",
       "genres": ["ambient", "downtempo", "electronic"],
       "addedAt": "2026-05-22T22:55:18.603Z",
-      "rating": 4,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/5cfd09c6-d8df-4a03-9811-907b2ffadbda/front-250",
         "width": 250,
@@ -1010,7 +983,6 @@
       "format": "CD",
       "genres": ["electropop"],
       "addedAt": "2026-05-17T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/0fcd00fb-f126-42da-974c-e2731bd6fd2a/front-250",
         "width": 250,
@@ -1045,7 +1017,6 @@
       "format": "CD",
       "genres": ["rock", "experimental", "progressive rock", "psychedelic", "psychedelic rock"],
       "addedAt": "2026-05-12T22:55:18.603Z",
-      "rating": 4,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/7f6d3088-837d-495e-905f-be5c70ac2d82/front-250",
         "width": 250,
@@ -1078,7 +1049,6 @@
       "format": "CD",
       "genres": ["progressive rock", "art rock", "psychedelic rock", "rock", "progressive"],
       "addedAt": "2026-05-07T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/1786dd7d-169a-485f-b9f2-1ffd3763f6b5/front-250",
         "width": 250,
@@ -1104,7 +1074,6 @@
       "format": "CD",
       "genres": ["progressive rock", "art rock", "rock", "progressive", "psychedelic rock"],
       "addedAt": "2026-05-02T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/9a6bf48c-4d95-4f8c-bfdc-25e5a619082c/front-250",
         "width": 250,
@@ -1133,7 +1102,6 @@
       "format": "CD",
       "genres": ["post-rock", "art rock"],
       "addedAt": "2026-04-27T22:55:18.603Z",
-      "rating": 3,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/aa5eda82-6d4b-4629-b92b-a1d7e730ce66/front-250",
         "width": 250,
@@ -1156,7 +1124,6 @@
       "format": "CD",
       "genres": ["dream pop", "downtempo", "ethereal wave", "rock", "shoegaze"],
       "addedAt": "2026-04-22T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/f96df5d2-4ef9-3ef4-a4be-c743802b6f1e/front-250",
         "width": 250,
@@ -1190,7 +1157,6 @@
       "format": "CD",
       "genres": ["shoegaze", "noise pop", "dream pop", "rock", "alternative rock"],
       "addedAt": "2026-04-17T22:55:18.603Z",
-      "rating": 4,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/68f5b261-dcea-4506-b400-90efc4c60254/front-250",
         "width": 250,
@@ -1225,7 +1191,6 @@
       "format": "CD",
       "genres": ["shoegaze", "dream pop"],
       "addedAt": "2026-04-12T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/12694708-e437-4874-a5d4-c1ca0ec46313/front-250",
         "width": 250,
@@ -1259,7 +1224,6 @@
       "format": "CD",
       "genres": ["art pop", "easy listening", "post-rock", "space rock"],
       "addedAt": "2026-04-07T22:55:18.603Z",
-      "rating": 3,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/5ba42b7a-df9f-4282-b58b-bc780329169f/front-250",
         "width": 250,
@@ -1293,7 +1257,6 @@
       "format": "CD",
       "genres": ["dream pop", "electronic", "indie rock", "leftfield", "pop"],
       "addedAt": "2026-04-02T22:55:18.603Z",
-      "rating": 2,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/111349e0-5427-4dfb-b419-e2e689861ebf/front-250",
         "width": 250,
@@ -1331,7 +1294,6 @@
       "format": "CD",
       "genres": ["idm", "ambient techno", "ambient"],
       "addedAt": "2026-03-28T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/3f7306e5-7f9a-3bb2-9fda-d5d4adb7d744/front-250",
         "width": 250,
@@ -1366,7 +1328,6 @@
       "format": "CD",
       "genres": ["electronic", "instrumental hip hop"],
       "addedAt": "2026-03-23T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/85cf03da-0ff3-3265-bb19-75f87765037d/front-250",
         "width": 250,
@@ -1414,7 +1375,6 @@
         "political hip hop"
       ],
       "addedAt": "2026-03-18T22:55:18.603Z",
-      "rating": 4,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/8a426098-714d-4897-b180-dfd8f0a70fc9/front-250",
         "width": 250,
@@ -1454,7 +1414,6 @@
       "format": "CD",
       "genres": ["hip hop", "conscious hip hop", "west coast hip hop"],
       "addedAt": "2026-03-13T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/8b85a562-71ce-486e-8536-34c5dca0f54e/front-250",
         "width": 250,
@@ -1499,7 +1458,6 @@
         "jazz rap"
       ],
       "addedAt": "2026-03-08T22:55:18.603Z",
-      "rating": 5,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/4187769c-7da1-48c6-90ff-b198fdead587/front-250",
         "width": 250,
@@ -1545,7 +1503,6 @@
       "format": "CD",
       "genres": ["instrumental hip hop", "hip hop", "instrumental"],
       "addedAt": "2026-03-03T22:55:18.603Z",
-      "rating": 5,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/6b936443-92d5-4177-af1f-2db55eccedf9/front-250",
         "width": 250,
@@ -1600,7 +1557,6 @@
       "format": "CD",
       "genres": ["downtempo", "electronic", "trip hop"],
       "addedAt": "2026-02-26T22:55:18.603Z",
-      "rating": 4,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/d80db34b-58e5-4102-abb1-5c7ede059894/front-250",
         "width": 250,
@@ -1639,7 +1595,6 @@
       "format": "CD",
       "genres": ["pop rock", "rock"],
       "addedAt": "2026-02-21T22:55:18.603Z",
-      "rating": 3,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/5d8477d7-1d62-4414-8936-a4b22983db30/front-250",
         "width": 250,
@@ -1676,7 +1631,6 @@
       "format": "CD",
       "genres": ["electronic", "pop", "pop rock", "rock"],
       "addedAt": "2026-02-16T22:55:18.603Z",
-      "rating": 4,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/b78fc5a2-d3ba-4d86-9c22-08999ff1df34/front-250",
         "width": 250,
@@ -1717,7 +1671,6 @@
       "format": "CD",
       "genres": ["alternative rock", "pop rock", "rock"],
       "addedAt": "2026-02-11T22:55:18.603Z",
-      "rating": 3,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/43500162-0628-431f-90e4-8417eec3b6b5/front-250",
         "width": 250,
@@ -1751,7 +1704,6 @@
       "format": "CD",
       "genres": ["rock"],
       "addedAt": "2026-02-06T22:55:18.603Z",
-      "rating": 5,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/6a956ee4-0494-4ac1-86fc-33b7085ba598/front-250",
         "width": 250,
@@ -1783,7 +1735,6 @@
       "format": "CD",
       "genres": ["pop rock", "rock"],
       "addedAt": "2026-02-01T22:55:18.603Z",
-      "rating": 5,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/4930d57d-067c-4cfe-9dc8-e137ffb8492d/front-250",
         "width": 250,
@@ -1816,7 +1767,6 @@
       "format": "CD",
       "genres": ["shoegaze", "alternative rock", "pop rock", "rock"],
       "addedAt": "2026-01-27T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/21e0b273-10cd-486a-bda2-796299debb4c/front-250",
         "width": 250,
@@ -1852,7 +1802,6 @@
       "format": "CD",
       "genres": ["rock", "alternative rock", "pop rock"],
       "addedAt": "2026-01-22T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/b14afa6b-484d-49b8-8e39-c7696716fe41/front-250",
         "width": 250,
@@ -1888,7 +1837,6 @@
       "format": "CD",
       "genres": ["pop rock", "rock"],
       "addedAt": "2026-01-17T22:55:18.603Z",
-      "rating": 4,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/d29c2b2d-7116-4f37-ad9f-acb582bd9860/front-250",
         "width": 250,
@@ -1922,7 +1870,6 @@
       "format": "CD",
       "genres": ["latin"],
       "addedAt": "2026-01-12T22:55:18.603Z",
-      "rating": 4,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/608382a2-12e2-44a5-976f-1ef8fe4dfcf5/front-250",
         "width": 250,
@@ -1963,7 +1910,6 @@
       "format": "CD",
       "genres": ["latin", "rock"],
       "addedAt": "2026-01-07T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/e69954f7-29b2-4488-b97d-6571d9ee35d1/front-250",
         "width": 250,
@@ -2003,7 +1949,6 @@
       "format": "CD",
       "genres": ["alternative rock", "rock"],
       "addedAt": "2026-01-02T22:55:18.603Z",
-      "rating": 5,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/daa562ad-861b-4dd5-b315-552773a7afa2/front-250",
         "width": 250,
@@ -2039,7 +1984,6 @@
       "format": "CD",
       "genres": ["alternative rock", "latin", "rock"],
       "addedAt": "2025-12-28T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/7fd51c7b-1f77-4878-9667-b32883d030b9/front-250",
         "width": 250,
@@ -2077,7 +2021,6 @@
       "format": "CD",
       "genres": ["folk rock", "rock"],
       "addedAt": "2025-12-23T22:55:18.603Z",
-      "rating": 2,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/b219bd13-4139-477a-8c94-120f4a561ca0/front-250",
         "width": 250,
@@ -2112,7 +2055,6 @@
       "format": "CD",
       "genres": ["alternative rock", "dream pop", "rock"],
       "addedAt": "2025-12-18T22:55:18.603Z",
-      "rating": 3,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/e8cae320-c8d2-4c32-b4e4-f93f464aaa67/front-250",
         "width": 250,
@@ -2151,7 +2093,6 @@
       "format": "CD",
       "genres": ["new wave"],
       "addedAt": "2025-12-13T22:55:18.603Z",
-      "rating": 4,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/64b9b1f4-27b5-49ad-8e8f-d04db5bbc60b/front-250",
         "width": 250,
@@ -2184,7 +2125,6 @@
       "format": "CD",
       "genres": ["rock"],
       "addedAt": "2025-12-08T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/2328bbb1-b66f-495c-90f1-f6d02ec71321/front-250",
         "width": 250,
@@ -2219,7 +2159,6 @@
       "format": "CD",
       "genres": ["rock"],
       "addedAt": "2025-11-28T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/356ce23b-6f63-4389-ad2b-437ecbd84119/front-250",
         "width": 250,
@@ -2251,7 +2190,6 @@
       "format": "CD",
       "genres": ["post-punk", "rock"],
       "addedAt": "2025-11-23T22:55:18.603Z",
-      "rating": 2,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/2afdb85c-738c-4a68-9d46-ffe32c138002/front-250",
         "width": 250,
@@ -2284,7 +2222,6 @@
       "format": "CD",
       "genres": ["rock"],
       "addedAt": "2025-11-18T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/5d1e9c14-c835-4be5-9b90-cbef0b3e0567/front-250",
         "width": 250,
@@ -2319,7 +2256,6 @@
       "format": "CD",
       "genres": ["latin", "latin pop", "latin rock", "pop", "pop rock"],
       "addedAt": "2025-11-13T22:55:18.603Z",
-      "rating": 4,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/3b417cc0-878d-49ae-93e2-b49e7f301ef2/front-250",
         "width": 250,
@@ -2357,7 +2293,6 @@
       "format": "CD",
       "genres": ["pop rock", "rock"],
       "addedAt": "2025-11-08T22:55:18.603Z",
-      "rating": 5,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/17497e82-f017-4d4b-a182-ec646a0c55da/front-250",
         "width": 250,
@@ -2390,7 +2325,6 @@
       "format": "CD",
       "genres": ["hard rock", "rock"],
       "addedAt": "2025-10-29T22:55:18.603Z",
-      "rating": 5,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/6c636a92-d637-4017-8f22-da66f519f865/front-250",
         "width": 250,
@@ -2428,7 +2362,6 @@
       "format": "CD",
       "genres": ["alternative rock", "latin", "post-punk", "reggae", "rock"],
       "addedAt": "2025-10-24T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/36482b46-6b61-4702-ba68-6cf920f4cb7f/front-250",
         "width": 250,
@@ -2462,7 +2395,6 @@
       "format": "CD",
       "genres": ["electronic", "jazz", "latin", "pop", "rock"],
       "addedAt": "2025-10-19T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/a364a004-4100-4b1d-82d6-2a9fb7f0e430/front-250",
         "width": 250,
@@ -2494,7 +2426,6 @@
       "format": "CD",
       "genres": [],
       "addedAt": "2025-10-14T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/c5410559-e025-4b06-ab08-cbbfa2bd0052/front-250",
         "width": 250,
@@ -2555,7 +2486,6 @@
       "format": "CD",
       "genres": ["rock"],
       "addedAt": "2025-10-09T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/51c98491-4c9c-4153-b82d-801c098283bb/front-250",
         "width": 250,
@@ -2594,7 +2524,6 @@
       "format": "CD",
       "genres": ["latin rock", "rock"],
       "addedAt": "2025-10-04T22:55:18.603Z",
-      "rating": 5,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/8ce2af42-dca0-438b-8eb9-41aa153419fb/front-250",
         "width": 250,
@@ -2630,7 +2559,6 @@
       "format": "CD",
       "genres": ["alternative rock", "latin"],
       "addedAt": "2025-09-29T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/c07c0e12-e8e4-416d-bad2-6458aee6c0d8/front-250",
         "width": 250,
@@ -2674,7 +2602,6 @@
       "format": "CD",
       "genres": ["rock"],
       "addedAt": "2025-09-24T22:55:18.603Z",
-      "rating": 3,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/63a47649-4f0d-38a7-91b8-e9ad5f7c2b5b/front-250",
         "width": 250,
@@ -2712,7 +2639,6 @@
       "format": "CD",
       "genres": ["latin pop", "latin rock"],
       "addedAt": "2025-09-19T22:55:18.603Z",
-      "rating": 3,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/2933dd9f-de3a-465a-97c5-cc3017b6325b/front-250",
         "width": 250,
@@ -2752,7 +2678,6 @@
       "format": "CD",
       "genres": ["electrotango", "tango"],
       "addedAt": "2025-09-14T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/393515a5-37dd-40c8-93a4-83dca761f652/front-250",
         "width": 250,
@@ -2792,7 +2717,6 @@
       "format": "CD",
       "genres": ["electronica", "tango", "electronic", "house"],
       "addedAt": "2025-09-09T22:55:18.603Z",
-      "rating": 4,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/18122e3c-c5d9-40e5-a88d-636aa9e95091/front-250",
         "width": 250,
@@ -2826,7 +2750,6 @@
       "format": "CD",
       "genres": ["latin"],
       "addedAt": "2025-09-04T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/e19044b5-7d47-424f-86de-16402806f654/front-250",
         "width": 250,
@@ -2867,7 +2790,6 @@
       "format": "CD",
       "genres": ["pop rock", "rock"],
       "addedAt": "2025-08-25T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/6bb3793b-f991-378e-9bff-0bd3117f2298/front-250",
         "width": 250,
@@ -2908,7 +2830,6 @@
       "format": "CD",
       "genres": ["rock", "psychedelic rock", "pop", "pop rock", "psychedelic"],
       "addedAt": "2025-08-20T22:55:18.603Z",
-      "rating": 4,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/3aaaeb65-83cc-4348-88b8-4ebf3eea25c8/front-250",
         "width": 250,
@@ -2946,7 +2867,6 @@
       "format": "CD",
       "genres": ["rock", "psychedelic rock", "baroque pop", "classic rock", "pop"],
       "addedAt": "2025-08-15T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/aacc5091-c9b6-4a49-b7c3-87fffebfaefb/front-250",
         "width": 250,
@@ -2983,7 +2903,6 @@
       "format": "CD",
       "genres": ["rock", "folk rock", "pop rock", "pop", "british rhythm & blues"],
       "addedAt": "2025-08-10T22:55:18.603Z",
-      "rating": 3,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/74d0e54b-62ad-4309-892b-26582a7ea769/front-250",
         "width": 250,
@@ -3021,7 +2940,6 @@
       "format": "CD",
       "genres": ["rock", "blues rock", "hard rock", "country rock", "blues"],
       "addedAt": "2025-08-05T22:55:18.603Z",
-      "rating": 2,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/19497421-341d-3b79-b3c1-3f09df947e76/front-250",
         "width": 250,
@@ -3055,7 +2973,6 @@
       "format": "CD",
       "genres": ["blues rock", "rock", "hard rock", "classic rock", "country blues"],
       "addedAt": "2025-07-31T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/499485cb-dac1-4741-bfcc-e6b218c50029/front-250",
         "width": 250,
@@ -3088,7 +3005,6 @@
       "format": "CD",
       "genres": ["hard rock", "rock", "blues rock", "classic rock", "arena rock"],
       "addedAt": "2025-07-26T22:55:18.603Z",
-      "rating": 4,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/2a73b5f2-f680-4c3b-902f-7e395dece103/front-250",
         "width": 250,
@@ -3120,7 +3036,6 @@
       "format": "CD",
       "genres": ["rock", "hard rock", "blues rock", "classic rock", "folk rock"],
       "addedAt": "2025-07-21T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/0aeb7173-5c47-415d-b908-f1514860de45/front-250",
         "width": 250,
@@ -3159,7 +3074,6 @@
       "format": "CD",
       "genres": ["rock", "glam rock", "pop rock", "art rock", "classic rock"],
       "addedAt": "2025-07-16T22:55:18.603Z",
-      "rating": 3,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/3876ca31-e41f-3392-8ea6-759801538f2b/front-250",
         "width": 250,
@@ -3194,7 +3108,6 @@
       "format": "CD",
       "genres": ["art rock", "ambient", "art pop", "electronic", "krautrock"],
       "addedAt": "2025-07-11T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/2e6cec99-242e-449c-8d3b-759ed09e4a3d/front-250",
         "width": 250,
@@ -3229,7 +3142,6 @@
       "format": "CD",
       "genres": ["hard rock", "rock", "art rock", "glam rock", "baroque pop"],
       "addedAt": "2025-07-01T22:55:18.603Z",
-      "rating": 1,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/18677378-dfb9-40f5-bbb0-a492e4dc9906/front-250",
         "width": 250,
@@ -3265,7 +3177,6 @@
       "format": "CD",
       "genres": ["rock", "pop rock", "soft rock", "blues", "folk pop"],
       "addedAt": "2025-06-26T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/89c1282b-257a-4a17-a870-433ce249f504/front-250",
         "width": 250,
@@ -3300,7 +3211,6 @@
       "format": "CD",
       "genres": ["art rock", "experimental rock", "rock", "psychedelic rock", "garage rock"],
       "addedAt": "2025-06-21T22:55:18.603Z",
-      "rating": 3,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/1bba876e-15b5-4475-a6d9-e025568251bc/front-250",
         "width": 250,
@@ -3335,7 +3245,6 @@
       "format": "CD",
       "genres": ["post-punk", "new wave", "punk", "punk rock", "reggae"],
       "addedAt": "2025-06-16T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/37b55dcd-194d-4d67-bb00-356fa69292b1/front-250",
         "width": 250,
@@ -3378,7 +3287,6 @@
       "format": "CD",
       "genres": ["post-punk", "gothic rock", "rock", "new wave"],
       "addedAt": "2025-06-11T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/3dd3e849-5830-429a-ac81-75054fe1d720/front-250",
         "width": 250,
@@ -3412,7 +3320,6 @@
       "format": "CD",
       "genres": ["post-punk", "gothic rock", "new wave", "rock"],
       "addedAt": "2025-06-06T22:55:18.603Z",
-      "rating": 4,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/b259f0cb-c9ef-4f35-9d2b-f092874672dc/front-250",
         "width": 250,
@@ -3445,7 +3352,6 @@
       "format": "CD",
       "genres": ["new wave", "post-punk", "synth-pop", "pop"],
       "addedAt": "2025-06-01T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/5fc810b6-0865-402a-a8a8-2f8a931d418b/front-250",
         "width": 250,
@@ -3477,7 +3383,6 @@
       "format": "CD",
       "genres": ["gothic rock", "alternative rock", "post-punk", "new wave", "dream pop"],
       "addedAt": "2025-05-27T22:55:18.603Z",
-      "rating": 4,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/0d3d0c6d-c824-4f2c-98e5-5bbeda8f289d/front-250",
         "width": 250,
@@ -3513,7 +3418,6 @@
       "format": "CD",
       "genres": ["jangle pop", "indie pop", "indie rock", "post-punk"],
       "addedAt": "2025-05-22T22:55:18.603Z",
-      "rating": 3,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/78ac78d7-1867-47f6-b2ec-2ed15d588ce2/front-250",
         "width": 250,
@@ -3547,7 +3451,6 @@
       "format": "CD",
       "genres": ["synth-pop", "electronic", "alternative dance", "rock"],
       "addedAt": "2025-05-17T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/0644af17-471f-3736-830c-888b3205c009/front-250",
         "width": 250,
@@ -3580,7 +3483,6 @@
       "format": "CD",
       "genres": ["new wave", "post-punk", "rock", "electronic"],
       "addedAt": "2025-05-12T22:55:18.603Z",
-      "rating": 4,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/7953fbfc-070e-448b-8ac7-66394e394629/front-250",
         "width": 250,
@@ -3612,7 +3514,6 @@
       "format": "CD",
       "genres": ["ambient", "electronic"],
       "addedAt": "2025-04-27T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/e57ebf96-6e41-4742-ba7d-af0a4f2bdea9/front-250",
         "width": 250,
@@ -3635,7 +3536,6 @@
       "format": "CD",
       "genres": ["grunge", "alternative rock", "rock", "punk rock"],
       "addedAt": "2025-04-22T22:55:18.603Z",
-      "rating": 4,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/347666eb-86f7-488a-a427-895f6f7ac203/front-250",
         "width": 250,
@@ -3671,7 +3571,6 @@
       "format": "CD",
       "genres": ["grunge"],
       "addedAt": "2025-04-17T22:55:18.603Z",
-      "rating": 4,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/18d4e9b4-9247-4b44-914a-8ddec3502103/front-250",
         "width": 250,
@@ -3707,7 +3606,6 @@
       "format": "CD",
       "genres": ["grunge", "alternative rock", "rock", "hard rock"],
       "addedAt": "2025-04-12T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/5c5d3332-1618-39bd-930a-5ca332ce0dbc/front-250",
         "width": 250,
@@ -3742,7 +3640,6 @@
       "format": "CD",
       "genres": ["alternative rock", "alternative metal", "grunge", "rock"],
       "addedAt": "2025-04-07T22:55:18.603Z",
-      "rating": 4,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/8fc75fbf-0651-4f13-8624-492bc84d2208/front-250",
         "width": 250,
@@ -3781,7 +3678,6 @@
       "format": "CD",
       "genres": ["alternative rock", "indie rock", "rock"],
       "addedAt": "2025-04-02T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/835ccb2e-1f9c-40a8-a6db-1700ffc18da9/front-250",
         "width": 250,
@@ -3820,7 +3716,6 @@
       "format": "CD",
       "genres": ["alternative rock", "rock", "noise rock", "experimental rock", "post-punk"],
       "addedAt": "2025-03-28T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/f7fe2390-a735-47d6-a000-d5e8173cd9b3/front-250",
         "width": 250,
@@ -3856,7 +3751,6 @@
       "format": "CD",
       "genres": ["alternative rock", "rock", "pop rock", "acoustic rock", "jangle pop"],
       "addedAt": "2025-03-23T22:55:18.603Z",
-      "rating": 3,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/264c5340-c5b1-4ad9-b2c2-ba9c0c725ff9/front-250",
         "width": 250,
@@ -3892,7 +3786,6 @@
       "format": "CD",
       "genres": ["rock", "pop rock", "alternative rock", "post-punk", "blues"],
       "addedAt": "2025-03-18T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/026312fe-cec5-3ea8-9408-3ebc665b6985/front-250",
         "width": 250,
@@ -3927,7 +3820,6 @@
       "format": "CD",
       "genres": ["rock", "pop rock", "alternative rock", "alternative dance", "dance-rock"],
       "addedAt": "2025-03-13T22:55:18.603Z",
-      "rating": 3,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/1ad164a7-3880-4e18-a00b-90e2c76c3d72/front-250",
         "width": 250,
@@ -3963,7 +3855,6 @@
       "format": "CD",
       "genres": ["alternative rock", "britpop", "rock", "pop", "hard rock"],
       "addedAt": "2025-03-08T22:55:18.603Z",
-      "rating": 4,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/610b4366-871e-4f16-8d84-0d86be49f93f/front-250",
         "width": 250,
@@ -3999,7 +3890,6 @@
       "format": "CD",
       "genres": ["britpop", "rock", "alternative rock", "indie rock"],
       "addedAt": "2025-03-03T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/82333afb-569d-405a-bfcf-cf71ff109e65/front-250",
         "width": 250,
@@ -4044,7 +3934,6 @@
       "format": "CD",
       "genres": ["britpop", "alternative rock", "art rock", "glam rock"],
       "addedAt": "2025-02-26T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/9d95bcdc-52df-4886-8b5c-774bd3fea8dd/front-250",
         "width": 250,
@@ -4080,7 +3969,6 @@
       "format": "CD",
       "genres": ["rock", "indie rock", "jangle pop"],
       "addedAt": "2025-02-21T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/484762fd-b3e6-44e0-b1b3-0cb4859ea1f5/front-250",
         "width": 250,
@@ -4117,7 +4005,6 @@
       "format": "CD",
       "genres": ["rock", "acid house", "electronic", "house", "alternative rock"],
       "addedAt": "2025-02-16T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/93d7f77b-1b14-467b-a9c1-99a56c50d942/front-250",
         "width": 250,
@@ -4152,7 +4039,6 @@
       "format": "CD",
       "genres": ["alternative rock", "rock", "downtempo", "electronic", "neo-psychedelia"],
       "addedAt": "2025-02-11T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/4a7c2fa9-1ce0-49dd-ba88-26c45367658d/front-250",
         "width": 250,
@@ -4189,7 +4075,6 @@
       "format": "SACD",
       "genres": ["rock", "alternative rock", "folk rock"],
       "addedAt": "2025-02-06T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/09dc8894-bb52-4edd-a31b-e74e30753a44/front-250",
         "width": 250,
@@ -4225,7 +4110,6 @@
       "format": "CD",
       "genres": ["rock"],
       "addedAt": "2025-02-01T22:55:18.603Z",
-      "rating": 2,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/318aaf9d-3adb-4458-9daf-4d67b4702dd7/front-250",
         "width": 250,
@@ -4259,7 +4143,6 @@
       "format": "CD",
       "genres": ["alternative rock", "rock", "grunge", "shoegaze"],
       "addedAt": "2025-01-27T22:55:18.603Z",
-      "rating": 5,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/913d666d-4403-44fd-b7f7-74eba5651e49/front-250",
         "width": 250,
@@ -4296,7 +4179,6 @@
       "format": "CD",
       "genres": ["alternative rock", "rock", "funk rock", "funk metal"],
       "addedAt": "2025-01-22T22:55:18.603Z",
-      "rating": 4,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/3eb0b384-30bc-46a4-a9f0-3b13a98a914c/front-250",
         "width": 250,
@@ -4335,7 +4217,6 @@
       "format": "CD",
       "genres": ["alternative rock", "funk rock", "rock", "funk metal", "funk"],
       "addedAt": "2025-01-17T22:55:18.603Z",
-      "rating": 5,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/3b05d3e3-e67f-350b-8dc3-4bedb665babc/front-250",
         "width": 250,
@@ -4376,7 +4257,6 @@
       "format": "CD",
       "genres": ["rock"],
       "addedAt": "2025-01-12T22:55:18.603Z",
-      "rating": 4,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/10cf6ada-ef3f-3cd3-9a7b-bdc15db2dddf/front-250",
         "width": 250,
@@ -4410,7 +4290,6 @@
       "format": "CD",
       "genres": ["thrash metal"],
       "addedAt": "2025-01-07T22:55:18.603Z",
-      "rating": 4,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/264b958d-e9fd-4cde-9759-e9d40df12a94/front-250",
         "width": 250,
@@ -4446,7 +4325,6 @@
       "format": "CD",
       "genres": ["heavy metal", "thrash metal"],
       "addedAt": "2025-01-02T22:55:18.603Z",
-      "rating": 4,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/fed37cfc-2a6d-4569-9ac0-501a7c7598eb/front-250",
         "width": 250,
@@ -4484,7 +4362,6 @@
         "heavy metal"
       ],
       "addedAt": "2024-12-28T22:55:18.603Z",
-      "rating": 4,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/4b1cec7d-1bba-4e77-80f4-5e103e7d9763/front-250",
         "width": 250,
@@ -4527,7 +4404,6 @@
         "art rock"
       ],
       "addedAt": "2024-12-23T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/97e72f08-e1fa-4801-b325-3d27e1b0f674/front-250",
         "width": 250,
@@ -4565,7 +4441,6 @@
       "format": "Enhanced CD",
       "genres": ["alternative metal", "nu metal", "metal", "post-hardcore", "post-metal"],
       "addedAt": "2024-12-18T22:55:18.603Z",
-      "rating": 5,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/4b78844c-d7c0-4317-a21a-73977c8cde92/front-250",
         "width": 250,
@@ -4600,7 +4475,6 @@
       "format": "CD",
       "genres": ["stoner rock", "rock", "alternative rock", "alternative metal", "hard rock"],
       "addedAt": "2024-12-13T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/79108d9b-c04f-48a6-a61a-8076b780a5e1/front-250",
         "width": 250,
@@ -4638,7 +4512,6 @@
       "format": "CD",
       "genres": ["rock", "indie rock", "garage rock revival", "garage rock"],
       "addedAt": "2024-12-08T22:55:18.603Z",
-      "rating": 3,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/05f9032d-fda8-4ce6-99a5-fdd0fc8af8ee/front-250",
         "width": 250,
@@ -4673,7 +4546,6 @@
       "format": "CD",
       "genres": ["alternative rock", "rock", "blues rock", "punk blues", "garage rock revival"],
       "addedAt": "2024-12-03T22:55:18.603Z",
-      "rating": 4,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/3d0554da-4de5-44d4-9715-87f23d69e536/front-250",
         "width": 250,
@@ -4711,7 +4583,6 @@
       "format": "CD",
       "genres": ["rock", "indie rock", "post-punk revival", "post-punk"],
       "addedAt": "2024-11-28T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/2e54bba1-1b3f-4e7a-b9e2-fd626c304e7c/front-250",
         "width": 250,
@@ -4746,7 +4617,6 @@
       "format": "CD",
       "genres": ["indie rock", "rock", "alternative rock", "garage rock revival"],
       "addedAt": "2024-11-23T22:55:18.603Z",
-      "rating": 1,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/43896770-8d09-3a04-8dcc-e4754f2963ac/front-250",
         "width": 250,
@@ -4781,7 +4651,6 @@
       "format": "CD",
       "genres": ["alternative rock"],
       "addedAt": "2024-11-18T22:55:18.603Z",
-      "rating": 3,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/26cdc327-38f2-4200-b5dc-f2fa0e13fcfe/front-250",
         "width": 250,
@@ -4815,7 +4684,6 @@
       "format": "CD",
       "genres": ["alternative rock", "indie rock", "rock", "blues rock", "psychedelic rock"],
       "addedAt": "2024-11-13T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/5a430edc-857f-4af6-a31b-8523d690c49c/front-250",
         "width": 250,
@@ -4857,7 +4725,6 @@
         "alternative pop"
       ],
       "addedAt": "2024-11-08T22:55:18.603Z",
-      "rating": 3,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/4d9f5934-0b1a-4098-b19c-e393b7cc17fb/front-250",
         "width": 250,
@@ -4894,7 +4761,6 @@
       "format": "CD",
       "genres": ["indie rock"],
       "addedAt": "2024-11-03T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/60797f49-bac1-4154-a62d-fbaa0cb8d3b9/front-250",
         "width": 250,
@@ -4930,7 +4796,6 @@
       "format": "CD",
       "genres": ["electronic", "dance-punk", "alternative dance", "indietronica"],
       "addedAt": "2024-10-29T22:55:18.603Z",
-      "rating": 4,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/76a05bcd-9a8b-4c38-9110-f6d7d8bd67fe/front-250",
         "width": 250,
@@ -4966,7 +4831,6 @@
       "format": "Enhanced CD",
       "genres": ["indie rock", "indie pop", "neo-psychedelia", "indietronica", "alternative rock"],
       "addedAt": "2024-10-24T22:55:18.603Z",
-      "rating": 4,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/25a366e1-24fc-4e4a-a4d7-3370cb662568/front-250",
         "width": 250,
@@ -5000,7 +4864,6 @@
       "format": "CD",
       "genres": ["psychedelic rock", "neo-psychedelia", "rock", "psychedelic pop"],
       "addedAt": "2024-10-19T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/f3536868-f5fe-4034-b837-a6447cde9e26/front-250",
         "width": 250,
@@ -5037,7 +4900,6 @@
       "format": "12\" Vinyl + CD + 7\" Vinyl",
       "genres": ["psychedelic rock", "neo-psychedelia", "psychedelic pop", "indie rock", "rock"],
       "addedAt": "2024-10-14T22:55:18.603Z",
-      "rating": 4,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/d105e2cd-f497-488f-a33b-c51195ac85ad/front-250",
         "width": 250,
@@ -5087,7 +4949,6 @@
       "format": "CD",
       "genres": ["indie rock", "rock"],
       "addedAt": "2024-10-09T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/e3329c6a-6ff9-4254-b82e-f4ac85e5e6dd/front-250",
         "width": 250,
@@ -5121,7 +4982,6 @@
       "format": "CD",
       "genres": ["indie folk", "rock"],
       "addedAt": "2024-10-04T22:55:18.603Z",
-      "rating": 4,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/f2d4a53b-0612-48e2-a09c-02489ae27a51/front-250",
         "width": 250,
@@ -5154,7 +5014,6 @@
       "format": "CD",
       "genres": ["folk rock", "folk", "indie folk", "indie rock", "rock"],
       "addedAt": "2024-09-29T22:55:18.603Z",
-      "rating": 2,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/d99d7f59-44ad-4fbd-a837-0dc00576f01b/front-250",
         "width": 250,
@@ -5189,7 +5048,6 @@
       "format": "CD",
       "genres": ["dream pop", "indie pop", "electronic", "indie rock"],
       "addedAt": "2024-09-24T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/44f67ad5-cdff-3036-80e9-bee67402ded0/front-250",
         "width": 250,
@@ -5223,7 +5081,6 @@
       "format": "CD",
       "genres": ["folk rock", "indie rock"],
       "addedAt": "2024-09-19T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/5d7797f1-7efc-350e-8d1f-71c5229502e0/front-250",
         "width": 250,
@@ -5265,7 +5122,6 @@
         "sunshine pop"
       ],
       "addedAt": "2024-09-14T22:55:18.603Z",
-      "rating": 1,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/1e21a9c3-d787-3348-accf-3af583ef43f6/front-250",
         "width": 250,
@@ -5300,7 +5156,6 @@
       "format": "CD",
       "genres": ["alternative rock"],
       "addedAt": "2024-09-09T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/18631159-91e4-45aa-aefc-4f030b5439e7/front-250",
         "width": 250,
@@ -5335,7 +5190,6 @@
       "format": "CD",
       "genres": ["electronic", "trip hop", "art pop", "downtempo", "hip hop"],
       "addedAt": "2024-09-04T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/14190090-8b00-4c4a-a861-50d7734c16fd/front-250",
         "width": 250,
@@ -5374,7 +5228,6 @@
       "format": "CD-R",
       "genres": [],
       "addedAt": "2024-08-30T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/bd25c5cb-3612-4117-ab0e-745867cdd2ae/front-250",
         "width": 250,
@@ -5412,7 +5265,6 @@
       "format": "CD",
       "genres": ["alternative rock", "pop rock", "rock", "post-britpop", "piano rock"],
       "addedAt": "2024-08-25T22:55:18.603Z",
-      "rating": 3,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/0433fe94-24fc-4fe5-851b-4c11a02e2ec5/front-250",
         "width": 250,
@@ -5447,7 +5299,6 @@
       "format": "CD",
       "genres": ["alternative rock", "rock", "progressive rock"],
       "addedAt": "2024-08-20T22:55:18.603Z",
-      "rating": 2,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/1cc29145-b0e4-47bf-8bda-a1edef67dd1d/front-250",
         "width": 250,
@@ -5482,7 +5333,6 @@
       "format": "CD",
       "genres": ["electro", "electronic"],
       "addedAt": "2024-08-10T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/0fb6848a-a188-424e-90be-f8e1f72a58df/front-250",
         "width": 250,
@@ -5517,7 +5367,6 @@
       "format": "CD",
       "genres": ["idm", "ambient", "electronic", "tech house"],
       "addedAt": "2024-08-05T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/9b93c88b-b939-4206-af30-b3a3e7f1ab8d/front-250",
         "width": 250,
@@ -5549,7 +5398,6 @@
       "format": "CD",
       "genres": ["jazz", "electronic", "third stream"],
       "addedAt": "2024-07-31T22:55:18.603Z",
-      "rating": 3,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/7469bd0f-e697-4234-88b8-61efc77c8062/front-250",
         "width": 250,
@@ -5582,7 +5430,6 @@
       "format": "CD",
       "genres": ["neo soul", "alternative r&b", "art pop"],
       "addedAt": "2024-07-26T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/08f54f68-7c89-4e22-8a0f-ac2b06e48568/front-250",
         "width": 250,
@@ -5623,7 +5470,6 @@
       "format": "CD",
       "genres": ["contemporary r&b"],
       "addedAt": "2024-07-21T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/3048076f-c5d4-4340-9ba0-c09d23b83b31/front-250",
         "width": 250,
@@ -5664,7 +5510,6 @@
       "format": "CD",
       "genres": ["hip hop", "pop rap"],
       "addedAt": "2024-07-16T22:55:18.603Z",
-      "rating": 3,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/224cc584-3254-454a-98bd-01f594152d27/front-250",
         "width": 250,
@@ -5701,7 +5546,6 @@
       "format": "CD",
       "genres": ["hip hop", "pop rap", "electropop"],
       "addedAt": "2024-07-11T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/49a7259f-b354-4502-9f5d-62fc4dcbd5f2/front-250",
         "width": 250,
@@ -5738,7 +5582,6 @@
       "format": "CD",
       "genres": ["contemporary r&b"],
       "addedAt": "2024-07-06T22:55:18.603Z",
-      "rating": 4,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/09621f2a-1213-46a5-b79b-d246aa70bc4f/front-250",
         "width": 250,
@@ -5778,7 +5621,6 @@
       "format": "CD",
       "genres": ["hip hop", "dirty south"],
       "addedAt": "2024-07-01T22:55:18.603Z",
-      "rating": 5,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/08b00894-6bec-408c-8bd9-d649a2189797/front-250",
         "width": 250,
@@ -5818,7 +5660,6 @@
       "format": "CD",
       "genres": ["hip hop"],
       "addedAt": "2024-06-21T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/e2b51264-ab8f-4168-849d-738e703ac24e/front-250",
         "width": 250,
@@ -5856,7 +5697,6 @@
       "format": "CD",
       "genres": ["hip hop"],
       "addedAt": "2024-06-16T22:55:18.603Z",
-      "rating": 2,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/2e7c03a2-2ef9-4563-bb6d-ebc65eed77e4/front-250",
         "width": 250,
@@ -5890,7 +5730,6 @@
       "format": "CD",
       "genres": ["hip hop"],
       "addedAt": "2024-06-11T22:55:18.603Z",
-      "rating": 3,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/f401f41f-fd25-392b-b013-79f9fb4b24a4/front-250",
         "width": 250,
@@ -5931,7 +5770,6 @@
       "format": "CD",
       "genres": ["hip hop"],
       "addedAt": "2024-06-06T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/c4494b26-cd1b-4032-9c7f-8ad0d4f7092d/front-250",
         "width": 250,
@@ -5967,7 +5805,6 @@
       "format": "CD",
       "genres": ["hip hop"],
       "addedAt": "2024-06-01T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/2e471ef7-c0be-4cb0-9f56-fb9505b7da70/front-250",
         "width": 250,
@@ -6013,7 +5850,6 @@
       "format": "CD",
       "genres": ["hip hop", "rap rock"],
       "addedAt": "2024-05-27T22:55:18.603Z",
-      "rating": 4,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/1bf66a76-d132-317d-95df-a22b5c7dc9f0/front-250",
         "width": 250,
@@ -6052,7 +5888,6 @@
       "format": "CD",
       "genres": ["hip hop"],
       "addedAt": "2024-05-22T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/21662373-c274-451d-a37b-32f0ab1439b6/front-250",
         "width": 250,
@@ -6100,7 +5935,6 @@
       "format": "CD",
       "genres": ["neo soul", "jazz", "soul"],
       "addedAt": "2024-05-17T22:55:18.603Z",
-      "rating": 1,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/92c85c68-e8e4-3c39-bf4e-dd9e7339427c/front-250",
         "width": 250,
@@ -6138,7 +5972,6 @@
       "format": "CD",
       "genres": ["neo soul", "hip hop", "jazz", "soul"],
       "addedAt": "2024-05-12T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/7dbf3ed6-7927-3f35-adc2-3b46b97eca60/front-250",
         "width": 250,
@@ -6175,7 +6008,6 @@
       "format": "CD",
       "genres": ["soul", "pop", "r&b", "contemporary jazz", "jazz pop"],
       "addedAt": "2024-05-07T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/0dfd2d0a-371b-4441-8cdc-04b16ba25af0/front-250",
         "width": 250,
@@ -6209,7 +6041,6 @@
       "format": "CD",
       "genres": ["pop", "pop soul", "blue-eyed soul", "soul"],
       "addedAt": "2024-05-02T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/3f0d44be-7440-4697-8628-59ec3c95357e/front-250",
         "width": 250,
@@ -6247,7 +6078,6 @@
       "format": "CD + DVD",
       "genres": ["pop", "r&b"],
       "addedAt": "2024-04-27T22:55:18.603Z",
-      "rating": 4,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/3287a560-657b-4557-a93d-16052aa09117/front-250",
         "width": 250,
@@ -6284,7 +6114,6 @@
       "format": "CD",
       "genres": ["flamenco pop", "alternative r&b", "art pop", "flamenco"],
       "addedAt": "2024-04-22T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/5fdcd1ae-93b0-462f-b11e-405ff1485e4a/front-250",
         "width": 250,
@@ -6319,7 +6148,6 @@
       "format": "CD",
       "genres": ["latin pop", "reggaeton"],
       "addedAt": "2024-04-17T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/fe3226ab-726b-4d52-a971-714473fec41b/front-250",
         "width": 250,
@@ -6366,7 +6194,6 @@
       "format": "CD",
       "genres": ["pop", "contemporary r&b", "dance-pop", "disco", "funk"],
       "addedAt": "2024-04-07T22:55:18.603Z",
-      "rating": 3,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/359c3b04-6354-42fa-8438-11393b1e46a3/front-250",
         "width": 250,
@@ -6399,7 +6226,6 @@
       "format": "CD",
       "genres": ["disco", "pop", "contemporary r&b", "r&b", "soul"],
       "addedAt": "2024-04-02T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/45349aeb-0728-4397-ab8c-a8074811e9be/front-250",
         "width": 250,
@@ -6433,7 +6259,6 @@
       "format": "CD",
       "genres": ["soul", "contemporary r&b", "pop soul"],
       "addedAt": "2024-03-28T22:55:18.603Z",
-      "rating": 4,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/1714d5ba-04d6-42bd-8746-54a201ce2d69/front-250",
         "width": 250,
@@ -6478,7 +6303,6 @@
       "format": "CD",
       "genres": ["soul", "r&b", "motown", "smooth soul"],
       "addedAt": "2024-03-23T22:55:18.603Z",
-      "rating": 3,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/22f960af-4341-462c-aca9-d84bb25007a1/front-250",
         "width": 250,
@@ -6511,7 +6335,6 @@
       "format": "CD",
       "genres": ["jazz", "cool jazz", "modal jazz", "hard bop", "post-bop"],
       "addedAt": "2024-03-18T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/46c3472f-1cb0-481b-9dc9-da67b62bb89b/front-250",
         "width": 250,
@@ -6540,7 +6363,6 @@
       "format": "CD",
       "genres": ["jazz", "jazz fusion", "avant-garde jazz", "jazz rock", "avant-garde"],
       "addedAt": "2024-03-13T22:55:18.603Z",
-      "rating": 4,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/a9d3727f-6fa1-491b-9693-a778031a1800/front-250",
         "width": 250,
@@ -6570,7 +6392,6 @@
       "format": "CD",
       "genres": ["jazz", "free jazz", "post-bop", "spiritual jazz", "hard bop"],
       "addedAt": "2024-03-08T22:55:18.603Z",
-      "rating": 3,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/77701877-36ef-4b07-b24e-bc9f75673a0e/front-250",
         "width": 250,
@@ -6597,7 +6418,6 @@
       "format": "CD",
       "genres": ["jazz", "cool jazz"],
       "addedAt": "2024-03-03T22:55:18.603Z",
-      "rating": 4,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/1a189330-3e41-4d15-9e03-a380ee24c202/front-250",
         "width": 250,
@@ -6628,7 +6448,6 @@
       "format": "CD",
       "genres": ["jazz", "cool jazz", "instrumental jazz"],
       "addedAt": "2024-02-27T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/a1dd240a-3860-4437-9cde-f8660b13f71d/front-250",
         "width": 250,
@@ -6658,7 +6477,6 @@
       "format": "CD",
       "genres": ["jazz", "jazz-funk", "funk", "hard bop", "jazz fusion"],
       "addedAt": "2024-02-22T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/8f2f47b4-880d-30be-a525-cc9be061c909/front-250",
         "width": 250,
@@ -6681,7 +6499,6 @@
       "format": "CD",
       "genres": ["jazz", "soul jazz"],
       "addedAt": "2024-02-17T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/5ff3c940-e955-3565-aa63-f1baaad303ff/front-250",
         "width": 250,
@@ -6716,7 +6533,6 @@
       "format": "CD",
       "genres": ["reggae", "roots reggae"],
       "addedAt": "2024-02-12T22:55:18.603Z",
-      "rating": 3,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/01d6c5ab-c8bc-46d9-8bb9-c93f2faed4ae/front-250",
         "width": 250,
@@ -6750,7 +6566,6 @@
       "format": "CD",
       "genres": ["rock", "folk rock", "blues rock", "classic rock", "folk"],
       "addedAt": "2024-02-07T22:55:18.603Z",
-      "rating": 4,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/24e227e6-cbef-4044-920c-3df4c143ee85/front-250",
         "width": 250,
@@ -6783,7 +6598,6 @@
       "format": "CD",
       "genres": ["folk rock", "blues rock", "rock", "contemporary folk"],
       "addedAt": "2024-02-02T22:55:18.603Z",
-      "rating": 3,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/c7747023-c496-4ee4-be65-c67adcc2ee03/front-250",
         "width": 250,
@@ -6817,7 +6631,6 @@
       "format": "CD",
       "genres": ["folk", "contemporary folk", "singer-songwriter", "folk rock", "folk pop"],
       "addedAt": "2024-01-28T22:55:18.603Z",
-      "rating": 3,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/9795c506-80af-4839-ac4d-c437008c9199/front-250",
         "width": 250,
@@ -6851,7 +6664,6 @@
       "format": "CD",
       "genres": ["folk", "rock", "chamber folk", "contemporary folk", "singer-songwriter"],
       "addedAt": "2024-01-23T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/6ed850e1-b4e6-4220-a883-10c373b45305/front-250",
         "width": 250,
@@ -6885,7 +6697,6 @@
       "format": "CD",
       "genres": ["folk", "contemporary folk"],
       "addedAt": "2024-01-18T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/2a274c12-8785-351a-9155-1d6d2dfde21c/front-250",
         "width": 250,
@@ -6920,7 +6731,6 @@
       "format": "CD",
       "genres": ["folk rock", "folk", "soft rock", "folk pop", "pop"],
       "addedAt": "2024-01-13T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/896485f6-f2f0-3e42-8221-640deb403ba2/front-250",
         "width": 250,
@@ -6955,7 +6765,6 @@
       "format": "CD",
       "genres": ["pop", "baroque pop", "pop rock", "rock", "psychedelic pop"],
       "addedAt": "2024-01-08T22:55:18.603Z",
-      "rating": 4,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/ccbbf352-68d3-4a96-85f4-0a65322381c4/front-250",
         "width": 250,
@@ -6994,7 +6803,6 @@
       "format": "CD",
       "genres": ["blues rock", "psychedelic rock", "rock", "acid rock", "hard rock"],
       "addedAt": "2024-01-03T22:55:18.603Z",
-      "rating": 3,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/67f45cb2-ff35-3c61-be72-ba5eddbd40d1/front-250",
         "width": 250,
@@ -7029,7 +6837,6 @@
       "format": "CD",
       "genres": ["psychedelic rock", "rock", "acid rock", "blues rock", "classic rock"],
       "addedAt": "2023-12-29T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/a5297a5b-e213-4311-bcf6-2445d04a8f87/front-250",
         "width": 250,
@@ -7064,7 +6871,6 @@
       "format": "CD",
       "genres": ["new wave", "rock"],
       "addedAt": "2023-12-24T22:55:18.603Z",
-      "rating": 5,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/d2988be2-8c17-4831-958a-2f8e663d3499/front-250",
         "width": 250,
@@ -7100,7 +6906,6 @@
       "format": "CD",
       "genres": ["blues rock", "rock", "experimental rock"],
       "addedAt": "2023-12-19T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/46038710-d5ed-42aa-b09e-2f467da90f11/front-250",
         "width": 250,
@@ -7143,7 +6948,6 @@
       "format": "CD",
       "genres": ["alternative rock", "rock", "singer-songwriter", "folk rock", "pop rock"],
       "addedAt": "2023-12-14T22:55:18.603Z",
-      "rating": 3,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/523cf6a3-b871-4ecb-8147-131efbd6b444/front-250",
         "width": 250,
@@ -7177,7 +6981,6 @@
       "format": "CD",
       "genres": ["indie pop", "folk rock", "indie folk", "indie rock"],
       "addedAt": "2023-12-09T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/0a5aa565-8158-4e81-9776-af8044f6cc1e/front-250",
         "width": 250,
@@ -7213,7 +7016,6 @@
       "format": "CD",
       "genres": ["indie folk", "chamber pop", "folk rock", "singer-songwriter", "baroque pop"],
       "addedAt": "2023-12-04T22:55:18.603Z",
-      "rating": 1,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/677957b6-6c42-4dce-89af-685eefbb1aba/front-250",
         "width": 250,
@@ -7260,7 +7062,6 @@
       "format": "CD",
       "genres": ["rock"],
       "addedAt": "2023-11-29T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/023fcf90-dca7-4a4e-a4e2-ed0eaba78f9e/front-250",
         "width": 250,
@@ -7295,7 +7096,6 @@
       "format": "CD",
       "genres": ["ambient pop", "art pop", "deconstructed club", "electronic", "experimental"],
       "addedAt": "2023-11-24T22:55:18.603Z",
-      "rating": 4,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/bdd6120a-0cfa-4ed3-8731-5df76ef77463/front-250",
         "width": 250,
@@ -7332,7 +7132,6 @@
       "format": "CD",
       "genres": ["alternative r&b", "trip hop", "art pop", "deconstructed club", "glitch pop"],
       "addedAt": "2023-11-19T22:55:18.603Z",
-      "rating": 3,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/5f816880-92a0-4e5b-a367-21dfba772faf/front-250",
         "width": 250,
@@ -7370,7 +7169,6 @@
       "format": "CD",
       "genres": ["indie pop", "synth-pop"],
       "addedAt": "2023-11-14T22:55:18.603Z",
-      "rating": 1,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/a46a535d-76b5-4547-88af-3676e8f1b12b/front-250",
         "width": 250,
@@ -7405,7 +7203,6 @@
       "format": "CD",
       "genres": ["alternative pop", "pop", "electropop", "ambient pop", "art pop"],
       "addedAt": "2023-11-09T22:55:18.603Z",
-      "rating": 5,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/3597fbd9-0da3-4540-8266-823d3c5eea8f/front-250",
         "width": 250,
@@ -7443,7 +7240,6 @@
       "format": "CD",
       "genres": ["pop", "synth-pop", "dance-pop", "electropop", "alternative pop"],
       "addedAt": "2023-11-04T22:55:18.603Z",
-      "rating": 3,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/0dc1f3dd-6135-48cf-b2f9-24e6a4e13ff1/front-250",
         "width": 250,
@@ -7486,7 +7282,6 @@
       "format": "CD",
       "genres": ["pop", "art pop", "chamber pop", "indie pop", "alternative rock"],
       "addedAt": "2023-10-30T22:55:18.603Z",
-      "rating": 5,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/077cc054-831f-43ff-856f-802a68699c1d/front-250",
         "width": 250,
@@ -7522,7 +7317,6 @@
       "format": "CD",
       "genres": ["indie rock", "jangle pop"],
       "addedAt": "2023-10-25T22:55:18.603Z",
-      "rating": 1,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/7e535de9-a3b3-423e-8edf-c200e8713c77/front-250",
         "width": 250,
@@ -7557,7 +7351,6 @@
       "format": "CD",
       "genres": ["progressive rock", "art rock", "rock"],
       "addedAt": "2023-10-20T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/1647e697-db13-41ac-a7fd-49f53d85d823/front-250",
         "width": 250,
@@ -7586,7 +7379,6 @@
       "format": "CD",
       "genres": ["progressive rock", "rock", "art rock", "classic rock"],
       "addedAt": "2023-10-15T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/39de3fa4-bbed-4c86-93a7-fe5ec3808cfd/front-250",
         "width": 250,
@@ -7609,7 +7401,6 @@
       "format": "CD",
       "genres": ["progressive rock", "art rock", "rock"],
       "addedAt": "2023-10-10T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/2b841fc3-a334-4e6d-b9aa-924334fb7005/front-250",
         "width": 250,
@@ -7641,7 +7432,6 @@
       "format": "CD",
       "genres": ["new age", "post-minimalism", "progressive rock", "symphonic prog"],
       "addedAt": "2023-10-05T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/53091b6b-2831-451a-9509-edea5838e1d9/front-250",
         "width": 250,
@@ -7664,7 +7454,6 @@
       "format": "CD",
       "genres": ["electronic"],
       "addedAt": "2023-09-30T22:55:18.603Z",
-      "rating": 5,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/ca5fbbcd-ea6b-31d9-bcfd-b61f1854e325/front-250",
         "width": 250,
@@ -7706,7 +7495,6 @@
       "format": "CD",
       "genres": ["electronic", "ambient", "progressive electronic"],
       "addedAt": "2023-09-25T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/ffd9ea4f-d762-344c-bc61-a21c65b929e8/front-250",
         "width": 250,
@@ -7736,7 +7524,6 @@
       "format": "CD",
       "genres": ["electronic", "breakbeat", "downtempo", "ambient", "electronica"],
       "addedAt": "2023-09-20T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/03c75779-ba67-4122-a429-306e26609bce/front-250",
         "width": 250,
@@ -7759,7 +7546,6 @@
       "format": "CD",
       "genres": ["electronic", "techno", "house", "leftfield"],
       "addedAt": "2023-09-15T22:55:18.603Z",
-      "rating": 2,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/1f005bea-8c4b-4f60-a132-d58867416d8a/front-250",
         "width": 250,
@@ -7791,7 +7577,6 @@
       "format": "CD",
       "genres": ["big beat", "electronic", "breakbeat"],
       "addedAt": "2023-09-05T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/056d71ea-4a8f-4374-8b4b-2579c1797e9f/front-250",
         "width": 250,
@@ -7830,7 +7615,6 @@
       "format": "CD",
       "genres": ["electronic", "big beat", "progressive house", "techno", "house"],
       "addedAt": "2023-08-31T22:55:18.603Z",
-      "rating": 5,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/7c3febff-cc50-4ac7-94a2-a8cc28489598/front-250",
         "width": 250,
@@ -7865,7 +7649,6 @@
       "format": "CD",
       "genres": ["progressive house", "electronic", "leftfield", "electronica", "house"],
       "addedAt": "2023-08-21T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/0adc63d5-7d87-33e2-9f32-82f45fefb916/front-250",
         "width": 250,
@@ -7900,7 +7683,6 @@
       "format": "CD",
       "genres": ["downtempo", "electronic"],
       "addedAt": "2023-08-16T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/c010abe7-8980-4df7-8d6f-82ff79985c9f/front-250",
         "width": 250,
@@ -7934,7 +7716,6 @@
       "format": "CD",
       "genres": ["electronic", "deep house", "downtempo", "soft rock"],
       "addedAt": "2023-08-11T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/44bb963e-b37e-4e23-857b-965ce6a837b3/front-250",
         "width": 250,
@@ -7972,7 +7753,6 @@
       "format": "CD",
       "genres": ["acid jazz", "bossa nova", "downtempo", "dub", "electronic"],
       "addedAt": "2023-08-06T22:55:18.603Z",
-      "rating": null,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/070bac81-095a-4def-a59e-e9c6efad26d3/front-250",
         "width": 250,
@@ -8009,7 +7789,6 @@
       "format": "CD",
       "genres": ["deep house", "electronic", "ambient", "ambient house", "downtempo"],
       "addedAt": "2023-08-01T22:55:18.603Z",
-      "rating": 3,
       "thumbnail": {
         "url": "https://coverartarchive.org/release/48a9aa5b-ac83-4c6b-b3b8-270101319cb3/front-250",
         "width": 250,

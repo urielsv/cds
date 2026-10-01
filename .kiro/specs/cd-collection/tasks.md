@@ -45,10 +45,10 @@ momentum and rubber-band edges on release.
       edges; a flick is projected to a landing cell and animated there in
       ~200ms rather than decaying. Measured in-browser: rest ~197ms after
       finger-up, exactly on the lattice.
-- [x] 1.7 Two arrangements on one lattice (`layout.ts`): even, or blocks sized
-      by rating (5★ = 3×3, 4★ = 2×2), first-fit packed so the wall stays
-      gapless. Windowing indexes placements by row, so block size does not
-      change frame cost.
+- [x] 1.7 One lattice (`layout.ts`), first-fit packed so the wall stays gapless.
+      Windowing indexes placements by row, so block size does not change frame
+      cost. ~~Blocks sized by rating (5★ = 3×3, 4★ = 2×2)~~ — **dropped:** the
+      owner decided against ratings; only the even arrangement remains.
 - [x] 1.8 Cover prefetching (`useCoverPrefetch.ts`): rows just outside the
       window are warmed at low priority once the view settles, with a low
       concurrency cap — measured: 29 of 57 covers already loaded immediately
@@ -206,9 +206,10 @@ Read `.kiro/skills/mobile-camera-scan/SKILL.md` before starting.
 
 ## 11. Edit and delete
 
-- [~] 11.1 `PATCH /api/discs/:id` exists and handles the rating (record first,
-  index second, one index read per call, tested). Field edits and
-  MusicBrainz re-sync are still to do. _Satisfies 5.1 in part._
+- [ ] 11.1 `PATCH /api/discs/:id` for field edits and MusicBrainz re-sync
+      (record first, index second, one index read per call). _Satisfies 5.1._
+      Note: the earlier rating-only PATCH was removed with ratings, so this
+      endpoint no longer exists and must be built from scratch.
 - [ ] 11.2 `DELETE /api/discs/:id`, removing images and updating the index.
       _Satisfies 5.2._
 - [ ] 11.3 Edit and delete UI, delete behind a confirmation. _Satisfies 5.2._
@@ -217,14 +218,17 @@ Read `.kiro/skills/mobile-camera-scan/SKILL.md` before starting.
 - [ ] 11.5 Let the owner clear an override and fall back to the provider value.
       _Satisfies 5.4._
 
-## 13. Rating and the rating wall — done
+## 13. Rating and the rating wall — dropped
 
-- [x] 13.1 `rating` on the disc and in the index, 1–5 or null. Never sourced
-      from a provider, so it is not an overridable field.
-- [x] 13.2 Star control in the detail view, owner only, optimistic so the wall
-      resizes the cover immediately and rolls back if the save fails.
-- [x] 13.3 Rating as a sort key and as the wall's cover-size mode, both carried
-      in the URL.
+The owner decided against ratings; everything below was built and then removed
+(field, star control, PATCH endpoint, sort key, cover-size mode). Stored
+documents that still carry `rating` parse fine, since the schemas strip unknown
+keys, and old links with `wall=rating` or `sort=rating-*` fall back to defaults.
+
+- [-] ~~13.1 `rating` on the disc and in the index, 1–5 or null.~~ Dropped.
+- [-] ~~13.2 Star control in the detail view, owner only, optimistic.~~ Dropped.
+- [-] ~~13.3 Rating as a sort key and as the wall's cover-size mode, both carried
+  in the URL.~~ Dropped.
 
 ## 12. Polish and verification
 

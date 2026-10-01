@@ -1,20 +1,14 @@
 /**
  * How covers are placed on the wall.
  *
- * Two arrangements share one representation, a square block of unit cells per
- * album:
- *
- * - **Even** — every cover one cell. A plain grid.
- * - **By rating** — the albums you rate highest occupy 2×2 or 3×3 cells, and
- *   the rest fill in around them. Ragged and editorial rather than uniform,
- *   but still gapless and still on the same cell lattice, so the camera,
- *   snapping and windowing are unchanged.
+ * Every album is a square block of unit cells. Today every cover is one cell —
+ * a plain, even grid — but the packer still accepts larger blocks, so the
+ * camera, snapping and windowing work on the general representation and would
+ * not need to change if covers of different sizes ever return.
  *
  * Pure: no DOM, no React. `packMosaic` is deterministic, so the same collection
  * in the same order always produces the same wall.
  */
-
-export type WallMode = 'even' | 'rating';
 
 export interface Placement {
   column: number;
@@ -30,18 +24,6 @@ export interface WallPlacement {
   rows: number;
   /** Placements starting or continuing on each row, for windowing. */
   byRow: number[][];
-}
-
-/**
- * Cells per side for a rating. Five stars is three cells — nine times the area
- * of an unrated album — which is enough to read as a deliberate feature wall
- * rather than an accident. Two and three stars stay small on purpose: this is
- * the owner's favourites made large, not a uniform gradient.
- */
-export function spanForRating(rating: number | null | undefined): number {
-  if (rating === 5) return 3;
-  if (rating === 4) return 2;
-  return 1;
 }
 
 /**
@@ -110,41 +92,36 @@ export function packMosaic(spans: readonly number[], columns: number): WallPlace
   return { placements, columns: width, rows: Math.max(1, occupied.length), byRow };
 }
 
-/** The spans a collection occupies in the requested arrangement. */
-export function spansFor(
-  ratings: readonly (number | null | undefined)[],
-  mode: WallMode,
-): number[] {
-  return mode === 'rating' ? ratings.map(spanForRating) : ratings.map(() => 1);
+/** The spans a collection of `count` covers occupies: one cell each. */
+export function spansFor(count: number): number[] {
+  return new Array<number>(count).fill(1);
 }
 
 /**
- * Places a collection on the wall in the requested arrangement, `columns`
- * covers across. The column count comes from the zoom: the wall always spans
- * the screen width, so zooming re-flows it rather than panning it sideways.
+ * Places a collection of `count` covers on the wall, `columns` across. The
+ * column count comes from the zoom: the wall always spans the screen width, so
+ * zooming re-flows it rather than panning it sideways.
  */
-export function wallPlacement(
-  ratings: readonly (number | null | undefined)[],
-  mode: WallMode,
-  columns: number,
-): WallPlacement {
-  return packMosaic(spansFor(ratings, mode), columns);
+export function wallPlacement(count: number, columns: number): WallPlacement {
+  return packMosaic(spansFor(count), columns);
 }
 
 /**
  * Rows the wall needs at a given column count, memoised per count. Asked for
  * every candidate zoom level when deciding how far the wall may zoom out, so
- * the rating mosaic is packed once per count, not once per question.
+ * any mosaic is packed once per count, not once per question.
  */
-export function rowCounter(spans: readonly number[], mode: WallMode): (columns: number) => number {
+export function rowCounter(spans: readonly number[]): (columns: number) => number {
+  // All single cells is a plain grid, whose height is arithmetic; only a mosaic
+  // of mixed sizes needs to be packed to know it.
+  const even = spans.every((span) => span === 1);
   const cache = new Map<number, number>();
   return (columns) => {
     let rows = cache.get(columns);
     if (rows === undefined) {
-      rows =
-        mode === 'even'
-          ? Math.max(1, Math.ceil(spans.length / Math.max(1, columns)))
-          : packMosaic(spans, columns).rows;
+      rows = even
+        ? Math.max(1, Math.ceil(spans.length / Math.max(1, columns)))
+        : packMosaic(spans, columns).rows;
       cache.set(columns, rows);
     }
     return rows;

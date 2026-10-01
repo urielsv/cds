@@ -11,10 +11,6 @@
  * uses. The result is `src/dev/demoCollection.json`, which the app shows when no
  * real collection is configured.
  *
- * Ratings in the demo are synthetic — see `demoRating` — because they are the
- * owner's own judgement and nobody has rated these. They exist so the
- * arrange-by-rating wall has something to shape.
- *
  * Metadata is MusicBrainz's CC0 core data, so the JSON may be committed. The
  * artwork is NOT copied into the repo: each cover is referenced at the Cover Art
  * Archive, because the images belong to their owners and this repository is
@@ -139,22 +135,6 @@ async function averageColour(url) {
   return null;
 }
 
-/**
- * A stable pseudo-rating for the demo, derived from the disc id so it never
- * changes between runs. Weighted to look like a real collection: a handful of
- * favourites, most albums unrated.
- */
-function demoRating(id) {
-  const hash = createHash('sha1').update(id).digest();
-  const bucket = hash[0] % 100;
-  if (bucket < 8) return 5;
-  if (bucket < 22) return 4;
-  if (bucket < 34) return 3;
-  if (bucket < 40) return 2;
-  if (bucket < 43) return 1;
-  return null;
-}
-
 function parseList() {
   return readFileSync(listPath, 'utf8')
     .split('\n')
@@ -249,7 +229,7 @@ for (const [i, album] of albums.entries()) {
       images: [{ url: tileUrl, width: 250, height: 250, placeholder: null, kind: 'front' }],
     };
     const color = await averageColour(tileUrl);
-    entries.push({ ...toIndexEntry(disc, color), rating: demoRating(id) });
+    entries.push(toIndexEntry(disc, color));
     console.log(
       `${label}  →  ${draft.releaseDate ?? '????'} ${draft.country ?? '--'} ${color ?? ''}`,
     );

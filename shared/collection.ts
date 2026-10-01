@@ -190,7 +190,6 @@ export function deriveFacets(discs: readonly DiscIndexEntry[]): Facets {
 // ---------------------------------------------------------------------------
 
 export const SORT_KEYS = [
-  'rating',
   'added',
   'artist',
   'title',
@@ -253,8 +252,6 @@ type SortValue = string | number | null;
 
 function sortValue(disc: DiscIndexEntry, key: SortKey): SortValue {
   switch (key) {
-    case 'rating':
-      return disc.rating ?? null;
     case 'added':
       return disc.addedAt;
     case 'artist':
@@ -309,20 +306,12 @@ export function sortDiscs(discs: readonly DiscIndexEntry[], sort: Sort): DiscInd
 // URL state (requirement 3.7)
 // ---------------------------------------------------------------------------
 
-/**
- * How the wall is laid out: every cover the same size, or the covers you rate
- * highest drawn larger. Part of the shared query state so a link carries it.
- */
-export const WALL_MODES = ['even', 'rating'] as const;
-export type WallModeName = (typeof WALL_MODES)[number];
-
 export interface QueryState {
   query: string;
   filters: Filters;
   sort: Sort;
   /** Move matching discs to the front instead of leaving them in place. */
   groupMatches: boolean;
-  wallMode: WallModeName;
 }
 
 export const DEFAULT_QUERY_STATE: QueryState = {
@@ -330,7 +319,6 @@ export const DEFAULT_QUERY_STATE: QueryState = {
   filters: EMPTY_FILTERS,
   sort: DEFAULT_SORT,
   groupMatches: false,
-  wallMode: 'even',
 };
 
 const LIST_PARAMS: Record<FacetKey, string> = {
@@ -364,11 +352,15 @@ export function serialiseQueryState(state: QueryState): string {
     params.set('sort', `${state.sort.key}-${state.sort.direction}`);
   }
   if (state.groupMatches) params.set('group', '1');
-  if (state.wallMode !== DEFAULT_QUERY_STATE.wallMode) params.set('wall', state.wallMode);
   return params.toString();
 }
 
-/** Parses a query string back into state, ignoring anything malformed. */
+/**
+ * Parses a query string back into state, ignoring anything malformed or
+ * unknown. Links shared before ratings were dropped may still carry
+ * `wall=rating` or `sort=rating-desc`; the first is never read and the second
+ * is not a sort key, so both fall back to the defaults.
+ */
 export function parseQueryState(search: string): QueryState {
   const params = new URLSearchParams(search);
 
@@ -391,15 +383,11 @@ export function parseQueryState(search: string): QueryState {
     sort = { key: rawSort[1] as SortKey, direction: rawSort[2] as SortDirection };
   }
 
-  const wall = params.get('wall');
   return {
     query: params.get('q') ?? '',
     filters,
     sort,
     groupMatches: params.get('group') === '1',
-    wallMode: (WALL_MODES as readonly string[]).includes(wall ?? '')
-      ? (wall as WallModeName)
-      : DEFAULT_QUERY_STATE.wallMode,
   };
 }
 
@@ -449,7 +437,6 @@ export function toIndexEntry(disc: Disc, color: string | null): DiscIndexEntry {
     format: disc.format,
     genres: disc.genres,
     addedAt: disc.addedAt,
-    rating: disc.rating,
     thumbnail,
     trackTitles: disc.tracks.map((track) => track.title),
     color,

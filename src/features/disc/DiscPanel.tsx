@@ -10,7 +10,6 @@ import {
 } from 'react';
 
 import { CountryBadge } from '@/components/CountryBadge';
-import { StarRating } from '@/components/StarRating';
 import { loadDisc } from '@/lib/collection';
 import { coverLoader } from '@/lib/coverLoader';
 import { REDUCED_TRANSITION, transition } from '@/motion/tokens';
@@ -26,8 +25,6 @@ export interface ScreenRect {
 
 interface DiscPanelProps {
   disc: DiscIndexEntry;
-  /** Present for the owner: rating this disc resizes it on the wall. */
-  onRate?: ((rating: number | null) => Promise<void>) | undefined;
   /** Where the tile is on screen right now; null when it cannot be located. */
   originRect: () => ScreenRect | null;
   /** Called once the closing animation has finished and the panel can unmount. */
@@ -66,7 +63,7 @@ function invert(from: ScreenRect, to: DOMRect) {
  * on the way back. Measuring both ends in screen space and animating the one
  * element outside the surface is exact at every zoom level.
  */
-export function DiscPanel({ disc, onRate, originRect, onClosed }: DiscPanelProps) {
+export function DiscPanel({ disc, originRect, onClosed }: DiscPanelProps) {
   const reduced = useReducedMotion() ?? false;
   const rootRef = useRef<HTMLDivElement>(null);
   const coverRef = useRef<HTMLElement | null>(null);
@@ -78,9 +75,6 @@ export function DiscPanel({ disc, onRate, originRect, onClosed }: DiscPanelProps
   const closeRef = useRef<HTMLButtonElement>(null);
   const closing = useRef(false);
   const [detail, setDetail] = useState<Disc | null>(null);
-  const [rating, setRating] = useState<number | null>(disc.rating ?? null);
-  const [ratingBusy, setRatingBusy] = useState(false);
-  const [ratingError, setRatingError] = useState<string | null>(null);
 
   const year = releaseYear(disc.releaseDate);
   const cover = detail?.images.find((image) => image.kind === 'front' && image.width > 600);
@@ -349,37 +343,6 @@ export function DiscPanel({ disc, onRate, originRect, onClosed }: DiscPanelProps
                 {disc.artist}
                 {year !== null && <span className="disc-panel__year"> · {year}</span>}
               </p>
-              <StarRating
-                value={rating}
-                busy={ratingBusy}
-                onChange={
-                  onRate === undefined
-                    ? undefined
-                    : (next) => {
-                        // Optimistic: the wall resizes this cover immediately,
-                        // and rolls back if the save fails.
-                        const previous = rating;
-                        setRating(next);
-                        setRatingBusy(true);
-                        setRatingError(null);
-                        void onRate(next)
-                          .catch((error: unknown) => {
-                            setRating(previous);
-                            setRatingError(
-                              error instanceof Error ? error.message : 'The rating did not save.',
-                            );
-                          })
-                          .finally(() => {
-                            setRatingBusy(false);
-                          });
-                      }
-                }
-              />
-              {ratingError !== null && (
-                <p className="disc-panel__rating-error" role="alert">
-                  {ratingError}
-                </p>
-              )}
             </header>
 
             {facts.length > 0 && (
