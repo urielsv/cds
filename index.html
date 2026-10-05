@@ -7,7 +7,11 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=5.0"
     />
-    <meta name="theme-color" content="#0a0a0b" />
+    <!-- Matches --color-bg. Safari 15–18 and Chrome tint their bars with this;
+         a dark value framed the white wall in black bars. Safari 26 ignores it
+         and samples the page instead, which is why full-screen layers overhang
+         the chrome (see --chrome-bleed in global.css). -->
+    <meta name="theme-color" content="#ffffff" />
     <meta name="description" content="A personal compact disc collection you can flip through." />
     <title>MyCDs</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />

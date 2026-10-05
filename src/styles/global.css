@@ -88,6 +88,16 @@
   --safe-left: env(safe-area-inset-left, 0px);
   --safe-right: env(safe-area-inset-right, 0px);
 
+  /* How far browser chrome can reach past the layout viewport. Safari on iOS 26
+     draws translucent bars over the page (status bar on top, floating tab bar
+     below), and `position: fixed; inset: 0` stops at the bar instead of running
+     under it, so a full-screen layer that should read as edge to edge leaves a
+     strip of bare page there — white. Full-screen backgrounds therefore
+     overhang by this much. Generous on purpose: an overhang nothing covers is
+     simply off screen, and only backgrounds use it, never content or hit
+     targets, so nothing becomes unreachable. */
+  --chrome-bleed: 8rem;
+
   color-scheme: light;
 }
 
@@ -286,7 +296,13 @@ button {
 .shelf {
   position: absolute;
   inset: 0;
-  overflow: hidden;
+  /* Clipped sideways, but free to paint past the top and bottom: the wall
+     carries on under the browser's translucent bars rather than ending in a
+     white strip where they are. The element itself — and so the camera's pan
+     bounds and the inset probe — stays the size of the layout viewport, so no
+     cover is ever parked out of reach behind the chrome. The overscan row the
+     virtualiser already mounts is what fills that overhang. */
+  overflow: clip visible;
   background-color: var(--color-bg);
   color: var(--color-text);
   cursor: grab;
@@ -336,7 +352,10 @@ button {
   position: absolute;
   z-index: 1;
   display: grid;
-  inset: 0;
+  /* Overhangs like the wall does, or covers would show under the browser
+     chrome while the curtain is still down. Symmetric, so the content stays
+     centred on the viewport. */
+  inset: calc(-1 * var(--chrome-bleed)) 0;
   place-items: center;
   background-color: var(--color-bg);
   transition: opacity var(--duration-slow) var(--ease-standard);
@@ -1441,9 +1460,12 @@ button {
   inset: 0;
 }
 
+/* The backdrop and scrim overhang the browser chrome (see `--chrome-bleed`) so
+   the open record's room fills the whole screen instead of the wall peeking
+   out under Safari's bars. */
 .disc-panel__backdrop {
   position: absolute;
-  inset: 0;
+  inset: calc(-1 * var(--chrome-bleed)) 0;
   overflow: hidden;
   background: var(--color-bg);
 }
@@ -1462,7 +1484,7 @@ button {
 
 .disc-panel__scrim {
   position: absolute;
-  inset: 0;
+  inset: calc(-1 * var(--chrome-bleed)) 0;
   border: 0;
   background: rgb(255 255 255 / 62%);
   cursor: default;
@@ -1745,7 +1767,8 @@ button {
 
 .admin-layer__scrim {
   position: absolute;
-  inset: 0;
+  /* Overhangs the browser chrome, as the disc panel's scrim does. */
+  inset: calc(-1 * var(--chrome-bleed)) 0;
   border: 0;
   background: rgb(255 255 255 / 55%);
   cursor: default;
