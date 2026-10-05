@@ -24,6 +24,13 @@ export interface ScreenRect {
   height: number;
 }
 
+/**
+ * How much of the record's colour reaches the page canvas while it is open:
+ * roughly what survives of it through the backdrop (the cover at 55% under a
+ * 62% white scrim), so the strip under the status bar reads as the same room.
+ */
+const CANVAS_TINT = 25;
+
 interface DiscPanelProps {
   disc: DiscIndexEntry;
   /** Where the tile is on screen right now; null when it cannot be located. */
@@ -105,11 +112,22 @@ export function DiscPanel({
   useLayoutEffect(() => {
     const root = document.documentElement;
     const previous = root.style.overflow;
+    const previousBackground = root.style.backgroundColor;
     root.style.overflow = 'hidden';
+    // Opened at (or near) the top of the page, there is no page above the
+    // panel for its backdrop to extend into, and Safari shows the page's
+    // canvas under the status bar instead — white. Colour the canvas like the
+    // room: the record's colour, washed out as the backdrop's scrim washes it.
+    // On the root, not the body: Safari tints its toolbar fade from the body's
+    // colour, which stays clear (see global.css).
+    if (disc.color) {
+      root.style.backgroundColor = `color-mix(in srgb, ${disc.color} ${String(CANVAS_TINT)}%, #fff)`;
+    }
     return () => {
       root.style.overflow = previous;
+      root.style.backgroundColor = previousBackground;
     };
-  }, []);
+  }, [disc.color]);
 
   const year = releaseYear(disc.releaseDate);
   const cover = detail?.images.find((image) => image.kind === 'front' && image.width > 600);
