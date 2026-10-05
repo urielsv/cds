@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import {
   activeFilterCount,
+  applyRecentChanges,
   colourRank,
   DEFAULT_QUERY_STATE,
   deriveFacets,
@@ -363,5 +364,70 @@ describe('findDuplicate', () => {
         source: { ...disc.source, releaseMbid: null },
       }),
     ).toBeNull();
+  });
+});
+
+describe('applyRecentChanges', () => {
+  const base: CollectionIndex = {
+    version: 1,
+    generatedAt: '2026-01-01T00:00:00.000Z',
+    discs: [entry({ id: 'a' }), entry({ id: 'b' }), entry({ id: 'c' })],
+  };
+  const now = 1_000_000;
+  const maxAge = 180_000;
+  const ids = (index: CollectionIndex) => index.discs.map((d) => d.id);
+
+  it('hides a disc deleted moments ago that a stale index still lists', () => {
+    const next = applyRecentChanges(
+      base,
+      [{ kind: 'delete', id: 'b', at: now - 5_000 }],
+      now,
+      maxAge,
+    );
+    expect(ids(next)).toEqual(['a', 'c']);
+  });
+
+  it('shows a just-added disc first, and an edit in place', () => {
+    const added = entry({ id: 'new' });
+    const edited = entry({ id: 'b', country: 'JP' });
+    const next = applyRecentChanges(
+      base,
+      [
+        { kind: 'put', entry: added, at: now - 2_000 },
+        { kind: 'put', entry: edited, at: now - 1_000 },
+      ],
+      now,
+      maxAge,
+    );
+    expect(ids(next)).toEqual(['new', 'a', 'b', 'c']);
+    expect(next.discs[2]).toBe(edited);
+  });
+
+  it('applies changes in order, so a delete after an add wins', () => {
+    const next = applyRecentChanges(
+      base,
+      [
+        { kind: 'put', entry: entry({ id: 'new' }), at: now - 2_000 },
+        { kind: 'delete', id: 'new', at: now - 1_000 },
+      ],
+      now,
+      maxAge,
+    );
+    expect(ids(next)).toEqual(['a', 'b', 'c']);
+  });
+
+  it('ignores changes old enough that the fetched index already has them', () => {
+    const next = applyRecentChanges(
+      base,
+      [{ kind: 'delete', id: 'b', at: now - maxAge - 1 }],
+      now,
+      maxAge,
+    );
+    expect(next).toBe(base);
+  });
+
+  it('is a no-op when the index already reflects the change', () => {
+    const next = applyRecentChanges(base, [{ kind: 'delete', id: 'zzz', at: now }], now, maxAge);
+    expect(ids(next)).toEqual(['a', 'b', 'c']);
   });
 });

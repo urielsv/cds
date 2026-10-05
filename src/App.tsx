@@ -11,7 +11,7 @@ import { FilterPanel } from '@/features/search/FilterPanel';
 import { FloatingBar } from '@/features/search/FloatingBar';
 import { Shelf, type ShelfHandle } from '@/features/shelf/Shelf';
 import { useDebouncedValue, useQueryState } from '@/hooks/useQueryState';
-import { loadCollection } from '@/lib/collection';
+import { loadCollection, rememberDeleted, rememberSaved } from '@/lib/collection';
 import { createDiscSearch } from '@/lib/search';
 import {
   activeFilterCount,
@@ -123,6 +123,7 @@ export function App() {
   }, []);
 
   const handleAdded = useCallback((entry: DiscIndexEntry) => {
+    rememberSaved(entry);
     setLoad((previous) =>
       previous.status === 'ready'
         ? {
@@ -154,6 +155,7 @@ export function App() {
   // An owner edit replaces the entry in place; the shelf re-renders from the
   // in-memory array, no index refetch (browsing stays network-free).
   const handleEdited = useCallback((entry: DiscIndexEntry) => {
+    rememberSaved(entry);
     setLoad((previous) =>
       previous.status === 'ready'
         ? {
@@ -166,8 +168,10 @@ export function App() {
     setOpenDisc((current) => (current?.id === entry.id ? entry : current));
   }, []);
 
-  // An owner delete drops the entry from the in-memory collection.
+  // An owner delete drops the entry from the in-memory collection, and is
+  // remembered so a reload does not resurrect it from a stale CDN copy.
   const handleRemoved = useCallback((id: string) => {
+    rememberDeleted(id);
     setLoad((previous) =>
       previous.status === 'ready'
         ? { ...previous, discs: previous.discs.filter((d) => d.id !== id) }

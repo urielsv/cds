@@ -480,6 +480,47 @@ export function updateIndexEntry(
   return { version: 1, generatedAt: now.toISOString(), discs };
 }
 
+/**
+ * An owner change already saved, remembered on the device that made it.
+ * `at` is epoch milliseconds.
+ */
+export type RecentChange =
+  { kind: 'put'; entry: DiscIndexEntry; at: number } | { kind: 'delete'; id: string; at: number };
+
+/**
+ * Lays the owner's own recent changes over a freshly fetched index.
+ *
+ * The browser reads the index through the CDN, which serves an overwritten
+ * copy for up to a minute after a write, and then the browser's own cache can
+ * hold it for another minute (`max-age`). Reloading straight after a delete
+ * would otherwise bring the disc back on screen even though it is gone from
+ * storage. Changes older than `maxAgeMs` are skipped: by then the fetched index
+ * already reflects them. Re-applying a change the index already has is a no-op,
+ * so overlap is harmless. Changes apply in the order given (oldest first).
+ */
+export function applyRecentChanges(
+  index: CollectionIndex,
+  changes: readonly RecentChange[],
+  now: number,
+  maxAgeMs: number,
+): CollectionIndex {
+  let discs = index.discs;
+  for (const change of changes) {
+    if (now - change.at > maxAgeMs) continue;
+    if (change.kind === 'delete') {
+      discs = discs.filter((disc) => disc.id !== change.id);
+      continue;
+    }
+    const position = discs.findIndex((disc) => disc.id === change.entry.id);
+    // A new disc goes first, where the server's ingest puts it.
+    discs =
+      position === -1
+        ? [change.entry, ...discs]
+        : discs.map((disc, i) => (i === position ? change.entry : disc));
+  }
+  return discs === index.discs ? index : { ...index, discs };
+}
+
 export type DuplicateReason = 'release' | 'barcode' | 'title';
 
 /**

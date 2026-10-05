@@ -1,4 +1,12 @@
-import { type CollectionIndex, collectionIndexSchema, type Disc, discSchema } from '@shared/disc';
+import { applyRecentChanges, type RecentChange } from '@shared/collection';
+import {
+  type CollectionIndex,
+  collectionIndexSchema,
+  type Disc,
+  type DiscIndexEntry,
+  discSchema,
+} from '@shared/disc';
+import { z } from 'zod';
 
 export interface LoadedCollection {
   index: CollectionIndex;
@@ -41,7 +49,70 @@ export async function loadCollection(signal?: AbortSignal): Promise<LoadedCollec
 
   // Validate at the boundary: a stored document is external input too.
   const index = collectionIndexSchema.parse(await response.json());
-  return { index, isDemo: false };
+  return {
+    index: applyRecentChanges(index, readRecentChanges(), Date.now(), RECENT_CHANGE_MAX_AGE_MS),
+    isDemo: false,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// Recent owner changes
+// ---------------------------------------------------------------------------
+
+/**
+ * How long a saved change may still be missing from the index the browser
+ * fetches: up to 60 s for the CDN to pick up the overwrite, plus up to 60 s of
+ * browser cache (`max-age=60`, see `api/_lib/store.ts`), plus slack.
+ */
+const RECENT_CHANGE_MAX_AGE_MS = 3 * 60 * 1000;
+const RECENT_CHANGES_KEY = 'mycds:recent-changes';
+
+const recentChangesSchema = z.array(
+  z.discriminatedUnion('kind', [
+    z.object({
+      kind: z.literal('put'),
+      entry: collectionIndexSchema.shape.discs.element,
+      at: z.number(),
+    }),
+    z.object({ kind: z.literal('delete'), id: z.string(), at: z.number() }),
+  ]),
+);
+
+function readRecentChanges(): RecentChange[] {
+  try {
+    const raw = localStorage.getItem(RECENT_CHANGES_KEY);
+    if (raw === null) return [];
+    const parsed = recentChangesSchema.safeParse(JSON.parse(raw));
+    return parsed.success ? parsed.data : [];
+  } catch {
+    // Storage disabled (private mode) or corrupt: just no overlay.
+    return [];
+  }
+}
+
+/**
+ * Remembers a change the server has confirmed, so a reload in the next few
+ * minutes shows it even while the CDN still serves the previous index. Only
+ * the device that made the change knows; other visitors wait out the minute.
+ */
+function remember(change: RecentChange): void {
+  try {
+    const now = change.at;
+    const kept = readRecentChanges().filter((c) => now - c.at <= RECENT_CHANGE_MAX_AGE_MS);
+    localStorage.setItem(RECENT_CHANGES_KEY, JSON.stringify([...kept, change]));
+  } catch {
+    // Best effort: without storage the change is still saved, just not overlaid.
+  }
+}
+
+/** Call after the server confirms an add or an edit. */
+export function rememberSaved(entry: DiscIndexEntry): void {
+  remember({ kind: 'put', entry, at: Date.now() });
+}
+
+/** Call after the server confirms a delete. */
+export function rememberDeleted(id: string): void {
+  remember({ kind: 'delete', id, at: Date.now() });
 }
 
 /**

@@ -8,7 +8,7 @@
  * so clean up after any failure.
  */
 
-import { BlobNotFoundError, del, get, put } from '@vercel/blob';
+import { BlobNotFoundError, copy, del, get, head, put } from '@vercel/blob';
 
 import {
   type CollectionIndex,
@@ -58,35 +58,84 @@ export function emptyIndex(now: Date): CollectionIndex {
   return { version: 1, generatedAt: now.toISOString(), discs: [] };
 }
 
+/** Where `readFresh` parks its throwaway copies. Never referenced by the index. */
+const SNAPSHOT_PREFIX = 'collection/snapshots/';
+
+/** ETags compared loosely: the CDN and the API may differ on quoting or `W/`. */
+function sameEtag(a: string, b: string): boolean {
+  const bare = (tag: string) => tag.replace(/^W\//, '').replace(/"/g, '');
+  return a.length > 0 && bare(a) === bare(b);
+}
+
+interface Auth {
+  token?: string;
+}
+
+/**
+ * The text of a mutable public blob as it is at origin right now, or null if
+ * it does not exist.
+ *
+ * Every read-modify-write of the index (and of a disc document) needs this.
+ * `get(..., { useCache: false })` looks like the answer but is honoured only
+ * for PRIVATE stores — the SDK sends it as `?cache=0` for private access and
+ * silently ignores it for public — and this store is public. A plain `get()`
+ * therefore returns the CDN copy, which lags an overwrite by up to 60 seconds,
+ * and writing back from it undoes whatever changed in that minute: delete one
+ * disc, then delete another, and the first comes back.
+ *
+ * So: `head()` (a simple operation) reports the origin's current ETag. If the
+ * CDN copy carries the same one it is current and is used as is — the common
+ * case, since writes are minutes apart. Otherwise the blob is copied inside
+ * the store, from origin, to a random pathname the CDN has never seen, read
+ * once (a guaranteed cache miss, so origin content), and deleted (free). That
+ * costs one advanced operation, and only when the CDN really is stale.
+ */
+async function readFresh(pathname: string, auth: Auth): Promise<string | null> {
+  let current: Awaited<ReturnType<typeof head>>;
+  try {
+    current = await head(pathname, auth);
+  } catch (error) {
+    if (error instanceof BlobNotFoundError) return null;
+    throw error;
+  }
+
+  const cached = await get(pathname, { access: 'public', ...auth }).catch(() => null);
+  if (cached?.statusCode === 200 && sameEtag(cached.blob.etag, current.etag)) {
+    return new Response(cached.stream).text();
+  }
+  if (cached?.statusCode === 200) await cached.stream.cancel();
+
+  const snapshot = await copy(current.url, `${SNAPSHOT_PREFIX}${pathname}`, {
+    access: 'public',
+    addRandomSuffix: true,
+    ...auth,
+  });
+  try {
+    const fresh = await get(snapshot.url, { access: 'public', ...auth });
+    if (fresh?.statusCode !== 200) throw new Error(`Could not read a fresh copy of ${pathname}.`);
+    return await new Response(fresh.stream).text();
+  } finally {
+    await del(snapshot.url, auth).catch(() => undefined);
+  }
+}
+
 export function createBlobStore(token?: string): CollectionStore {
   const auth = token === undefined ? {} : { token };
 
   return {
     async readIndex() {
-      let result: Awaited<ReturnType<typeof get>>;
-      try {
-        // `useCache: false` reads origin. The CDN copy may be up to a minute
-        // stale, and read-modify-write from a stale copy would drop the disc
-        // added just before. One origin read per add is a fair price.
-        result = await get(INDEX_PATH, { access: 'public', useCache: false, ...auth });
-      } catch (error) {
-        if (error instanceof BlobNotFoundError) return emptyIndex(new Date());
-        throw error;
-      }
-      if (result?.statusCode !== 200) return emptyIndex(new Date());
-      const text = await new Response(result.stream).text();
+      // Origin, not the CDN: a stale copy written back would undo the last
+      // minute's adds and deletes. See `readFresh`.
+      const text = await readFresh(INDEX_PATH, auth);
+      if (text === null) return emptyIndex(new Date());
       return collectionIndexSchema.parse(JSON.parse(text));
     },
 
     async readDisc(id) {
-      try {
-        const result = await get(discPath(id), { access: 'public', useCache: false, ...auth });
-        if (result?.statusCode !== 200) return null;
-        return discSchema.parse(JSON.parse(await new Response(result.stream).text()));
-      } catch (error) {
-        if (error instanceof BlobNotFoundError) return null;
-        throw error;
-      }
+      // Origin too: an edit builds on this document, and a delete reads it to
+      // find every image blob to remove — including a cover replaced moments ago.
+      const text = await readFresh(discPath(id), auth);
+      return text === null ? null : discSchema.parse(JSON.parse(text));
     },
 
     async putImage(pathname, bytes) {
