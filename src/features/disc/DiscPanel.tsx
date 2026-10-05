@@ -94,6 +94,23 @@ export function DiscPanel({
   const [detail, setDetail] = useState<Disc | null>(null);
   const [editing, setEditing] = useState(false);
 
+  /**
+   * The panel is page content, placed where the page is scrolled (see
+   * `.disc-panel`): only the page's own content shows under Safari's
+   * translucent toolbars. The page is held still while it is open, or a
+   * scroll that chained out of a short track list would carry the panel away
+   * with the wall.
+   */
+  const [top] = useState(() => window.scrollY);
+  useLayoutEffect(() => {
+    const root = document.documentElement;
+    const previous = root.style.overflow;
+    root.style.overflow = 'hidden';
+    return () => {
+      root.style.overflow = previous;
+    };
+  }, []);
+
   const year = releaseYear(disc.releaseDate);
   const cover = detail?.images.find((image) => image.kind === 'front' && image.width > 600);
   const coverUrl = disc.thumbnail?.url;
@@ -310,6 +327,7 @@ export function DiscPanel({
     <div
       ref={rootRef}
       className="disc-panel"
+      style={{ top }}
       role="dialog"
       aria-modal="true"
       aria-label={`${disc.title} by ${disc.artist}`}

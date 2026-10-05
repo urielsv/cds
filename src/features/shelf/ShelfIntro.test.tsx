@@ -46,6 +46,8 @@ describe('ShelfIntro', () => {
 
   it('moves on to another message while it waits', () => {
     const { container } = render(<ShelfIntro urls={urls} />);
+    // Nothing arriving: shown once the prediction kicks in, then rotating.
+    advance(600);
     advance(1400);
     expect(container.querySelector('.shelf-intro__messages')).not.toHaveTextContent(
       /^Loading the best albums…$/,
@@ -99,6 +101,7 @@ describe('ShelfIntro', () => {
   it('offers a way to skip ahead, but only after a moment', () => {
     const { container } = render(<ShelfIntro urls={urls} />);
     expect(screen.queryByRole('button', { name: 'Show what’s here' })).toBeNull();
+    advance(600);
     advance(1500);
     fireEvent.click(screen.getByRole('button', { name: 'Show what’s here' }));
     finishFade();
@@ -112,6 +115,33 @@ describe('ShelfIntro', () => {
     fireEvent.pointerDown(intro);
     finishFade();
     expect(container.querySelector('.shelf-intro')).toBeNull();
+  });
+
+  it('starts blank, so a quick load never flashes a loading screen', () => {
+    const { container } = render(<ShelfIntro urls={urls} />);
+    expect(container.querySelector('.shelf-intro')).toHaveClass('shelf-intro--blank');
+    advance(200);
+    load(urls);
+    finishFade();
+    expect(container.querySelector('.shelf-intro')).toBeNull();
+  });
+
+  it('shows the loading screen for a load set to take longer than 3 seconds', () => {
+    const { container } = render(<ShelfIntro urls={urls} />);
+    // One cover in 600 ms: ten will take about six seconds.
+    advance(500);
+    load(urls.slice(0, 1));
+    advance(150);
+    expect(container.querySelector('.shelf-intro')).not.toHaveClass('shelf-intro--blank');
+  });
+
+  it('stays blank for a load on course to finish quickly', () => {
+    const { container } = render(<ShelfIntro urls={urls} />);
+    advance(500);
+    // Eight of ten in 600 ms: the rest will follow well inside 3 seconds.
+    load(urls.slice(0, 8));
+    advance(150);
+    expect(container.querySelector('.shelf-intro')).toHaveClass('shelf-intro--blank');
   });
 
   it('lifts straight away for a screen with no artwork', () => {

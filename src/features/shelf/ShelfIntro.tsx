@@ -5,6 +5,7 @@ import { durationMs, REDUCED_TRANSITION, transition } from '@/motion/tokens';
 
 import { coverLoader } from '@/lib/coverLoader';
 import { INTRO_DONE_MESSAGE, introSequence } from './introMessages';
+import { looksLong, PREDICT_EVERY_MS } from './introTiming';
 
 /**
  * The longest the intro will ever hold the wall back. It waits for every cover
@@ -15,7 +16,7 @@ import { INTRO_DONE_MESSAGE, introSequence } from './introMessages';
  */
 const INTRO_MAX_MS = 10_000;
 
-/** When the explicit "show what's here" control appears. */
+/** When the explicit "show what's here" control appears, after the intro shows. */
 const SKIP_AFTER_MS = 1500;
 
 /**
@@ -62,6 +63,9 @@ export function ShelfIntro({ urls }: { urls: readonly string[] | null }) {
   const [elapsed, setElapsed] = useState({ skip: false, timedOut: false });
   const [dismissed, setDismissed] = useState(false);
   const [phase, setPhase] = useState<Phase>('showing');
+  const [startedAt] = useState(() => Date.now());
+  // Whether the loading screen's content is shown at all; see `looksLong`.
+  const [visible, setVisible] = useState(false);
 
   const subscribe = useCallback((listener: () => void) => coverLoader.subscribe(listener), []);
   const settled = useSyncExternalStore(subscribe, () =>
@@ -74,29 +78,49 @@ export function ShelfIntro({ urls }: { urls: readonly string[] | null }) {
   const complete = urls !== null && settled >= total;
   const ready = dismissed || elapsed.timedOut || complete;
 
+  // Decide whether this load is long enough to deserve a loading screen.
   useEffect(() => {
-    const timers = [
-      window.setTimeout(() => {
-        setElapsed((e) => ({ ...e, skip: true }));
-      }, SKIP_AFTER_MS),
-      window.setTimeout(() => {
-        setElapsed((e) => ({ ...e, timedOut: true }));
-      }, INTRO_MAX_MS),
-    ];
-    const rotate = window.setInterval(() => {
-      setMessageIndex((i) => (i + 1) % messages.length);
-    }, MESSAGE_MS);
+    if (visible || ready) return;
+    const check = () => {
+      if (looksLong(settled, total, Date.now() - startedAt)) setVisible(true);
+    };
+    check();
+    const timer = window.setInterval(check, PREDICT_EVERY_MS);
+    return () => {
+      window.clearInterval(timer);
+    };
+  }, [visible, ready, settled, total, startedAt]);
+
+  useEffect(() => {
+    const timedOut = window.setTimeout(() => {
+      setElapsed((e) => ({ ...e, timedOut: true }));
+    }, INTRO_MAX_MS);
     // Any key but Tab lifts the curtain; Tab reaches the button inside it.
     const onKey = (event: KeyboardEvent) => {
       if (event.key !== 'Tab' && event.key !== 'Shift') setDismissed(true);
     };
     window.addEventListener('keydown', onKey);
     return () => {
-      for (const timer of timers) window.clearTimeout(timer);
-      window.clearInterval(rotate);
+      window.clearTimeout(timedOut);
       window.removeEventListener('keydown', onKey);
     };
-  }, [messages.length]);
+  }, []);
+
+  // The messages and the skip control run only once there is something on
+  // screen to read.
+  useEffect(() => {
+    if (!visible) return;
+    const skip = window.setTimeout(() => {
+      setElapsed((e) => ({ ...e, skip: true }));
+    }, SKIP_AFTER_MS);
+    const rotate = window.setInterval(() => {
+      setMessageIndex((i) => (i + 1) % messages.length);
+    }, MESSAGE_MS);
+    return () => {
+      window.clearTimeout(skip);
+      window.clearInterval(rotate);
+    };
+  }, [visible, messages.length]);
 
   // Fade, then unmount, so nothing sits over the wall once it is shown.
   useEffect(() => {
@@ -153,7 +177,11 @@ export function ShelfIntro({ urls }: { urls: readonly string[] | null }) {
 
   return (
     <div
-      className={['shelf-intro', phase === 'leaving' && 'shelf-intro--leaving']
+      className={[
+        'shelf-intro',
+        !visible && 'shelf-intro--blank',
+        phase === 'leaving' && 'shelf-intro--leaving',
+      ]
         .filter(Boolean)
         .join(' ')}
       onPointerDown={() => {

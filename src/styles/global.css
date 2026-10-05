@@ -122,10 +122,21 @@ body {
 
 html {
   -webkit-text-size-adjust: 100%;
+  /* The open disc holds the page still with overflow: hidden; without a
+     reserved gutter, a desktop scrollbar vanishing would change the page
+     width and re-flow the wall behind the panel. */
+  scrollbar-gutter: stable;
 }
 
 body {
-  background-color: var(--color-bg);
+  /* All but transparent, on purpose. Safari 26 tints its toolbars, and the
+     soft fade under them at the top and bottom of the screen, with the body's
+     background colour (it ignores theme-color). White drew a band of light
+     over the covers at both ends. A colour that is set but almost clear keeps
+     Safari sampling the page rather than falling back to its default white,
+     and leaves nothing to see in the fade. What the page paints — the shelf,
+     the panels — carries its own background. */
+  background-color: rgb(255 255 255 / 1%);
   color: var(--color-text);
   font-family: var(--font-sans);
   line-height: 1.45;
@@ -359,17 +370,33 @@ button {
 /* ---- First-load curtain (ShelfIntro) ---- */
 
 .shelf-intro {
-  /* Over the screen, not the (page-tall) shelf. */
-  position: fixed;
+  /* Page content at the top of the page, not a fixed layer: only the page's
+     own content shows under Safari's translucent toolbars, so a fixed curtain
+     left the loading wall visible through them. The intro only runs at
+     scroll 0, before anyone has scrolled. Centred in the visible screen
+     (svh), and running on past the bottom toolbar by the bleed. */
+  position: absolute;
   z-index: 1;
+  top: 0;
+  right: 0;
+  left: 0;
   display: grid;
-  /* Overhangs like the wall does, or covers would show under the browser
-     chrome while the curtain is still down. Symmetric, so the content stays
-     centred on the viewport. */
-  inset: calc(-1 * var(--chrome-bleed)) 0;
+  box-sizing: content-box;
+  height: 100svh;
+  padding-bottom: var(--chrome-bleed);
   place-items: center;
   background-color: var(--color-bg);
+  /* A touch lifts it rather than scrolling the page out from under it. */
+  touch-action: none;
   transition: opacity var(--duration-slow) var(--ease-standard);
+}
+
+/* Held blank for the first moments: if the covers arrive quickly the curtain
+   lifts without its content ever showing, rather than flashing a loading
+   screen for half a second (see ShelfIntro). */
+.shelf-intro--blank .shelf-intro__content,
+.shelf-intro--blank .shelf-intro__skip {
+  opacity: 0;
 }
 
 /* Lifted: fades to reveal the wall, and stops catching touches at once so the
@@ -386,7 +413,9 @@ button {
   align-items: center;
   gap: 1.1rem;
   text-align: center;
-  transition: transform var(--duration-slow) var(--ease-standard);
+  transition:
+    transform var(--duration-slow) var(--ease-standard),
+    opacity var(--duration-slow) var(--ease-standard);
 }
 
 /* The content drifts forward a touch as the curtain lifts: the wall arrives
@@ -1466,9 +1495,17 @@ button {
    =========================================================================== */
 
 .disc-panel {
-  position: fixed;
+  /* Page content, placed at the scroll position it opened at (DiscPanel sets
+     `top`) with the page held still, rather than a fixed layer: only the
+     page's own content shows under Safari's translucent toolbars, so a fixed
+     panel left the wall showing through them. The backdrop's bleed carries
+     the room on under both toolbars. dvh: the visible screen, so the last
+     track can scroll clear of the bottom toolbar. */
+  position: absolute;
   z-index: 20;
-  inset: 0;
+  right: 0;
+  left: 0;
+  height: 100dvh;
 }
 
 /* The backdrop and scrim overhang the browser chrome (see `--chrome-bleed`) so
