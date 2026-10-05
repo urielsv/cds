@@ -318,100 +318,108 @@ export function DiscPanel({
         {/* The cover itself, blurred to fill the screen: the room takes on the
             colour of the record. One static element, painted once. */}
         {coverSrc && <img className="disc-panel__ambient" src={loadedCover ?? coverSrc} alt="" />}
-        <button
-          type="button"
-          className="disc-panel__scrim"
-          onClick={close}
-          aria-label="Close"
-          tabIndex={-1}
-        />
+        <div className="disc-panel__scrim" />
       </div>
 
       <div className="disc-panel__scroll">
-        <div className="disc-panel__layout">
-          <div className="disc-panel__art">
-            {coverSrc ? (
-              <img
-                ref={setCover}
-                className="disc-panel__cover"
-                src={coverSrc}
-                alt={`Cover of ${disc.title} by ${disc.artist}`}
-                width={disc.thumbnail?.width ?? 500}
-                height={disc.thumbnail?.height ?? 500}
-                style={{ backgroundColor: disc.color ?? undefined }}
-                draggable={false}
-              />
-            ) : (
-              <div
-                ref={setCover}
-                className="disc-panel__cover disc-panel__cover--typeset"
-                style={{ backgroundColor: disc.color ?? undefined }}
-                role="img"
-                aria-label={`No artwork for ${disc.title}`}
-              >
-                <span>{disc.title}</span>
-              </div>
-            )}
-          </div>
+        {/* The tap-outside-to-close target lives inside the scroller, behind
+            the content, rather than under it. iOS Safari will not scroll a
+            container that is `pointer-events: none` (as it used to be, so
+            taps fell through to the scrim) even when the finger lands on a
+            child that takes pointer events: the track list could not scroll. */}
+        <div className="disc-panel__content">
+          <button
+            type="button"
+            className="disc-panel__dismiss"
+            onClick={close}
+            aria-label="Close"
+            tabIndex={-1}
+          />
+          <div className="disc-panel__layout">
+            <div className="disc-panel__art">
+              {coverSrc ? (
+                <img
+                  ref={setCover}
+                  className="disc-panel__cover"
+                  src={coverSrc}
+                  alt={`Cover of ${disc.title} by ${disc.artist}`}
+                  width={disc.thumbnail?.width ?? 500}
+                  height={disc.thumbnail?.height ?? 500}
+                  style={{ backgroundColor: disc.color ?? undefined }}
+                  draggable={false}
+                />
+              ) : (
+                <div
+                  ref={setCover}
+                  className="disc-panel__cover disc-panel__cover--typeset"
+                  style={{ backgroundColor: disc.color ?? undefined }}
+                  role="img"
+                  aria-label={`No artwork for ${disc.title}`}
+                >
+                  <span>{disc.title}</span>
+                </div>
+              )}
+            </div>
 
-          <div ref={bodyRef} className="disc-panel__body">
-            <header className="disc-panel__header">
-              <h2 className="disc-panel__title">{disc.title}</h2>
-              <p className="disc-panel__artist">
-                {disc.artist}
-                {year !== null && <span className="disc-panel__year"> · {year}</span>}
-              </p>
-            </header>
+            <div ref={bodyRef} className="disc-panel__body">
+              <header className="disc-panel__header">
+                <h2 className="disc-panel__title">{disc.title}</h2>
+                <p className="disc-panel__artist">
+                  {disc.artist}
+                  {year !== null && <span className="disc-panel__year"> · {year}</span>}
+                </p>
+              </header>
 
-            {facts.length > 0 && (
-              <dl className="disc-panel__facts">
-                {facts.map((fact) => (
-                  <div key={fact.label} className="disc-panel__fact">
-                    <dt>{fact.label}</dt>
-                    <dd>{fact.value}</dd>
-                  </div>
-                ))}
-              </dl>
-            )}
+              {facts.length > 0 && (
+                <dl className="disc-panel__facts">
+                  {facts.map((fact) => (
+                    <div key={fact.label} className="disc-panel__fact">
+                      <dt>{fact.label}</dt>
+                      <dd>{fact.value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              )}
 
-            {disc.genres.length > 0 && (
-              <ul className="disc-panel__genres" aria-label="Genres">
-                {disc.genres.map((genre) => (
-                  <li key={genre} className="disc-panel__genre">
-                    {genre}
-                  </li>
-                ))}
-              </ul>
-            )}
-
-            {detail?.notes && <p className="disc-panel__notes">{detail.notes}</p>}
-
-            {tracks.length > 0 && (
-              <section className="disc-panel__tracks" aria-label="Tracks">
-                <h3 className="disc-panel__tracks-heading">
-                  {tracks.length} track{tracks.length === 1 ? '' : 's'}
-                  {runtime !== null && ` · ${formatDuration(runtime)}`}
-                </h3>
-                <ol className="disc-panel__tracklist">
-                  {tracks.map((track) => (
-                    <li key={track.position} className="disc-panel__track">
-                      <span className="disc-panel__track-number">{track.position}</span>
-                      <span className="disc-panel__track-title">
-                        {track.title}
-                        {track.artist !== null && (
-                          <span className="disc-panel__track-artist"> — {track.artist}</span>
-                        )}
-                      </span>
-                      {track.lengthMs !== null && (
-                        <span className="disc-panel__track-length">
-                          {formatDuration(track.lengthMs)}
-                        </span>
-                      )}
+              {disc.genres.length > 0 && (
+                <ul className="disc-panel__genres" aria-label="Genres">
+                  {disc.genres.map((genre) => (
+                    <li key={genre} className="disc-panel__genre">
+                      {genre}
                     </li>
                   ))}
-                </ol>
-              </section>
-            )}
+                </ul>
+              )}
+
+              {detail?.notes && <p className="disc-panel__notes">{detail.notes}</p>}
+
+              {tracks.length > 0 && (
+                <section className="disc-panel__tracks" aria-label="Tracks">
+                  <h3 className="disc-panel__tracks-heading">
+                    {tracks.length} track{tracks.length === 1 ? '' : 's'}
+                    {runtime !== null && ` · ${formatDuration(runtime)}`}
+                  </h3>
+                  <ol className="disc-panel__tracklist">
+                    {tracks.map((track) => (
+                      <li key={track.position} className="disc-panel__track">
+                        <span className="disc-panel__track-number">{track.position}</span>
+                        <span className="disc-panel__track-title">
+                          {track.title}
+                          {track.artist !== null && (
+                            <span className="disc-panel__track-artist"> — {track.artist}</span>
+                          )}
+                        </span>
+                        {track.lengthMs !== null && (
+                          <span className="disc-panel__track-length">
+                            {formatDuration(track.lengthMs)}
+                          </span>
+                        )}
+                      </li>
+                    ))}
+                  </ol>
+                </section>
+              )}
+            </div>
           </div>
         </div>
       </div>

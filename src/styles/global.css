@@ -1485,9 +1485,7 @@ button {
 .disc-panel__scrim {
   position: absolute;
   inset: calc(-1 * var(--chrome-bleed)) 0;
-  border: 0;
   background: rgb(255 255 255 / 62%);
-  cursor: default;
 }
 
 .disc-panel__scroll {
@@ -1497,12 +1495,31 @@ button {
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-y;
-  /* Clicks on empty space fall through to the scrim and close the panel. */
-  pointer-events: none;
+}
+
+/* Grid so the layout stretches to at least the screen's height (desktop
+   centres the record vertically in it), and so the dismiss target behind it
+   covers the whole scrolled length. */
+.disc-panel__content {
+  position: relative;
+  display: grid;
+  min-height: 100%;
+}
+
+/* Transparent, behind the content: a tap on empty space closes the panel. A
+   drag that starts here still scrolls — a button does not block panning. */
+.disc-panel__dismiss {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: none;
+  cursor: default;
 }
 
 .disc-panel__layout {
+  position: relative;
   display: flex;
+  width: 100%;
   max-width: 64rem;
   flex-direction: column;
   align-items: center;
@@ -1510,6 +1527,8 @@ button {
   margin: 0 auto;
   padding: calc(4.25rem + var(--safe-top)) calc(1.25rem + var(--safe-right))
     calc(2.5rem + var(--safe-bottom)) calc(1.25rem + var(--safe-left));
+  /* Empty space in the layout lets taps through to the dismiss target. */
+  pointer-events: none;
 }
 
 .disc-panel__layout > * {
