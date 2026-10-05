@@ -22,12 +22,44 @@ import {
 } from './camera';
 
 /**
- * How far a flick throws the wall: the distance a finger moving at release
- * velocity would cover in this many milliseconds. Physics, not an animation
- * duration, which is why it is not one of the motion tokens — it decides how
- * far a hard flick goes, not how long the movement takes.
+ * Momentum decays exponentially with this time constant, as kinetic scrolling
+ * does: the wall keeps the finger's speed at release and slows smoothly, and a
+ * flick at velocity v travels v × this far in total. 325 ms is the classic
+ * kinetic-scrolling constant and is close to iOS's own scroll views. Physics,
+ * not an animation duration, which is why it is not one of the motion tokens —
+ * the slow-down is shaped by the throw, not by a fixed clock.
+ *
+ * It replaced a spring with a fixed visual duration, which carried a throw
+ * only ~40% as far as iOS does and then braked it hard: on a phone, a flick
+ * felt like it was caught rather than released.
  */
-const THROW_REACH_MS = 190;
+const MOMENTUM_TIME_CONSTANT_MS = 325;
+
+/**
+ * Snapping the landing to whole covers changes the distance, so each axis gets
+ * its own time constant that lands exactly on the cell while still starting at
+ * the finger's speed. Outside this band (a tiny flick snapped a whole cell
+ * further, say) the stretch would read as a lurch or a crawl, and the release
+ * falls back to a spring instead.
+ */
+const MIN_TIME_CONSTANT_MS = MOMENTUM_TIME_CONSTANT_MS * 0.5;
+const MAX_TIME_CONSTANT_MS = MOMENTUM_TIME_CONSTANT_MS * 1.8;
+
+/** Momentum ends once every axis is this close to its landing, in pixels. */
+const MOMENTUM_REST_PX = 0.5;
+
+/**
+ * The time constant that carries an axis `distance` pixels when it starts at
+ * `velocity` px/ms: 0 when there is nothing to travel, null when exponential
+ * momentum cannot get there naturally (no speed, the wrong way, or a stretch
+ * outside the band) and a spring should take over.
+ */
+export function timeConstant(distance: number, velocity: number): number | null {
+  if (Math.abs(distance) <= MOMENTUM_REST_PX) return 0;
+  if (velocity === 0 || Math.sign(distance) !== Math.sign(velocity)) return null;
+  const tau = distance / velocity;
+  return tau >= MIN_TIME_CONSTANT_MS && tau <= MAX_TIME_CONSTANT_MS ? tau : null;
+}
 
 type Listener = (camera: Camera) => void;
 
@@ -286,10 +318,12 @@ export class CameraController {
    * covers.
    *
    * The landing cell is decided at release — projected along the flick,
-   * clamped, snapped — and reached by a spring that starts at the finger's
+   * snapped — and reached by exponential momentum that starts at the finger's
    * velocity, so there is no change of pace as the finger lifts and no drift
-   * while the wall makes up its mind. An axis already stretched past its edge
-   * gets no throw: it is pulled home, as a scroll view does.
+   * while the wall makes up its mind. Two cases use a spring instead: a throw
+   * that would run past the end of the wall (the spring carries it into the
+   * rubber band and back, as an edge does natively), and an axis already
+   * stretched past its edge, which gets no throw and is pulled home.
    */
   fling(vx: number, vy: number): void {
     this.stop();
@@ -304,20 +338,77 @@ export class CameraController {
       y: past(start.y, bounds.y) ? 0 : vy,
     };
 
-    const landing = snapCells(
-      {
-        ...start,
-        x: start.x + velocity.x * THROW_REACH_MS,
-        y: start.y + velocity.y * THROW_REACH_MS,
-      },
-      this.layout,
-      this.viewport,
-    );
+    const ideal = {
+      ...start,
+      x: start.x + velocity.x * MOMENTUM_TIME_CONSTANT_MS,
+      y: start.y + velocity.y * MOMENTUM_TIME_CONSTANT_MS,
+    };
+    const landing = snapCells(ideal, this.layout, this.viewport);
+
+    const hitsEdge = past(ideal.x, bounds.x) || past(ideal.y, bounds.y);
+    const tx = timeConstant(landing.x - start.x, velocity.x);
+    const ty = timeConstant(landing.y - start.y, velocity.y);
+    if (!hitsEdge && tx !== null && ty !== null) {
+      this.coastTo(start, landing, tx, ty);
+      return;
+    }
+
     const distance = Math.hypot(landing.x - start.x, landing.y - start.y);
     // A throw of more than a screen gets slightly longer to cover the ground,
     // so a long flick does not blur past.
     const far = distance > Math.max(this.viewport.width, this.viewport.height);
     void this.springTo(landing, velocity, far ? 'slow' : 'base');
+  }
+
+  /**
+   * Exponential momentum from `from` to `to`, each axis with its own time
+   * constant (0 for an axis that does not move). Motion's `animate` is used
+   * only as the frame clock — a linear 0→duration in milliseconds — so the
+   * position is the closed-form decay, exact at every frame whatever the frame
+   * rate, and it ends precisely on the landing cell.
+   */
+  private coastTo(from: Camera, to: Camera, tx: number, ty: number): void {
+    if (this.reducedMotion) {
+      this.set(to);
+      this.release();
+      return;
+    }
+    const dx = to.x - from.x;
+    const dy = to.y - from.y;
+    // Time for an axis's remaining distance to fall below the rest threshold.
+    const settleMs = (distance: number, tau: number) =>
+      tau === 0 || Math.abs(distance) <= MOMENTUM_REST_PX
+        ? 0
+        : tau * Math.log(Math.abs(distance) / MOMENTUM_REST_PX);
+    const duration = Math.max(settleMs(dx, tx), settleMs(dy, ty));
+    if (duration === 0) {
+      this.set(to);
+      this.release();
+      return;
+    }
+    const along = (distance: number, tau: number, t: number) =>
+      tau === 0 ? distance : distance * (1 - Math.exp(-t / tau));
+
+    this.lease();
+    const controls = animate(0, duration, {
+      duration: duration / 1000,
+      ease: 'linear',
+      onUpdate: (t: number) => {
+        this.set({ scale: to.scale, x: from.x + along(dx, tx, t), y: from.y + along(dy, ty, t) });
+      },
+      onComplete: () => {
+        if (this.running !== running) return;
+        this.running = null;
+        this.set(to);
+        this.release();
+      },
+    });
+    const running: Controls = {
+      stop: () => {
+        controls.stop();
+      },
+    };
+    this.running = running;
   }
 
   /**

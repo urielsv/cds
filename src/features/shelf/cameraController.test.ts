@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { gridLayoutOf, scaleForColumns, type Viewport } from './camera';
-import { CameraController } from './cameraController';
+import { gridLayoutOf, scaleForColumns, TILE_SIZE, type Viewport } from './camera';
+import { CameraController, timeConstant } from './cameraController';
 
 const phone: Viewport = { width: 390, height: 844, insetTop: 47, insetBottom: 110 };
 
@@ -52,5 +52,40 @@ describe('CameraController on a width-filling wall', () => {
     controller.reflow = reflow;
     await controller.step(-1);
     expect(reflow).toHaveBeenCalledWith(scaleForColumns(phone, 5), expect.any(Object));
+  });
+});
+
+describe('fling momentum', () => {
+  it('lands a flick on a whole row, the full kinetic distance away', () => {
+    const controller = controllerAt(4);
+    const cell = TILE_SIZE * controller.camera.scale;
+    // 2 px/ms upwards: momentum carries ~650 px, snapped to the row grid.
+    controller.fling(0, -2);
+    const y = controller.camera.y;
+    expect(Math.abs(y / cell - Math.round(y / cell))).toBeLessThan(1e-6);
+    expect(Math.abs(y)).toBeGreaterThan(650 - cell);
+    expect(Math.abs(y)).toBeLessThan(650 + cell);
+  });
+});
+
+describe('timeConstant', () => {
+  it('starts at the finger speed and covers the snapped distance', () => {
+    expect(timeConstant(-650, -2)).toBeCloseTo(325);
+  });
+
+  it('is zero when there is nothing to travel', () => {
+    expect(timeConstant(0.2, 1)).toBe(0);
+  });
+
+  it('gives up (spring instead) for the wrong direction or no speed', () => {
+    expect(timeConstant(100, -1)).toBeNull();
+    expect(timeConstant(100, 0)).toBeNull();
+  });
+
+  it('gives up when snapping stretched the throw too far either way', () => {
+    // A slow 0.1 px/ms flick snapped a whole 200 px cell along: tau 2000 ms.
+    expect(timeConstant(200, 0.1)).toBeNull();
+    // A fast flick snapped back to a tenth of its reach.
+    expect(timeConstant(65, 2)).toBeNull();
   });
 });
