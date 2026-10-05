@@ -33,6 +33,8 @@ export interface CollectionStore {
   writeDisc: (disc: Disc) => Promise<StoredObject>;
   writeIndex: (index: CollectionIndex) => Promise<StoredObject>;
   remove: (urls: readonly string[]) => Promise<void>;
+  /** Deletes a disc's full document by id. del() is free; a no-op if absent. */
+  removeDisc: (id: string) => Promise<void>;
 }
 
 const YEAR_SECONDS = 365 * 24 * 60 * 60;
@@ -42,6 +44,15 @@ const YEAR_SECONDS = 365 * 24 * 60 * 60;
  * before a visitor sees a new disc. One minute is Blob's minimum.
  */
 const INDEX_CACHE_SECONDS = 60;
+
+/**
+ * Disc documents can now be edited in place (cover, country, format, genres),
+ * so they are no longer immutable and must not be cached for a year or an edit
+ * would be served stale for that long. They are read only when a disc is
+ * opened — never on the hot shelf path — so a short lifetime matching the index
+ * costs little. The client also busts its in-memory cache on an edit.
+ */
+const DISC_CACHE_SECONDS = 60;
 
 export function emptyIndex(now: Date): CollectionIndex {
   return { version: 1, generatedAt: now.toISOString(), discs: [] };
@@ -97,9 +108,9 @@ export function createBlobStore(token?: string): CollectionStore {
         addRandomSuffix: false,
         allowOverwrite: true,
         contentType: 'application/json',
-        // Disc documents are immutable once written; an edit flow must write a
-        // new path (or accept this lifetime) rather than overwrite in place.
-        cacheControlMaxAge: YEAR_SECONDS,
+        // Short-lived: disc docs are mutable now (edit flow), so a stale CDN
+        // copy must expire quickly rather than linger for a year.
+        cacheControlMaxAge: DISC_CACHE_SECONDS,
         ...auth,
       });
       return { url: blob.url };
@@ -120,6 +131,12 @@ export function createBlobStore(token?: string): CollectionStore {
     async remove(urls) {
       if (urls.length === 0) return;
       await del([...urls], auth);
+    },
+
+    async removeDisc(id) {
+      // del() by pathname is free and idempotent — deleting an absent blob is
+      // not an error — so callers can remove a disc document unconditionally.
+      await del(discPath(id), auth);
     },
   };
 }

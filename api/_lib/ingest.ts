@@ -38,26 +38,27 @@ const imageSchema = z.object({
   height: z.number().int().min(16).max(4096),
 });
 
+/** The resized-in-the-browser artwork payload, shared by add and edit flows. */
+export const artworkSchema = z.object({
+  color: z
+    .string()
+    .regex(/^#[0-9a-f]{6}$/i)
+    .nullable(),
+  placeholder: z
+    .string()
+    .regex(/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/)
+    .max(4000)
+    .nullable(),
+  tile: imageSchema,
+  large: imageSchema.nullable(),
+});
+
 export const ingestRequestSchema = z.object({
   mbid: mbidSchema,
   notes: z.string().max(4000).nullable().optional(),
   /** Set after the owner has seen the duplicate warning and chosen to add anyway. */
   allowDuplicate: z.boolean().optional(),
-  artwork: z
-    .object({
-      color: z
-        .string()
-        .regex(/^#[0-9a-f]{6}$/i)
-        .nullable(),
-      placeholder: z
-        .string()
-        .regex(/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/)
-        .max(4000)
-        .nullable(),
-      tile: imageSchema,
-      large: imageSchema.nullable(),
-    })
-    .nullable(),
+  artwork: artworkSchema.nullable(),
 });
 
 export type IngestRequest = z.infer<typeof ingestRequestSchema>;

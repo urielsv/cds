@@ -8,7 +8,7 @@
  * only handles the structured part of a query.
  */
 
-import { type Disc, type DiscImage, type DiscIndexEntry } from './disc.js';
+import { type CollectionIndex, type Disc, type DiscImage, type DiscIndexEntry } from './disc.js';
 import { releaseYear } from './format.js';
 
 // ---------------------------------------------------------------------------
@@ -443,6 +443,41 @@ export function toIndexEntry(disc: Disc, color: string | null): DiscIndexEntry {
     releaseMbid: disc.source.releaseMbid,
     barcode: disc.barcode,
   };
+}
+
+/**
+ * Returns a new index with the disc removed, and its `generatedAt` refreshed.
+ * The index is the only thing the app reads to find discs, so a delete rewrites
+ * it without the entry first, before the disc document and its images are
+ * removed — nothing must ever reference a disc that is gone.
+ */
+export function removeFromIndex(
+  index: CollectionIndex,
+  id: string,
+  now: Date = new Date(),
+): CollectionIndex {
+  return {
+    version: 1,
+    generatedAt: now.toISOString(),
+    discs: index.discs.filter((disc) => disc.id !== id),
+  };
+}
+
+/**
+ * Returns a new index with the entry for `entry.id` replaced in place, keeping
+ * its position so an edit does not reshuffle the shelf. If the id is not
+ * present the index is returned unchanged.
+ */
+export function updateIndexEntry(
+  index: CollectionIndex,
+  entry: DiscIndexEntry,
+  now: Date = new Date(),
+): CollectionIndex {
+  const position = index.discs.findIndex((disc) => disc.id === entry.id);
+  if (position === -1) return index;
+  const discs = [...index.discs];
+  discs[position] = entry;
+  return { version: 1, generatedAt: now.toISOString(), discs };
 }
 
 export type DuplicateReason = 'release' | 'barcode' | 'title';

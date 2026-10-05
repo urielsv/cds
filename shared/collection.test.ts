@@ -12,12 +12,14 @@ import {
   matchesFilters,
   parseQueryState,
   type QueryState,
+  removeFromIndex,
   serialiseQueryState,
   sortDiscs,
   toIndexEntry,
   uniqueDiscId,
+  updateIndexEntry,
 } from './collection';
-import { type Disc, type DiscIndexEntry } from './disc';
+import { type CollectionIndex, type Disc, type DiscIndexEntry } from './disc';
 
 function entry(overrides: Partial<DiscIndexEntry> = {}): DiscIndexEntry {
   return {
@@ -301,8 +303,46 @@ describe('toIndexEntry', () => {
   });
 });
 
+describe('removeFromIndex / updateIndexEntry', () => {
+  const base: CollectionIndex = {
+    version: 1,
+    generatedAt: '2026-01-01T00:00:00.000Z',
+    discs: [entry({ id: 'a' }), entry({ id: 'b' }), entry({ id: 'c' })],
+  };
+
+  it('removes the named disc and refreshes generatedAt', () => {
+    const now = new Date('2026-02-02T00:00:00.000Z');
+    const next = removeFromIndex(base, 'b', now);
+    expect(next.discs.map((d) => d.id)).toEqual(['a', 'c']);
+    expect(next.generatedAt).toBe(now.toISOString());
+    // Original is untouched.
+    expect(base.discs).toHaveLength(3);
+  });
+
+  it('removing an absent id leaves the discs unchanged', () => {
+    expect(removeFromIndex(base, 'zzz').discs.map((d) => d.id)).toEqual(['a', 'b', 'c']);
+  });
+
+  it('replaces an entry in place, preserving order', () => {
+    const edited = entry({ id: 'b', country: 'JP', format: 'SHM-CD' });
+    const next = updateIndexEntry(base, edited, new Date('2026-02-02T00:00:00.000Z'));
+    expect(next.discs.map((d) => d.id)).toEqual(['a', 'b', 'c']);
+    expect(next.discs[1]).toBe(edited);
+    expect(next.discs[1]?.country).toBe('JP');
+  });
+
+  it('returns the index unchanged when the id is not present', () => {
+    const edited = entry({ id: 'nope' });
+    expect(updateIndexEntry(base, edited)).toBe(base);
+  });
+});
+
 describe('findDuplicate', () => {
   const existing = [toIndexEntry(disc, null)];
+
+  it('matches on release MBID first', () => {
+    expect(findDuplicate(existing, disc)).toEqual({ id: disc.id, reason: 'release' });
+  });
 
   it('matches on release MBID first', () => {
     expect(findDuplicate(existing, disc)).toEqual({ id: disc.id, reason: 'release' });

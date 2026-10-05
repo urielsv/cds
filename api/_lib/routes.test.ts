@@ -4,6 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 import searchFixture from '../../shared/fixtures/mb-search-discovery.json';
 import { handleLogin } from '../auth/login';
 import { handleCreateDisc } from '../discs';
+import { handleDiscMutation } from '../discs/[id]';
 
 import { createSessionToken, hashPassword, LoginRateLimiter, SESSION_COOKIE } from './auth';
 import { handleLookup } from './lookup';
@@ -15,6 +16,24 @@ const SECRET = 'a-test-secret-that-is-long-enough-to-use-1234';
 function post(url: string, body: unknown, headers: Record<string, string> = {}): Request {
   return new Request(url, {
     method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+      host: 'mycds.test',
+      origin: 'https://mycds.test',
+      ...headers,
+    },
+    body: JSON.stringify(body),
+  });
+}
+
+function mutate(
+  method: 'DELETE' | 'PATCH',
+  url: string,
+  body: unknown,
+  headers: Record<string, string> = {},
+): Request {
+  return new Request(url, {
+    method,
     headers: {
       'content-type': 'application/json',
       host: 'mycds.test',
@@ -115,6 +134,71 @@ describe('POST /api/discs', () => {
         'https://mycds.test/api/discs',
         { mbid: 'nope' },
         { cookie: `${SESSION_COOKIE}=${token}` },
+      ),
+      deps,
+    );
+    expect(response.status).toBe(400);
+  });
+});
+
+describe('DELETE / PATCH /api/discs/:id', () => {
+  const deps = { secret: SECRET, store: vi.fn<() => CollectionStore>() };
+
+  it('rejects an unauthenticated DELETE before touching the store', async () => {
+    const response = await handleDiscMutation(
+      mutate('DELETE', 'https://mycds.test/api/discs/some-id', {}),
+      deps,
+    );
+    expect(response.status).toBe(401);
+    expect(deps.store).not.toHaveBeenCalled();
+  });
+
+  it('rejects an unauthenticated PATCH', async () => {
+    const response = await handleDiscMutation(
+      mutate('PATCH', 'https://mycds.test/api/discs/some-id', { country: 'JP' }),
+      deps,
+    );
+    expect(response.status).toBe(401);
+  });
+
+  it('refuses an unsupported method', async () => {
+    const response = await handleDiscMutation(
+      new Request('https://mycds.test/api/discs/some-id', {
+        method: 'PUT',
+        headers: { 'content-type': 'application/json', host: 'mycds.test' },
+        body: '{}',
+      }),
+      deps,
+    );
+    expect(response.status).toBe(405);
+  });
+
+  it('rejects an invalid disc id once signed in', async () => {
+    const token = await createSessionToken(SECRET);
+    const response = await handleDiscMutation(
+      mutate(
+        'DELETE',
+        'https://mycds.test/api/discs/Not_A_Slug',
+        {},
+        {
+          cookie: `${SESSION_COOKIE}=${token}`,
+        },
+      ),
+      deps,
+    );
+    expect(response.status).toBe(400);
+  });
+
+  it('rejects an empty PATCH body once signed in', async () => {
+    const token = await createSessionToken(SECRET);
+    const response = await handleDiscMutation(
+      mutate(
+        'PATCH',
+        'https://mycds.test/api/discs/daft-punk-discovery-2001',
+        {},
+        {
+          cookie: `${SESSION_COOKIE}=${token}`,
+        },
       ),
       deps,
     );

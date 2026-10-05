@@ -151,6 +151,35 @@ export function App() {
     };
   }, [arrivedId]);
 
+  // An owner edit replaces the entry in place; the shelf re-renders from the
+  // in-memory array, no index refetch (browsing stays network-free).
+  const handleEdited = useCallback((entry: DiscIndexEntry) => {
+    setLoad((previous) =>
+      previous.status === 'ready'
+        ? {
+            ...previous,
+            discs: previous.discs.map((d) => (d.id === entry.id ? entry : d)),
+          }
+        : previous,
+    );
+    // The open panel is keyed by disc id; refresh its summary too.
+    setOpenDisc((current) => (current?.id === entry.id ? entry : current));
+  }, []);
+
+  // An owner delete drops the entry from the in-memory collection.
+  const handleRemoved = useCallback((id: string) => {
+    setLoad((previous) =>
+      previous.status === 'ready'
+        ? { ...previous, discs: previous.discs.filter((d) => d.id !== id) }
+        : previous,
+    );
+  }, []);
+
+  const handleEditSessionExpired = useCallback(() => {
+    void session.refresh();
+    setOverlay('sign-in');
+  }, [session]);
+
   const clearNarrowing = useCallback(() => {
     updateQuery({ query: '', filters: EMPTY_FILTERS });
   }, [updateQuery]);
@@ -332,6 +361,10 @@ export function App() {
           disc={openDisc}
           originRect={originRect}
           onClosed={handleClosed}
+          canEdit={session.status === 'signed-in'}
+          onEdited={handleEdited}
+          onDeleted={handleRemoved}
+          onSessionExpired={handleEditSessionExpired}
         />
       )}
     </>

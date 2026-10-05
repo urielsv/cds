@@ -76,6 +76,17 @@ export function loadDisc(id: string, signal?: AbortSignal): Promise<Disc | null>
 }
 
 /**
+ * Drops a disc from the in-memory cache so the next `loadDisc` refetches it.
+ * Disc documents used to be immutable; now the owner can edit them, so after a
+ * save the stale cached copy must be evicted or the panel would keep showing
+ * the old data for the rest of the session. Pass no id to clear everything.
+ */
+export function evictDisc(id?: string): void {
+  if (id === undefined) discCache.clear();
+  else discCache.delete(id);
+}
+
+/**
  * Fetches the full record for one disc — track durations, catalogue number,
  * barcode, notes — which the index deliberately leaves out.
  *

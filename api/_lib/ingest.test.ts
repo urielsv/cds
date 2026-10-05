@@ -54,6 +54,7 @@ function fakeStore(initial: CollectionIndex, failOn?: 'image' | 'disc' | 'index'
       return Promise.resolve({ url: 'https://blob.test/collection/index.json' });
     }),
     remove: vi.fn(() => Promise.resolve()),
+    removeDisc: vi.fn(() => Promise.resolve()),
   };
   return { store, log, current: () => index };
 }

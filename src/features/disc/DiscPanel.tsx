@@ -10,6 +10,7 @@ import {
 } from 'react';
 
 import { CountryBadge } from '@/components/CountryBadge';
+import { EditDiscSheet } from '@/features/disc/EditDiscSheet';
 import { loadDisc } from '@/lib/collection';
 import { coverLoader } from '@/lib/coverLoader';
 import { REDUCED_TRANSITION, transition } from '@/motion/tokens';
@@ -29,6 +30,14 @@ interface DiscPanelProps {
   originRect: () => ScreenRect | null;
   /** Called once the closing animation has finished and the panel can unmount. */
   onClosed: () => void;
+  /** Owner-only: show Edit/Delete affordances. Server re-checks every write. */
+  canEdit?: boolean;
+  /** Owner edited this disc; the index entry has been replaced. */
+  onEdited?: (entry: DiscIndexEntry) => void;
+  /** Owner deleted this disc; it should leave the shelf and the panel close. */
+  onDeleted?: (id: string) => void;
+  /** The session lapsed mid-edit; prompt a re-sign-in. */
+  onSessionExpired?: () => void;
 }
 
 function isOnScreen(rect: ScreenRect | null): rect is ScreenRect {
@@ -63,7 +72,15 @@ function invert(from: ScreenRect, to: DOMRect) {
  * on the way back. Measuring both ends in screen space and animating the one
  * element outside the surface is exact at every zoom level.
  */
-export function DiscPanel({ disc, originRect, onClosed }: DiscPanelProps) {
+export function DiscPanel({
+  disc,
+  originRect,
+  onClosed,
+  canEdit = false,
+  onEdited,
+  onDeleted,
+  onSessionExpired,
+}: DiscPanelProps) {
   const reduced = useReducedMotion() ?? false;
   const rootRef = useRef<HTMLDivElement>(null);
   const coverRef = useRef<HTMLElement | null>(null);
@@ -75,6 +92,7 @@ export function DiscPanel({ disc, originRect, onClosed }: DiscPanelProps) {
   const closeRef = useRef<HTMLButtonElement>(null);
   const closing = useRef(false);
   const [detail, setDetail] = useState<Disc | null>(null);
+  const [editing, setEditing] = useState(false);
 
   const year = releaseYear(disc.releaseDate);
   const cover = detail?.images.find((image) => image.kind === 'front' && image.width > 600);
@@ -409,6 +427,42 @@ export function DiscPanel({ disc, originRect, onClosed }: DiscPanelProps) {
         </svg>
         <span className="visually-hidden">Close</span>
       </button>
+
+      {canEdit && (
+        <button
+          type="button"
+          className="disc-panel__edit glass"
+          onClick={() => {
+            setEditing(true);
+          }}
+        >
+          Edit
+        </button>
+      )}
+
+      {editing && (
+        <EditDiscSheet
+          entry={disc}
+          detail={detail}
+          onClose={() => {
+            setEditing(false);
+          }}
+          onEdited={(entry) => {
+            setEditing(false);
+            onEdited?.(entry);
+          }}
+          onDeleted={(id) => {
+            setEditing(false);
+            // Close the panel; App removes the entry from the shelf.
+            onDeleted?.(id);
+            onClosed();
+          }}
+          onSessionExpired={() => {
+            setEditing(false);
+            onSessionExpired?.();
+          }}
+        />
+      )}
     </div>
   );
 }
