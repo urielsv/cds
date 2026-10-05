@@ -35,7 +35,7 @@ import {
   widthColumns,
   zoomAt,
 } from './camera';
-import { CameraController } from './cameraController';
+import { CameraController, windowScroller } from './cameraController';
 import { DiscTile } from './DiscTile';
 import { ShelfIntro } from './ShelfIntro';
 import { indexAt, packMosaic, rowCounter, spansFor } from './layout';
@@ -43,12 +43,13 @@ import { useCoverPrefetch } from './useCoverPrefetch';
 import { useCameraGestures } from './useCameraGestures';
 
 /**
- * Tiles mounted beyond each screen edge. One ring is enough at this tile size:
- * the range is recomputed on every camera frame, and a fling moves at most a
- * fraction of a tile per frame. Two rings cost ~40% more mounted tiles on a
- * phone for no visible gain.
+ * Tiles mounted beyond each screen edge. Two rows, not one: the range now
+ * follows native scrolling, whose momentum on iOS can cover more than a row
+ * per frame, and React's re-render lands a frame behind the scroll. One row
+ * showed empty slots at the leading edge of a hard flick. Columns are all on
+ * screen anyway (the wall spans the width), so the cost is two rows of tiles.
  */
-const OVERSCAN = 1;
+const OVERSCAN = 2;
 
 /**
  * Above this many mounted tiles, changes that affect every tile (dimming for a
@@ -110,6 +111,7 @@ interface PendingReflow {
 export function Shelf({ discs, matches, openDiscId, arrivedDiscId, onOpen, ref }: ShelfProps) {
   const viewportRef = useRef<HTMLDivElement>(null);
   const surfaceRef = useRef<HTMLDivElement>(null);
+  const screenProbeRef = useRef<HTMLDivElement>(null);
   const insetProbeRef = useRef<HTMLDivElement>(null);
   const tileElements = useRef(new Map<string, HTMLButtonElement>());
   const pendingFocus = useRef<number | null>(null);
@@ -126,6 +128,14 @@ export function Shelf({ discs, matches, openDiscId, arrivedDiscId, onOpen, ref }
     insetTop: 0,
     insetBottom: 0,
   });
+  /**
+   * The tallest the screen has been at this width. Safari's toolbar grows and
+   * shrinks as the page scrolls, changing the viewport height mid-scroll; the
+   * choice of column counts must not follow it, or a scroll could re-flow
+   * the wall. Only a change of width (a rotation, a window resize) resets it.
+   */
+  const [stableHeight, setStableHeight] = useState(0);
+  const lastWidth = useRef(0);
   const [range, setRange] = useState<TileRange>(EMPTY_RANGE);
   const [panning, setPanning] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -143,12 +153,10 @@ export function Shelf({ discs, matches, openDiscId, arrivedDiscId, onOpen, ref }
   const rowsFor = useMemo(() => rowCounter(spans), [spans]);
   const allowedColumns = useMemo(
     () =>
-      viewport.width > 0 && viewport.height > 0
-        ? widthColumns(viewport, spans.length, rowsFor)
+      viewport.width > 0 && stableHeight > 0
+        ? widthColumns({ width: viewport.width, height: stableHeight }, spans.length, rowsFor)
         : [UNMEASURED_COLUMNS],
-    // Insets do not affect which counts fill the screen.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [viewport.width, viewport.height, spans.length, rowsFor],
+    [viewport.width, stableHeight, spans.length, rowsFor],
   );
   const [wantedColumns, setWantedColumns] = useState<number | null>(null);
   const columns = nearestColumns(
@@ -176,29 +184,36 @@ export function Shelf({ discs, matches, openDiscId, arrivedDiscId, onOpen, ref }
   // ---- Measuring -----------------------------------------------------------
 
   useLayoutEffect(() => {
-    const element = viewportRef.current;
-    if (!element) return;
+    const screenProbe = screenProbeRef.current;
+    if (!screenProbe) return;
 
     const measure = () => {
-      // Safe-area insets only exist in CSS (`env()`), so an invisible probe
-      // positioned with them is measured instead. Resize-time only.
-      const probe = insetProbeRef.current;
-      const height = element.clientHeight;
-      const insetTop = probe?.offsetTop ?? 0;
-      const insetBottom = probe ? Math.max(0, height - probe.offsetTop - probe.offsetHeight) : 0;
+      // The screen is a fixed, invisible probe: the shelf itself is now as
+      // tall as the whole wall. Safe-area insets only exist in CSS (`env()`),
+      // so a second probe positioned with them is measured against it.
+      // Resize-time only.
+      const screen = screenProbe.getBoundingClientRect();
+      const inset = insetProbeRef.current?.getBoundingClientRect();
+      const width = screen.width;
+      const height = screen.height;
+      const insetTop = inset ? Math.max(0, inset.top - screen.top) : 0;
+      const insetBottom = inset ? Math.max(0, screen.bottom - inset.bottom) : 0;
       setViewport((previous) =>
-        previous.width === element.clientWidth &&
+        previous.width === width &&
         previous.height === height &&
         previous.insetTop === insetTop &&
         previous.insetBottom === insetBottom
           ? previous
-          : { width: element.clientWidth, height, insetTop, insetBottom },
+          : { width, height, insetTop, insetBottom },
       );
+      const widthChanged = lastWidth.current !== width;
+      lastWidth.current = width;
+      setStableHeight((previous) => (widthChanged ? height : Math.max(previous, height)));
     };
     measure();
 
     const observer = new ResizeObserver(measure);
-    observer.observe(element);
+    observer.observe(screenProbe);
     return () => {
       observer.disconnect();
     };
@@ -208,8 +223,21 @@ export function Shelf({ discs, matches, openDiscId, arrivedDiscId, onOpen, ref }
 
   useLayoutEffect(() => {
     controller.attach(surfaceRef.current);
+    controller.attachScroller(windowScroller);
+    // The wall always opens at the top; a restored scroll position from the
+    // last visit would land on an arbitrary stretch of a re-flowed wall.
+    const restoration = window.history.scrollRestoration;
+    window.history.scrollRestoration = 'manual';
+    const onScroll = () => {
+      controller.syncScroll();
+    };
+    // Passive: the camera only follows the scroll, it never cancels it.
+    window.addEventListener('scroll', onScroll, { passive: true });
     return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.history.scrollRestoration = restoration;
       controller.stop();
+      controller.attachScroller(null);
       controller.attach(null);
     };
   }, [controller]);
@@ -255,7 +283,19 @@ export function Shelf({ discs, matches, openDiscId, arrivedDiscId, onOpen, ref }
     }
 
     if (!placed || beforeViewport.width === 0) {
-      controller.set(snapCells({ scale: fitted, x: 0, y: 0 }, layout, viewport));
+      controller.set(snapCells({ scale: fitted, x: 0, y: viewport.insetTop }, layout, viewport));
+      return;
+    }
+
+    // The same wall at the same width — Safari's toolbar growing or shrinking
+    // as the page scrolls, or a new order of the same covers. The page has not
+    // moved, so neither does the wall: just follow the scroll, in new bounds.
+    if (
+      beforeViewport.width === viewport.width &&
+      before.columns === layout.columns &&
+      before.worldHeight === layout.worldHeight
+    ) {
+      controller.syncScroll();
       return;
     }
 
@@ -419,8 +459,8 @@ export function Shelf({ discs, matches, openDiscId, arrivedDiscId, onOpen, ref }
   );
 
   // Focus lands after the render that mounts the target tile. `preventScroll`
-  // matters: the viewport clips overflow, and a browser scrolling it to reveal
-  // focus would silently shift the whole plane out from under the camera.
+  // matters: the camera brings the cover into view itself, clear of the notch
+  // and the floating bar, and a browser scroll to reveal focus would fight it.
   useEffect(() => {
     const index = pendingFocus.current;
     if (index === null) return;
@@ -504,14 +544,10 @@ export function Shelf({ discs, matches, openDiscId, arrivedDiscId, onOpen, ref }
         const index = indexById.get(id);
         const element = viewportRef.current;
         if (index === undefined || !element) return null;
+        // The camera is in screen coordinates already: the wall's position on
+        // screen, wherever the page is scrolled.
         const rect = tileRect(placementFor(index), controller.camera);
-        const origin = element.getBoundingClientRect();
-        return {
-          x: origin.left + rect.x,
-          y: origin.top + rect.y,
-          width: rect.size,
-          height: rect.size,
-        };
+        return { x: rect.x, y: rect.y, width: rect.size, height: rect.size };
       },
       zoomStep,
       showAll,
@@ -594,10 +630,16 @@ export function Shelf({ discs, matches, openDiscId, arrivedDiscId, onOpen, ref }
     .filter(Boolean)
     .join(' ');
 
+  // The shelf is as tall as the wall (plus the insets, as CSS padding), which
+  // is what gives the page its native scroll range.
+  const wallHeight =
+    viewport.width > 0 ? layout.worldHeight * scaleForColumns(viewport, layout.columns) : 0;
+
   return (
     <div
       ref={viewportRef}
       className={className}
+      style={{ height: wallHeight }}
       // `application`: arrow keys move between covers here rather than being
       // taken by a screen reader's browse mode, which could not reach covers
       // outside the virtualised window anyway.
@@ -607,6 +649,7 @@ export function Shelf({ discs, matches, openDiscId, arrivedDiscId, onOpen, ref }
         matches === null ? '' : `, ${String(matchCount)} matching`
       }. Arrow keys move between albums, plus and minus zoom.`}
     >
+      <div ref={screenProbeRef} className="shelf__screen-probe" aria-hidden="true" />
       <div ref={insetProbeRef} className="shelf__inset-probe" aria-hidden="true" />
       <ShelfIntro urls={discs.length === 0 ? [] : introUrls} />
       <div

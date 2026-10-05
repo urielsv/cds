@@ -29,6 +29,11 @@ transformed plane, so the decision in the old 1.3 was reversed: gestures are now
 pointer events with `touch-action: none`, 1:1 while the finger is down, with
 momentum and rubber-band edges on release.
 
+**Since reversed again, in part:** vertical movement is native page scroll once
+more (so covers pass under Safari's translucent bars on iOS 26, and momentum is
+the platform's), while pinch-to-zoom stays custom, on touch events with the page
+held still. See `.kiro/skills/shelf-performance/SKILL.md`.
+
 - [x] 1.1 Deterministic fixture generator, now with an average colour per cover.
 - [x] 1.2 `features/shelf/camera.ts`: pure geometry — screen-shaped grid (1×1 up
       to N×M), zoom limits (one cover fills the short side ↔ whole collection),

@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import { gridLayoutOf, scaleForColumns, TILE_SIZE, type Viewport } from './camera';
-import { CameraController, timeConstant } from './cameraController';
+import { gridLayoutOf, scaleForColumns, type Viewport } from './camera';
+import { CameraController, type Scroller } from './cameraController';
 
 const phone: Viewport = { width: 390, height: 844, insetTop: 47, insetBottom: 110 };
 
@@ -17,13 +17,6 @@ function controllerAt(columns: number, rows = 40) {
 describe('CameraController on a width-filling wall', () => {
   it('has nothing to pan sideways at rest', () => {
     expect(controllerAt(4).lockedX).toBe(true);
-  });
-
-  it('ignores the sideways part of a flick', () => {
-    const controller = controllerAt(4);
-    controller.fling(3, -2);
-    expect(controller.camera.x).toBe(0);
-    expect(controller.camera.y).toBeLessThan(0);
   });
 
   it('asks the wall to re-flow when a pinch lands on another column count', () => {
@@ -55,37 +48,77 @@ describe('CameraController on a width-filling wall', () => {
   });
 });
 
-describe('fling momentum', () => {
-  it('lands a flick on a whole row, the full kinetic distance away', () => {
+/** A page that scrolls instantly within [0, max]. */
+function fakePage(max: number): Scroller & { scrolled: number[] } {
+  let y = 0;
+  const scrolled: number[] = [];
+  return {
+    scrolled,
+    get y() {
+      return y;
+    },
+    to(next) {
+      y = Math.min(max, Math.max(0, next));
+      scrolled.push(y);
+    },
+  };
+}
+
+describe('CameraController bound to the page scroll', () => {
+  function scrolling(max = 5000) {
     const controller = controllerAt(4);
-    const cell = TILE_SIZE * controller.camera.scale;
-    // 2 px/ms upwards: momentum carries ~650 px, snapped to the row grid.
-    controller.fling(0, -2);
-    const y = controller.camera.y;
-    expect(Math.abs(y / cell - Math.round(y / cell))).toBeLessThan(1e-6);
-    expect(Math.abs(y)).toBeGreaterThan(650 - cell);
-    expect(Math.abs(y)).toBeLessThan(650 + cell);
-  });
-});
+    const page = fakePage(max);
+    controller.attachScroller(page);
+    const surface = document.createElement('div');
+    controller.attach(surface);
+    return { controller, page, surface };
+  }
 
-describe('timeConstant', () => {
-  it('starts at the finger speed and covers the snapped distance', () => {
-    expect(timeConstant(-650, -2)).toBeCloseTo(325);
-  });
-
-  it('is zero when there is nothing to travel', () => {
-    expect(timeConstant(0.2, 1)).toBe(0);
+  it('rests the wall by scrolling the page, not by moving the wall', () => {
+    const { controller, page, surface } = scrolling();
+    controller.set({ ...controller.camera, y: phone.insetTop - 600 });
+    expect(page.y).toBe(600);
+    expect(surface.style.transform).toMatch(/^translate3d\(0px, 0px, 0\)/);
   });
 
-  it('gives up (spring instead) for the wrong direction or no speed', () => {
-    expect(timeConstant(100, -1)).toBeNull();
-    expect(timeConstant(100, 0)).toBeNull();
+  it('follows a native scroll without writing a transform', () => {
+    const { controller, page, surface } = scrolling();
+    const before = surface.style.transform;
+    page.to(320);
+    controller.syncScroll();
+    expect(controller.camera.y).toBe(phone.insetTop - 320);
+    expect(surface.style.transform).toBe(before);
   });
 
-  it('gives up when snapping stretched the throw too far either way', () => {
-    // A slow 0.1 px/ms flick snapped a whole 200 px cell along: tau 2000 ms.
-    expect(timeConstant(200, 0.1)).toBeNull();
-    // A fast flick snapped back to a tenth of its reach.
-    expect(timeConstant(65, 2)).toBeNull();
+  it('draws a pinch as a transform and leaves the page where it is', () => {
+    const { controller, page, surface } = scrolling();
+    page.to(200);
+    controller.syncScroll();
+    controller.beginGesture();
+    const scale = controller.camera.scale * 1.3;
+    // 60px above where the page alone would put the wall's top.
+    controller.set({ scale, x: -40, y: phone.insetTop - 260 });
+    expect(page.y).toBe(200);
+    expect(surface.style.transform).toBe(`translate3d(-40px, -60px, 0) scale(${String(scale)})`);
+    controller.endGesture();
+  });
+
+  it('follows the browser when it cannot scroll as far as asked', () => {
+    const { controller, page } = scrolling(1000);
+    controller.set({ ...controller.camera, y: phone.insetTop - 1500 });
+    expect(page.y).toBe(1000);
+    expect(controller.camera.y).toBe(phone.insetTop - 1000);
+  });
+
+  it('finishes a move at its destination when a finger lands', () => {
+    const controller = controllerAt(4);
+    controller.setReducedMotion(false);
+    const page = fakePage(5000);
+    controller.attachScroller(page);
+    void controller.animateTo({ ...controller.camera, y: phone.insetTop - 800 });
+    expect(controller.isMoving).toBe(true);
+    controller.finish();
+    expect(controller.isMoving).toBe(false);
+    expect(page.y).toBe(800);
   });
 });

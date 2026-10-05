@@ -75,15 +75,15 @@ describe('clampCamera', () => {
 
   it('keeps the plane from being dragged off screen', () => {
     const clamped = clampCamera({ x: 500, y: 900, scale: 1 }, layout, phone);
-    // Flush with the top of the screen: covers run under the notch rather
-    // than leaving a strip of background above the first row.
+    // At the top of the page the first row starts just below the notch, as a
+    // page's content does; it passes under the notch once scrolled.
     expect(clamped.x).toBe(0);
-    expect(clamped.y).toBe(0);
+    expect(clamped.y).toBe(phone.insetTop);
   });
 
-  it('ends the last row flush with the bottom of the screen, under the bar', () => {
+  it('ends the last row just above the floating bar, as the end of the page', () => {
     const clamped = clampCamera({ x: -1e6, y: -1e6, scale: 1 }, layout, phone);
-    expect(clamped.y + layout.worldHeight).toBeCloseTo(phone.height);
+    expect(clamped.y + layout.worldHeight).toBeCloseTo(phone.height - phone.insetBottom);
     expect(clamped.x + layout.worldWidth).toBeCloseTo(phone.width);
   });
 
@@ -91,10 +91,10 @@ describe('clampCamera', () => {
     const small = gridLayout(3, phone);
     const clamped = clampCamera({ x: 50, y: 50, scale: 0.1 }, small, phone);
     expect(clamped.x).toBeLessThanOrEqual(0);
-    expect(clamped.y).toBeLessThanOrEqual(0);
+    expect(clamped.y).toBe(phone.insetTop);
     expect(clamped.x + small.worldWidth * clamped.scale).toBeGreaterThanOrEqual(phone.width - 0.01);
     expect(clamped.y + small.worldHeight * clamped.scale).toBeGreaterThanOrEqual(
-      phone.height - 0.01,
+      phone.height - phone.insetBottom - 0.01,
     );
   });
 });
@@ -293,21 +293,21 @@ describe('snapping', () => {
     expect(snapped.y / cell).toBeCloseTo(-3);
   });
 
-  it('sits flush at the end of the wall rather than leaving a strip of background', () => {
+  it('lands exactly on the end of the wall rather than short of it', () => {
     const scale = fourAcross;
     const bottom = snapCells({ x: 0, y: -1e6, scale }, layout, phone);
     const bounds = panBounds(layout, phone, scale);
     expect(bottom.y).toBeCloseTo(bounds.y.min);
-    expect(bottom.y + layout.worldHeight * scale).toBeCloseTo(phone.height);
+    expect(bottom.y + layout.worldHeight * scale).toBeCloseTo(phone.height - phone.insetBottom);
 
     const right = snapCells({ x: -1e6, y: 0, scale }, layout, phone);
     expect(right.x + layout.worldWidth * scale).toBeCloseTo(phone.width);
   });
 
-  it('starts flush at the top-left corner', () => {
-    const snapped = snapCells({ x: 4, y: 6, scale: fourAcross }, layout, phone);
+  it('starts at the left edge, just below the notch', () => {
+    const snapped = snapCells({ x: 4, y: 60, scale: fourAcross }, layout, phone);
     expect(snapped.x).toBeCloseTo(0);
-    expect(snapped.y).toBeCloseTo(0);
+    expect(snapped.y).toBeCloseTo(phone.insetTop);
   });
 
   it('crops a collection too small to fill the screen rather than framing it', () => {

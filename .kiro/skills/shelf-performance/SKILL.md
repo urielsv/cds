@@ -20,7 +20,7 @@ tiles. Tune it by measuring, not by guessing, and note the reasoning in a commen
 
 ## Transform the container, not the tiles
 
-Panning moves **one** transformed element. Never update the position of each tile
+Scrolling moves the page; zooming moves **one** transformed element. Never update the position of each tile
 individually; that is hundreds of style recalculations per frame.
 
 The same applies to animation: if every tile should react to something, animate the
@@ -33,10 +33,18 @@ While a drag is active, position follows the pointer 1:1 with no easing and no
 spring. Easing belongs only to the release. Any perceptible lag between finger and
 content destroys the physicality the product is built on.
 
-Read pointer events, not scroll events, for the drag. Use `touch-action` to tell
-the browser which axes you are handling so it stops fighting you, and remember the
-page-level `overscroll-behavior: none` already set in `global.css` is what prevents
-rubber-banding from hijacking a pan.
+Scrolling the wall is the page's own native scroll: the shelf is as tall as the
+wall, and the browser does the panning, the momentum and the edge bounce. That is
+deliberate — it is the only way covers pass under Safari's translucent toolbars on
+iOS 26 (a page locked in place gets bars tinted with its background colour), and
+native momentum feels right on every platform without being re-implemented. Do not
+go back to a pointer-driven pan on a fixed layer.
+
+Pinch-to-zoom is ours. The shelf is `touch-action: pan-y`, and a two-finger touch
+has its `touchmove` cancelled so the page holds still while the wall follows the
+fingers exactly. Follow the scroll with a passive `scroll` listener that only
+updates the camera and the virtualised range — never write styles per scroll
+event, and never cancel the scroll.
 
 ## `will-change` is a lease, not a gift
 
@@ -93,8 +101,8 @@ animation's duration to hide it.
 ## Checklist
 
 - [ ] Only near-viewport tiles are mounted
-- [ ] Panning transforms a single container
-- [ ] Drag tracks the pointer with no easing mid-gesture
+- [ ] Scrolling is native page scroll; zoom transforms a single container
+- [ ] Pinch tracks the fingers with no easing mid-gesture
 - [ ] `will-change` added on gesture start, removed on end
 - [ ] Images pre-sized, dimensioned, lazy, with placeholders
 - [ ] Stagger is clamped

@@ -217,4 +217,36 @@ describe('Shelf', () => {
     });
     expect(Number.parseFloat(surface.style.width)).toBeLessThan(before);
   });
+  it('re-flows to fewer, larger covers when pinched open, holding the page still', () => {
+    const { container } = renderShelf(150);
+    const shelf = container.querySelector<HTMLElement>('.shelf')!;
+    const surface = container.querySelector<HTMLElement>('.shelf__surface')!;
+    const before = Number.parseFloat(surface.style.width);
+    const at = (spread: number) => [
+      { clientX: 195 - spread / 2, clientY: 400 },
+      { clientX: 195 + spread / 2, clientY: 400 },
+    ];
+    fireEvent.touchStart(shelf, { touches: at(100) });
+    const move = fireEvent.touchMove(shelf, { touches: at(220) });
+    // Cancelled, so the browser neither scrolls nor zooms the page meanwhile.
+    expect(move).toBe(false);
+    act(() => {
+      fireEvent.touchEnd(shelf, { touches: [] });
+    });
+    expect(Number.parseFloat(surface.style.width)).toBeLessThan(before);
+  });
+
+  it('leaves one-finger movement to the browser', () => {
+    const { container } = renderShelf(150);
+    const shelf = container.querySelector<HTMLElement>('.shelf')!;
+    fireEvent.touchStart(shelf, { touches: [{ clientX: 100, clientY: 400 }] });
+    const move = fireEvent.touchMove(shelf, { touches: [{ clientX: 100, clientY: 200 }] });
+    expect(move).toBe(true);
+  });
+
+  it('makes the page as tall as the wall, so it scrolls natively', () => {
+    const { container } = renderShelf(150);
+    const shelf = container.querySelector<HTMLElement>('.shelf')!;
+    expect(Number.parseFloat(shelf.style.height)).toBeGreaterThan(VIEWPORT_HEIGHT);
+  });
 });

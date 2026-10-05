@@ -89,3 +89,22 @@ vi.stubGlobal(
     dispatchEvent: vi.fn(),
   })),
 );
+
+// jsdom lays nothing out and does not implement scrolling: `scrollTo` only
+// logs "not implemented". The shelf scrolls the page to rest the wall, so
+// give it a page that scrolls — instantly, with no bounds, which is enough for
+// the camera's bookkeeping to be exercised. (API tests run without a DOM.)
+let pageScrollY = 0;
+if (typeof window !== 'undefined') {
+  Object.defineProperty(window, 'scrollY', {
+    configurable: true,
+    get: () => pageScrollY,
+  });
+  window.scrollTo = (x?: number | ScrollToOptions, y?: number) => {
+    const top = typeof x === 'object' ? x.top : y;
+    if (typeof top === 'number') pageScrollY = Math.max(0, top);
+  };
+}
+afterEach(() => {
+  pageScrollY = 0;
+});

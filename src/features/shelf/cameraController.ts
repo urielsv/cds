@@ -1,6 +1,6 @@
 import { animate, type Transition } from 'motion/react';
 
-import { type DurationName, springTransition, transition } from '@/motion/tokens';
+import { springTransition, transition } from '@/motion/tokens';
 
 import {
   type Camera,
@@ -9,7 +9,7 @@ import {
   type GridLayout,
   mixCamera,
   panBounds,
-  rubberBandCamera,
+  scaleForColumns,
   scaleLimits,
   snapCamera,
   snapCells,
@@ -21,71 +21,49 @@ import {
   zoomAt,
 } from './camera';
 
-/**
- * Momentum decays exponentially with this time constant, as kinetic scrolling
- * does: the wall keeps the finger's speed at release and slows smoothly, and a
- * flick at velocity v travels v × this far in total. 325 ms is the classic
- * kinetic-scrolling constant and is close to iOS's own scroll views. Physics,
- * not an animation duration, which is why it is not one of the motion tokens —
- * the slow-down is shaped by the throw, not by a fixed clock.
- *
- * It replaced a spring with a fixed visual duration, which carried a throw
- * only ~40% as far as iOS does and then braked it hard: on a phone, a flick
- * felt like it was caught rather than released.
- */
-const MOMENTUM_TIME_CONSTANT_MS = 325;
-
-/**
- * Snapping the landing to whole covers changes the distance, so each axis gets
- * its own time constant that lands exactly on the cell while still starting at
- * the finger's speed. Outside this band (a tiny flick snapped a whole cell
- * further, say) the stretch would read as a lurch or a crawl, and the release
- * falls back to a spring instead.
- */
-const MIN_TIME_CONSTANT_MS = MOMENTUM_TIME_CONSTANT_MS * 0.5;
-const MAX_TIME_CONSTANT_MS = MOMENTUM_TIME_CONSTANT_MS * 1.8;
-
-/** Momentum ends once every axis is this close to its landing, in pixels. */
-const MOMENTUM_REST_PX = 0.5;
-
-/**
- * The time constant that carries an axis `distance` pixels when it starts at
- * `velocity` px/ms: 0 when there is nothing to travel, null when exponential
- * momentum cannot get there naturally (no speed, the wrong way, or a stretch
- * outside the band) and a spring should take over.
- */
-export function timeConstant(distance: number, velocity: number): number | null {
-  if (Math.abs(distance) <= MOMENTUM_REST_PX) return 0;
-  if (velocity === 0 || Math.sign(distance) !== Math.sign(velocity)) return null;
-  const tau = distance / velocity;
-  return tau >= MIN_TIME_CONSTANT_MS && tau <= MAX_TIME_CONSTANT_MS ? tau : null;
-}
-
 type Listener = (camera: Camera) => void;
 
 interface Controls {
   stop: () => void;
+  /** Where the move was going, so a touch can finish it rather than strand it. */
+  target: Camera;
 }
 
-interface Velocity {
-  /** Pixels per millisecond, as measured from pointer events. */
-  x: number;
-  y: number;
+/** The page's own vertical scroll position, behind an interface so tests can fake it. */
+export interface Scroller {
+  readonly y: number;
+  to: (y: number) => void;
 }
+
+export const windowScroller: Scroller = {
+  get y() {
+    return window.scrollY;
+  },
+  to(y) {
+    window.scrollTo(0, y);
+  },
+};
 
 /**
  * Owns the camera outside React.
  *
- * During a gesture the camera changes every frame; routing that through React
- * state would re-render the tile tree sixty times a second. Instead the
- * controller writes the one surface transform directly, and tells React only
- * about what React needs — which tiles are in range — via the listener.
+ * The wall is the page's own scrolling content, so moving up and down it is
+ * native scrolling: the browser's momentum, its edge bounce, and — the reason
+ * for the design — content that passes under Safari's translucent bars, as it
+ * does on any ordinary page. A hand-rolled pan on a fixed layer can never do
+ * that last part: Safari tints its bars with the page colour wherever the page
+ * itself is not scrolling underneath.
  *
- * Releases are Motion springs rather than tweens. A spring starts at the speed
- * the wall already has, so a throw continues the finger's motion instead of
- * restarting it, and a wall stretched past its edge is pulled home with a
- * force proportional to the stretch — which is what an edge feels like on
- * native scroll views.
+ * The camera is therefore two things at once. At rest (the fitted scale, no
+ * sideways offset) its `y` *is* the scroll position, and setting it scrolls
+ * the page. In motion — a pinch, the spring after one, a zoom — the wall is
+ * drawn with a transform relative to wherever the page is scrolled, and the
+ * move ends by scrolling the page to its resting place, so the hand-off is
+ * invisible.
+ *
+ * Either way it writes at most one transform, on the one surface that holds
+ * every tile, and tells React only what React needs — which tiles are in
+ * range — via the listener.
  */
 export class CameraController {
   camera: Camera = { x: 0, y: 0, scale: 1 };
@@ -102,9 +80,13 @@ export class CameraController {
   reflow: ((targetScale: number, focus: { x: number; y: number }) => void) | null = null;
 
   private surface: HTMLElement | null = null;
+  private scroller: Scroller | null = null;
+  private scrollY = 0;
   private readonly listeners = new Set<Listener>();
   private running: Controls | null = null;
   private leased = false;
+  private gesturing = false;
+  private lastTransform = '';
 
   private configured = false;
 
@@ -135,6 +117,31 @@ export class CameraController {
 
   attach(surface: HTMLElement | null): void {
     this.surface = surface;
+    this.lastTransform = '';
+    this.apply();
+  }
+
+  /**
+   * Binds the camera's resting position to the page scroll. Without a
+   * scroller (unit tests) the camera is a plain transform, as it would be on a
+   * fixed layer.
+   */
+  attachScroller(scroller: Scroller | null): void {
+    this.scroller = scroller;
+    this.scrollY = scroller?.y ?? 0;
+  }
+
+  /**
+   * The page scrolled — a finger, momentum, the keyboard, or our own
+   * `scrollTo`. At rest the camera simply follows; mid-move it keeps its
+   * screen position and the transform absorbs the difference.
+   */
+  syncScroll(): void {
+    if (!this.scroller) return;
+    this.scrollY = this.scroller.y;
+    if (this.running === null && !this.gesturing && this.restScale()) {
+      this.camera = { ...this.camera, y: this.surfaceTop() - this.scrollY };
+    }
     this.apply();
   }
 
@@ -160,6 +167,19 @@ export class CameraController {
   }
 
   /**
+   * A pinch (or trackpad zoom) is in progress: the wall is drawn by transform
+   * and must not be handed back to the page scroll mid-gesture, even when it
+   * happens to pass through a resting pose.
+   */
+  beginGesture(): void {
+    this.gesturing = true;
+  }
+
+  endGesture(): void {
+    this.gesturing = false;
+  }
+
+  /**
    * The camera a gesture should treat as its starting point: the current one
    * with any rubber-band stretch undone, zoom anchored at `focus`. Picking up
    * from the stretched position as if it were real would make the wall jump
@@ -174,7 +194,7 @@ export class CameraController {
   /**
    * True when the wall is no wider than the screen at the camera's scale —
    * always, at rest, for a width-filling wall. There is then nothing to pan
-   * sideways, and a drag moves the wall vertically only.
+   * sideways.
    */
   get lockedX(): boolean {
     return this.layout.worldWidth * this.camera.scale <= this.viewport.width + 0.5;
@@ -194,7 +214,7 @@ export class CameraController {
    * anchored at `focus` (default: the centre of the screen).
    */
   zoomTo(scale: number, focus?: { x: number; y: number }): Promise<void> {
-    const anchor = focus ?? { x: this.viewport.width / 2, y: this.viewport.height / 2 };
+    const anchor = focus ?? this.centre();
     if (this.reflowsAt(scale)) {
       this.stop();
       this.reflow?.(scale, anchor);
@@ -205,10 +225,23 @@ export class CameraController {
     );
   }
 
-  /** Cancels any momentum or programmatic move — a touch catches the content. */
+  /** Cancels any programmatic move where it stands — a pinch catches the content. */
   stop(): void {
     this.running?.stop();
     this.running = null;
+  }
+
+  /**
+   * Ends any programmatic move at its destination. Used when a finger lands
+   * to scroll: native scrolling needs the wall at rest under it, and jumping
+   * to where the move was going beats stranding the wall mid-zoom.
+   */
+  finish(): void {
+    const running = this.running;
+    if (!running) return;
+    this.stop();
+    this.set(running.target);
+    this.release();
   }
 
   get isMoving(): boolean {
@@ -217,8 +250,10 @@ export class CameraController {
 
   /**
    * `will-change` is a lease, not a gift: the surface is promoted to its own
-   * layer only while it moves, then released so the browser re-rasterises it
-   * sharply at the new scale instead of stretching a stale bitmap.
+   * layer only while it is transformed, then released so the browser
+   * re-rasterises it sharply at the new scale instead of stretching a stale
+   * bitmap. Native scrolling needs no lease — the page scroller is already
+   * composited.
    */
   lease(): void {
     if (this.leased || !this.surface) return;
@@ -235,7 +270,8 @@ export class CameraController {
   /**
    * Animates to `target` along the pan-and-zoom path of `mixCamera`. Tweens by
    * default, for moves nobody is touching (buttons, keys, reveal); a release
-   * passes a spring.
+   * passes a spring. A purely vertical move is a scroll of the page, frame by
+   * frame; anything with a zoom in it is a transform until it lands.
    */
   animateTo(target: Camera, options: Transition = transition('base', 'standard')): Promise<void> {
     this.stop();
@@ -249,7 +285,7 @@ export class CameraController {
       return Promise.resolve();
     }
 
-    this.lease();
+    if (Math.abs(to.scale / from.scale - 1) > 0.001) this.lease();
     return new Promise((resolve) => {
       const controls = animate(0, 1, {
         ...options,
@@ -264,6 +300,7 @@ export class CameraController {
         },
       });
       this.running = {
+        target: to,
         stop: () => {
           controls.stop();
           resolve();
@@ -293,13 +330,9 @@ export class CameraController {
       this.release();
       return;
     }
-    if (Math.abs(target.scale / c.scale - 1) > 0.001) {
-      // A zoom change travels the pan-and-zoom path, sprung so it eases out
-      // of wherever the pinch left it rather than starting from standstill.
-      void this.animateTo(target, springTransition('fast'));
-      return;
-    }
-    void this.springTo(target, { x: 0, y: 0 }, 'fast');
+    // Sprung, so it eases out of wherever the pinch left it rather than
+    // starting from standstill.
+    void this.animateTo(target, springTransition('fast'));
   }
 
   /** One zoom stop in or out, animated, anchored at `focus` (default: centre). */
@@ -313,194 +346,59 @@ export class CameraController {
     return { x: this.viewport.width / 2, y: this.viewport.height / 2 };
   }
 
-  /**
-   * Releases a pan: throws the wall along the flick and lands it on whole
-   * covers.
-   *
-   * The landing cell is decided at release — projected along the flick,
-   * snapped — and reached by exponential momentum that starts at the finger's
-   * velocity, so there is no change of pace as the finger lifts and no drift
-   * while the wall makes up its mind. Two cases use a spring instead: a throw
-   * that would run past the end of the wall (the spring carries it into the
-   * rubber band and back, as an edge does natively), and an axis already
-   * stretched past its edge, which gets no throw and is pulled home.
-   */
-  fling(vx: number, vy: number): void {
-    this.stop();
-    const start = unbandCamera(this.camera, this.layout, this.viewport);
-    const bounds = panBounds(this.layout, this.viewport, start.scale);
-    const past = (value: number, range: { min: number; max: number }) =>
-      value < range.min - 0.5 || value > range.max + 0.5;
-    const velocity = {
-      // A wall that fits the width does not travel sideways, however the
-      // finger drifted.
-      x: past(start.x, bounds.x) || this.lockedX ? 0 : vx,
-      y: past(start.y, bounds.y) ? 0 : vy,
-    };
+  /** Where the wall's top sits on the page: below the top inset (the shelf's padding). */
+  private surfaceTop(): number {
+    return this.viewport.insetTop;
+  }
 
-    const ideal = {
-      ...start,
-      x: start.x + velocity.x * MOMENTUM_TIME_CONSTANT_MS,
-      y: start.y + velocity.y * MOMENTUM_TIME_CONSTANT_MS,
-    };
-    const landing = snapCells(ideal, this.layout, this.viewport);
-
-    const hitsEdge = past(ideal.x, bounds.x) || past(ideal.y, bounds.y);
-    const tx = timeConstant(landing.x - start.x, velocity.x);
-    const ty = timeConstant(landing.y - start.y, velocity.y);
-    if (!hitsEdge && tx !== null && ty !== null) {
-      this.coastTo(start, landing, tx, ty);
-      return;
-    }
-
-    const distance = Math.hypot(landing.x - start.x, landing.y - start.y);
-    // A throw of more than a screen gets slightly longer to cover the ground,
-    // so a long flick does not blur past.
-    const far = distance > Math.max(this.viewport.width, this.viewport.height);
-    void this.springTo(landing, velocity, far ? 'slow' : 'base');
+  /** The camera is at the fitted scale with nothing offset sideways. */
+  private restScale(): boolean {
+    if (this.viewport.width === 0) return false;
+    const fitted = scaleForColumns(this.viewport, this.layout.columns);
+    return Math.abs(this.camera.scale / fitted - 1) < 0.001 && Math.abs(this.camera.x) < 0.5;
   }
 
   /**
-   * Exponential momentum from `from` to `to`, each axis with its own time
-   * constant (0 for an axis that does not move). Motion's `animate` is used
-   * only as the frame clock — a linear 0→duration in milliseconds — so the
-   * position is the closed-form decay, exact at every frame whatever the frame
-   * rate, and it ends precisely on the landing cell.
+   * At rest, and inside the scroll range: a pose the page scroll alone can
+   * show. A pinch never counts, even as it passes through one.
    */
-  private coastTo(from: Camera, to: Camera, tx: number, ty: number): void {
-    if (this.reducedMotion) {
-      this.set(to);
-      this.release();
-      return;
-    }
-    const dx = to.x - from.x;
-    const dy = to.y - from.y;
-    // Time for an axis's remaining distance to fall below the rest threshold.
-    const settleMs = (distance: number, tau: number) =>
-      tau === 0 || Math.abs(distance) <= MOMENTUM_REST_PX
-        ? 0
-        : tau * Math.log(Math.abs(distance) / MOMENTUM_REST_PX);
-    const duration = Math.max(settleMs(dx, tx), settleMs(dy, ty));
-    if (duration === 0) {
-      this.set(to);
-      this.release();
-      return;
-    }
-    const along = (distance: number, tau: number, t: number) =>
-      tau === 0 ? distance : distance * (1 - Math.exp(-t / tau));
-
-    this.lease();
-    const controls = animate(0, duration, {
-      duration: duration / 1000,
-      ease: 'linear',
-      onUpdate: (t: number) => {
-        this.set({ scale: to.scale, x: from.x + along(dx, tx, t), y: from.y + along(dy, ty, t) });
-      },
-      onComplete: () => {
-        if (this.running !== running) return;
-        this.running = null;
-        this.set(to);
-        this.release();
-      },
-    });
-    const running: Controls = {
-      stop: () => {
-        controls.stop();
-      },
-    };
-    this.running = running;
-  }
-
-  /**
-   * Springs each axis to `target` independently, each starting at its own
-   * velocity — a diagonal flick keeps its direction and its speed on both
-   * axes. Travels in unstretched coordinates and is drawn through the rubber
-   * band, so a spring that overshoots an edge meets the same resistance a
-   * finger would, and one that starts stretched does not jump.
-   */
-  private springTo(target: Camera, velocity: Velocity, duration: DurationName): Promise<void> {
-    this.stop();
-    const to = this.clamped(target);
-
-    if (this.reducedMotion || !isFinite(velocity.x + velocity.y)) {
-      this.set(to);
-      this.release();
-      return Promise.resolve();
-    }
-
-    const from = unbandCamera(this.camera, this.layout, this.viewport);
-    const scale = to.scale;
-    let x = from.x;
-    let y = from.y;
-
-    // Both axes tick in the same Motion frame; draw once per frame, not once
-    // per axis.
-    let queued = false;
-    const draw = () => {
-      if (queued) return;
-      queued = true;
-      queueMicrotask(() => {
-        queued = false;
-        if (this.running === controls) {
-          this.set(rubberBandCamera({ scale, x, y }, this.layout, this.viewport));
-        }
-      });
-    };
-
-    let resolveDone: () => void = () => undefined;
-    const done = new Promise<void>((resolve) => {
-      resolveDone = resolve;
-    });
-
-    let ax: Controls | null = null;
-    let ay: Controls | null = null;
-    // Created before the animations start, so a spring that completes
-    // synchronously (nothing to travel) still finds itself running.
-    const controls: Controls = {
-      stop: () => {
-        ax?.stop();
-        ay?.stop();
-        resolveDone();
-      },
-    };
-    this.running = controls;
-
-    let remaining = 2;
-    const finish = () => {
-      remaining -= 1;
-      if (remaining > 0 || this.running !== controls) return;
-      this.running = null;
-      this.set(to);
-      this.release();
-      resolveDone();
-    };
-
-    this.lease();
-    // Motion measures spring velocity per second; pointer velocity is per ms.
-    ax = animate(from.x, to.x, {
-      ...springTransition(duration, velocity.x * 1000),
-      onUpdate: (value: number) => {
-        x = value;
-        draw();
-      },
-      onComplete: finish,
-    });
-    ay = animate(from.y, to.y, {
-      ...springTransition(duration, velocity.y * 1000),
-      onUpdate: (value: number) => {
-        y = value;
-        draw();
-      },
-      onComplete: finish,
-    });
-    return done;
+  private atRest(): boolean {
+    if (this.gesturing || !this.restScale()) return false;
+    const range = panBounds(this.layout, this.viewport, this.camera.scale).y;
+    return this.camera.y >= range.min - 0.5 && this.camera.y <= range.max + 0.5;
   }
 
   private apply(): void {
-    const { x, y, scale } = this.camera;
+    let { y } = this.camera;
+    const { x, scale } = this.camera;
+    const scroller = this.scroller;
+    let offsetY = y;
+
+    if (scroller) {
+      if (this.atRest()) {
+        // Resting poses are scroll positions: move the page, not the wall.
+        const wanted = this.surfaceTop() - y;
+        if (Math.abs(wanted - this.scrollY) > 0.5) {
+          scroller.to(Math.max(0, wanted));
+          this.scrollY = scroller.y;
+          // The browser has the last word on the scroll range (its viewport
+          // can differ from ours by a collapsing toolbar); follow it.
+          y = this.surfaceTop() - this.scrollY;
+          this.camera = { ...this.camera, y };
+        }
+      }
+      // The surface sits on the page at `surfaceTop`; draw it relative to that.
+      offsetY = y - (this.surfaceTop() - this.scrollY);
+    }
+
     if (this.surface) {
-      // The only style write per frame, on the only element that moves.
-      this.surface.style.transform = `translate3d(${x}px, ${y}px, 0) scale(${scale})`;
+      // The only style write, on the only element that moves — and skipped
+      // when nothing changed, which is every frame of a native scroll.
+      const transform = `translate3d(${String(x)}px, ${String(offsetY)}px, 0) scale(${String(scale)})`;
+      if (transform !== this.lastTransform) {
+        this.surface.style.transform = transform;
+        this.lastTransform = transform;
+      }
     }
     for (const listener of this.listeners) listener(this.camera);
   }

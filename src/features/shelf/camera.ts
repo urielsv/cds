@@ -25,6 +25,7 @@ export interface Placement {
 }
 
 export interface Camera {
+  /** Screen position of the wall's top-left corner, and its scale. */
   x: number;
   y: number;
   scale: number;
@@ -34,10 +35,11 @@ export interface Viewport {
   width: number;
   height: number;
   /**
-   * Screen space covered by the notch at the top and the floating bar at the
-   * bottom. Deliberately *not* part of the pan bounds — the wall always runs
-   * edge to edge under both, so no strip of background ever shows — but used
-   * when bringing a focused cover into the clear part of the screen.
+   * Screen space taken by the notch at the top and the floating bar at the
+   * bottom. The page pads the wall by exactly these, so they bound how far it
+   * scrolls (see `panBounds`): it starts below the notch and ends above the
+   * bar, and passes under both in between. Also used when bringing a focused
+   * cover into the clear part of the screen.
    */
   insetTop: number;
   insetBottom: number;
@@ -349,9 +351,8 @@ interface AxisRange {
 }
 
 /**
- * Allowed offsets on one axis: the content may pan until its edge meets the
- * screen edge, and no further. Content smaller than the screen (only possible
- * mid-computation, since the zoom-out limit is the cover scale) is centred.
+ * Allowed offsets across: the content may pan until its edge meets the screen
+ * edge, and no further. Content narrower than the screen is centred.
  */
 function axisRange(content: number, screen: number): AxisRange {
   if (content <= screen) {
@@ -361,22 +362,38 @@ function axisRange(content: number, screen: number): AxisRange {
   return { min: screen - content, max: 0 };
 }
 
+/**
+ * Allowed offsets down the page: from the wall's top just below the top inset
+ * (scroll position 0) to its end just above the bottom inset (the end of the
+ * page). A wall too short to scroll sits at the top, as a short page does.
+ */
+function verticalRange(content: number, screen: number, top: number, bottom: number): AxisRange {
+  return { min: Math.min(top, screen - bottom - content), max: top };
+}
+
 export interface PanBounds {
   x: AxisRange;
   y: AxisRange;
 }
 
 /**
- * Edge to edge on both axes: at rest the wall always fills the screen. The
- * notch and the floating bar are deliberately ignored — covers run under both
- * rather than scrolling clear of them, which would leave a strip of background
- * at the ends of the wall. A drag may stretch past these bounds (see
- * `rubberBandCamera`), but the wall always springs back inside them.
+ * Edge to edge across; top to bottom, the wall can scroll clear of the notch
+ * at the top and of the floating bar at the bottom. The shelf is the page's
+ * own scrolling content, padded by exactly those insets, so these bounds are
+ * the native scroll range: the wall's top rests below the notch at scroll 0,
+ * and its last row rises above the bar at the end. In between, covers pass
+ * under both — and under the browser's own translucent bars. A pinch may
+ * stretch past these bounds (see `rubberBandCamera`), but always springs back.
  */
 export function panBounds(layout: GridLayout, viewport: Viewport, scale: number): PanBounds {
   return {
     x: axisRange(layout.worldWidth * scale, viewport.width),
-    y: axisRange(layout.worldHeight * scale, viewport.height),
+    y: verticalRange(
+      layout.worldHeight * scale,
+      viewport.height,
+      viewport.insetTop,
+      viewport.insetBottom,
+    ),
   };
 }
 

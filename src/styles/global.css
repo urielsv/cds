@@ -113,10 +113,11 @@
 
 html,
 body {
-  height: 100%;
-  /* The wall pans itself; the page never scrolls, bounces or pinch-zooms. */
-  overflow: hidden;
-  overscroll-behavior: none;
+  /* The page scrolls natively: the wall is its content (see .shelf). That is
+     what lets covers pass under Safari's translucent toolbars, as any
+     ordinary page's content does; a page locked in place gets bars tinted
+     with its background colour instead. */
+  min-height: 100%;
 }
 
 html {
@@ -256,13 +257,14 @@ button {
    =========================================================================== */
 
 .app-main {
-  position: fixed;
-  inset: 0;
+  position: relative;
 }
 
+/* Loading, error and empty states: centred on the screen, not the page. */
 .app-message {
+  position: fixed;
+  inset: 0;
   display: flex;
-  height: 100%;
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -294,37 +296,44 @@ button {
    =========================================================================== */
 
 .shelf {
-  position: absolute;
-  inset: 0;
-  /* Clipped sideways, but free to paint past the top and bottom: the wall
-     carries on under the browser's translucent bars rather than ending in a
-     white strip where they are. The element itself — and so the camera's pan
-     bounds and the inset probe — stays the size of the layout viewport, so no
-     cover is ever parked out of reach behind the chrome. The overscan row the
-     virtualiser already mounts is what fills that overhang. */
-  overflow: clip visible;
+  position: relative;
+  /* Height is the wall's, set by Shelf; the padding is the notch at the top
+     and the floating bar at the bottom, so the page starts with the wall
+     below the one and can scroll its last row above the other. Content-box,
+     so the padding adds to that height rather than eating into it. */
+  box-sizing: content-box;
+  padding-top: var(--safe-top);
+  padding-bottom: calc(var(--bar-clearance) + var(--safe-bottom));
+  /* The surface is transformed mid-pinch; clipping keeps a zoomed-in wall
+     from widening the page into a sideways scroll. */
+  overflow: clip;
   background-color: var(--color-bg);
   color: var(--color-text);
-  cursor: grab;
-  /* Every gesture is ours: the browser must neither scroll nor zoom. */
-  touch-action: none;
+  /* Vertical panning is the browser's (native scroll and momentum); pinch
+     and sideways movement are ours, and the page itself must not zoom. */
+  touch-action: pan-y;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   user-select: none;
-}
-
-.shelf--panning {
-  cursor: grabbing;
 }
 
 .shelf:focus-visible {
   outline-offset: -2px;
 }
 
-/* Positioned with the safe-area insets and the bar clearance, then measured:
-   the only way for script to learn what `env()` resolves to. */
+/* The screen, measured: the shelf element itself is as tall as the wall. */
+.shelf__screen-probe {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+/* Positioned with the safe-area insets and the bar clearance, then measured
+   against the screen probe: the only way for script to learn what `env()`
+   resolves to. */
 .shelf__inset-probe {
-  position: absolute;
+  position: fixed;
   top: var(--safe-top);
   bottom: calc(var(--bar-clearance) + var(--safe-bottom));
   left: 0;
@@ -340,7 +349,8 @@ button {
    rather than as background showing through. */
 .shelf__surface {
   position: absolute;
-  top: 0;
+  /* Below the notch at scroll 0 — the camera's `surfaceTop`. */
+  top: var(--safe-top);
   left: 0;
   background-color: var(--color-tile-empty);
   transform-origin: 0 0;
@@ -349,7 +359,8 @@ button {
 /* ---- First-load curtain (ShelfIntro) ---- */
 
 .shelf-intro {
-  position: absolute;
+  /* Over the screen, not the (page-tall) shelf. */
+  position: fixed;
   z-index: 1;
   display: grid;
   /* Overhangs like the wall does, or covers would show under the browser
